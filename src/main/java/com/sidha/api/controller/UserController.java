@@ -1,4 +1,4 @@
-package com.sidha.services.controller;
+package com.sidha.api.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -7,8 +7,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/user")
 public class UserController {
     
-    @RequestMapping("/test")
-    public String test() {
-        return "Hello World!";
-    }
 }

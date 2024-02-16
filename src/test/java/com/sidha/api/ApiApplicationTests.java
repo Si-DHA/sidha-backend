@@ -1,10 +1,10 @@
-package com.sidha.services;
+package com.sidha.api;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ServicesApplicationTests {
+class ApiApplicationTests {
 
 	@Test
 	void contextLoads() {
