@@ -23,6 +23,8 @@ stages:
 build:
     image: $IMAGE_OPENJDK_GRADLE
     stage: build
+    only:
+        - master
     script:
         - echo "Compiling the code..."
         - cd $CI_PROJECT_DIR
@@ -33,6 +35,8 @@ build:
 
 deploy:
     stage: deploy
+    only:
+        - master
     before_script:
         - "which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )"
         - eval $(ssh-agent -s)
@@ -43,8 +47,8 @@ deploy:
 
     script:
         - echo "Deploy to server..."
-	      - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "cd sidha-backend"
-	      - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "sudo docker-compose down"
-	      - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "git checkout master"
+        - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "cd sidha-backend"
+        - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "sudo docker-compose down"
+        - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "git checkout master"
         - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "git pull origin master"
-	      - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "sudo docker-compose up --build"
+        - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "sudo docker-compose up --build"
