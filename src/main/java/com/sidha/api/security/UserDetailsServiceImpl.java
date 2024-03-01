@@ -25,6 +25,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         UserModel user = userDb.findByUsername(username);
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
         // grantedAuthorities.add(new SimpleGrantedAuthority(user.getRole().getRole()));
-        return new User(user.getUsername(), user.getPassword(), grantedAuthorities);
+        return new User(user.getEmail(), user.getPassword(), grantedAuthorities);
     }
 }

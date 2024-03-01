@@ -28,7 +28,6 @@ public class JwtUtils {
 
         Claims claims = Jwts.claims().setSubject(user.getId().toString());
         claims.put("name", user.getName());
-        claims.put("userName", user.getUsername());
         claims.put("email", user.getEmail());
         claims.put("address", user.getAddress());
 
