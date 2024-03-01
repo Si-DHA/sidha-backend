@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @DiscriminatorValue(value = "karyawan")
 public class Karyawan extends UserModel {
   @Column(name = "position")
+
   private String position;
     
 }
