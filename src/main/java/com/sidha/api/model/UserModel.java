@@ -12,11 +12,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.sidha.api.model.enumerator.Role;
 
-import java.io.Serializable;
+// import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+// import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,7 +33,7 @@ import lombok.Setter;
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue(value = "user")
 @Table(name = "user_table")
-public class UserModel implements Serializable, UserDetails {
+public class UserModel implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id = UUID.randomUUID();

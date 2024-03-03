@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,11 +16,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import com.sidha.api.security.filter.JwtTokenFilter;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+// import com.apapedia.user.constant.Constant;
+import com.sidha.api.security.jwt.JwtTokenFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -41,7 +37,7 @@ public class WebSecurityConfig {
                         // .requestMatchers("/api/user/**").hasAnyAuthority(Constant.ROLE_SELLER, Constant.ROLE_CUSTOMER)
                         // .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/**").permitAll()
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
@@ -57,16 +53,15 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers( new AntPathRequestMatcher("/css/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
-                        // TODO: Add the following line to the authorizeHttpRequests block
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
-                // .formLogin((form) -> form
-                //         .loginPage("/login")
-                //         .permitAll()
-                //         .defaultSuccessUrl("/")
-                // )
-                // .logout((logout) -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                //         .logoutSuccessUrl("/login"))
+                .formLogin((form) -> form
+                        .loginPage("/login")
+                        .permitAll()
+                        .defaultSuccessUrl("/")
+                )
+                .logout((logout) -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                        .logoutSuccessUrl("/login"))
 
         ;
         return http.build();
@@ -76,13 +71,6 @@ public class WebSecurityConfig {
     public BCryptPasswordEncoder encoder(){
         return new BCryptPasswordEncoder();
     }
-
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .build();
-    }
-        
 
     @Autowired
     public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
