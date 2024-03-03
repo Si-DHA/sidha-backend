@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sidha.api.DTO.UserMapper;
+import com.sidha.api.DTO.request.LoginUserRequestDTO;
 import com.sidha.api.DTO.request.SignUpUserRequestDTO;
 import com.sidha.api.DTO.response.UserResponse;
 import com.sidha.api.model.Admin;
@@ -44,14 +45,28 @@ public class AuthServiceImpl implements AuthService {
         switch (request.getRole()) {
             case ADMIN:
                 userDb.save(modelMapper.map(request, Admin.class));
+                break;
             case KARYAWAN:
                 userDb.save(modelMapper.map(request, Karyawan.class));
+                break;
             case SOPIR:
                 userDb.save(modelMapper.map(request, Sopir.class));
+                break;
             case KLIEN:
                 userDb.save(modelMapper.map(request, Klien.class));
+                break;
             default:
                 throw new IllegalArgumentException("Invalid role");
         }
+    }
+
+    @Override
+    public UserResponse login(LoginUserRequestDTO request) {
+        var user = userDb.findByEmail(request.getEmail());
+        var jwt = jwtUtils.generateJwtToken(user);
+        var UserResponse = new UserResponse();
+        UserResponse.setToken(jwt);
+        UserResponse.setUser(user);
+        return UserResponse;
     }
 }
