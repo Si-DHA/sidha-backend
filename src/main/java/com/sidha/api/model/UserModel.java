@@ -1,15 +1,20 @@
 package com.sidha.api.model;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serializable;
+import com.sidha.api.model.enumerator.Role;
+
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,44 +24,70 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
 @SQLDelete(sql = "UPDATE user_table SET is_deleted = true WHERE id=?")
-@SQLRestriction( value = "is_deleted = false" )
+@SQLRestriction(value = "is_deleted = false")
+@DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue(value = "user")
 @Table(name = "user_table")
-public class UserModel implements Serializable{
+public class UserModel implements UserDetails {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id = UUID.randomUUID();
 
-    @NotNull
-    @Column(name="name", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @NotNull
-    @Column(name="username", nullable = false, unique = true)
-    private String username;
-
-    @NotNull
-    @Column(name="password", nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
-    
-    @NotNull
-    @Column(name="email", nullable = false)
+
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @NotNull
-    @Column(name="address", nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
+    private String username = this.email;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @Column(name = "address", nullable = false)
     private String address;
-    
-    @NotNull
-    @Column(name="created_at", nullable = false)
+
+    @Column(name = "phone", nullable = false)
+    private String phone;
+
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
-    
-    @NotNull
-    @Column(name="updated_at", nullable = false)
+
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
-    
-    @NotNull
-    @Column(name="is_deleted", nullable = false)
+
+    @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

@@ -2,7 +2,7 @@ package com.sidha.api.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
-// import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,7 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserModel user = userDb.findByUsername(username);
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        // grantedAuthorities.add(new SimpleGrantedAuthority(user.getRole().getRole()));
+        grantedAuthorities.add(new SimpleGrantedAuthority(user.getRole().getName()));
         return new User(user.getUsername(), user.getPassword(), grantedAuthorities);
     }
 }

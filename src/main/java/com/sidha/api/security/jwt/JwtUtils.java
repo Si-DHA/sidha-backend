@@ -1,6 +1,9 @@
 package com.sidha.api.security.jwt;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +12,9 @@ import org.springframework.stereotype.Component;
 
 import com.sidha.api.model.UserModel;
 
+import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -23,46 +27,49 @@ public class JwtUtils {
     @Value("${sidha.app.jwtExpirationMs}")
     private long jwtExpirationMs;
 
-    public String generateJwtToken(UserModel user){
-        Jwts.parser().setSigningKey(jwtSecret);
+    private Key getSignInKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
 
-        Claims claims = Jwts.claims().setSubject(user.getId().toString());
+    public String generateJwtToken(UserModel user) {
+        var claims = Jwts.claims().setSubject(user.getId().toString());
         claims.put("name", user.getName());
-        claims.put("userName", user.getUsername());
+        claims.put("username", user.getUsername());
         claims.put("email", user.getEmail());
         claims.put("address", user.getAddress());
 
         claims.setIssuedAt(new Date());
         claims.setExpiration(new Date(new Date().getTime() + TimeUnit.MILLISECONDS.toMillis(jwtExpirationMs)));
 
-        return Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
+        return Jwts.builder().setClaims(claims).signWith(getSignInKey(), SignatureAlgorithm.HS256).compact();
     }
 
-    public Claims getClaimsFromJwtToken(String token){
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+    public Claims getClaimsFromJwtToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(token).getBody();
     }
 
-    public String getUserNameFromJwtToken(String token){
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().get("userName").toString();
+    public String getUserNameFromJwtToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(token).getBody().get("username").toString();
     }
 
-    public String getTokenFromHeader(HashMap<String, String> header){
+    public String getTokenFromHeader(Map<String, String> header) {
         return header.get("authorization").substring(7);
     }
 
-    public boolean validateJwtToken(String authToken){
-        try{
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+    public boolean validateJwtToken(String authToken) {
+        try {
+            Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(authToken);
             return true;
-        } catch (SignatureException e) {
+        } catch (SecurityException e) {
             logger.error("Invalid JWT Signature: {}", e.getMessage());
         } catch (MalformedJwtException e) {
             logger.error("Invalid JWT Token: {}", e.getMessage());
-        } catch (ExpiredJwtException e){
+        } catch (ExpiredJwtException e) {
             logger.error("JWT Token is expired: {}", e.getMessage());
-        } catch (UnsupportedJwtException e){
+        } catch (UnsupportedJwtException e) {
             logger.error("JWT Token is unsupported: {}", e.getMessage());
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             logger.error("JWT claims string is empty: {}", e.getMessage());
         }
         return false;
