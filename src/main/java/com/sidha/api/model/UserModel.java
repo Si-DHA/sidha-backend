@@ -44,10 +44,10 @@ public class UserModel implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "username")
+    @Column(name = "username", nullable = false, unique = true)
     private String username = this.email;
 
     @Enumerated(EnumType.STRING)

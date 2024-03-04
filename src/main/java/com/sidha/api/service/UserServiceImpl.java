@@ -16,5 +16,10 @@ public class UserServiceImpl implements UserService {
     public UserModel findByEmail(String email) {
         return userDb.findByEmail(email);
     }
+
+    @Override
+    public UserModel findByUsername(String username) {
+        return userDb.findByUsername(username);
+    }
     
 }

@@ -34,6 +34,12 @@ public class AuthController {
       if (request.getEmail().isEmpty() || request.getPassword().isEmpty()) {
         return new BaseResponse<UserResponse>(false, 400, "Email and password cannot be empty", null);
       }
+      
+      request.setUsername(request.getEmail().split("@")[0]);
+      if (userService.findByUsername(request.getUsername()) != null) {
+        return new BaseResponse<UserResponse>(false, 400, "Username already exists", null);
+      }
+
       request.setPassword(passwordEncoder.encode(request.getPassword()));
       UserResponse response = authService.register(request);
       return new BaseResponse<UserResponse>(true, 200, "User registered successfully", response);
