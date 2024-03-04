@@ -5,8 +5,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sidha.api.DTO.request.ForgotPassUserRequestDTO;
 import com.sidha.api.DTO.request.LoginUserRequestDTO;
 import com.sidha.api.DTO.request.SignUpUserRequestDTO;
 import com.sidha.api.DTO.response.BaseResponse;
@@ -34,7 +36,7 @@ public class AuthController {
       if (request.getEmail().isEmpty() || request.getPassword().isEmpty()) {
         return new BaseResponse<>(false, 400, "Email and password cannot be empty", null);
       }
-      
+
       request.setUsername(request.getEmail().split("@")[0]);
       if (userService.findByUsername(request.getUsername()) != null) {
         return new BaseResponse<>(false, 400, "Username already exists", null);
@@ -67,6 +69,40 @@ public class AuthController {
 
       UserResponse response = authService.login(request);
       return new BaseResponse<>(true, 200, "User logged in successfully", response);
+    } catch (Exception e) {
+      return new BaseResponse<>(false, 500, e.getMessage(), null);
+    }
+  }
+
+  @PostMapping("/forgot-password")
+  public BaseResponse<?> forgotPassword(@RequestBody ForgotPassUserRequestDTO request) {
+    try {
+      // Jika field kosong, maka akan mengembalikan response error
+      if (request.getEmail().isEmpty()) {
+        return new BaseResponse<>(false, 400, "Email cannot be empty", null);
+      }
+
+      if (userService.findByEmail(request.getEmail()) == null) {
+        return new BaseResponse<>(false, 400, "User not found", null);
+      }
+
+      var response = authService.forgotPassword(request);
+      return new BaseResponse<>(true, 200, "Reset password link sent to your email", response);
+    } catch (Exception e) {
+      return new BaseResponse<>(false, 500, e.getMessage(), null);
+    }
+  }
+
+  @PostMapping("/reset-password")
+  public BaseResponse<?> resetPass(@RequestParam String token, @RequestParam String password) {
+    try {
+      // Jika field kosong, maka akan mengembalikan response error
+      if (token.isEmpty() || password.isEmpty()) {
+        return new BaseResponse<>(false, 400, "Token and password cannot be empty", null);
+      }
+
+      authService.resetPassword(token, passwordEncoder.encode(password));
+      return new BaseResponse<>(true, 200, "Password reset successfully", null);
     } catch (Exception e) {
       return new BaseResponse<>(false, 500, e.getMessage(), null);
     }

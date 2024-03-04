@@ -36,6 +36,12 @@ public class UserModel implements UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id = UUID.randomUUID();
 
+    @Column(name = "token", nullable = true)
+    private String token;
+
+    @Column(name = "token_created_at", nullable = true)
+    private LocalDateTime tokenCreatedAt;
+
     @Column(name = "name", nullable = false)
     private String name;
 
