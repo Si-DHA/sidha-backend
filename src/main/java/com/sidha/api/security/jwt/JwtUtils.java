@@ -14,7 +14,7 @@ import com.sidha.api.model.UserModel;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -33,7 +33,7 @@ public class JwtUtils {
     }
 
     public String generateJwtToken(UserModel user) {
-        Claims claims = Jwts.claims().setSubject(user.getId().toString());
+        var claims = Jwts.claims().setSubject(user.getId().toString());
         claims.put("name", user.getName());
         claims.put("username", user.getUsername());
         claims.put("email", user.getEmail());
@@ -53,7 +53,7 @@ public class JwtUtils {
         return Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(token).getBody().get("username").toString();
     }
 
-    public String getTokenFromHeader(HashMap<String, String> header) {
+    public String getTokenFromHeader(Map<String, String> header) {
         return header.get("authorization").substring(7);
     }
 

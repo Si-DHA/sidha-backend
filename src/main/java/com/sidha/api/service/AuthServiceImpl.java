@@ -31,17 +31,17 @@ public class AuthServiceImpl implements AuthService {
     private ModelMapper modelMapper;
 
     @Override
-    public UserResponse register(SignUpUserRequestDTO<?> request) {
+    public UserResponse register(SignUpUserRequestDTO request) {
         var user = userMapper.toUserModel(request);
         var jwt = jwtUtils.generateJwtToken(user);
-        var UserResponse = new UserResponse();
-        UserResponse.setToken(jwt);
-        UserResponse.setUser(user);
+        var userResponse = new UserResponse();
+        userResponse.setToken(jwt);
+        userResponse.setUser(user);
         saveUser(request);
-        return UserResponse;
+        return userResponse;
     }
 
-    private void saveUser(SignUpUserRequestDTO<?> request) {
+    private void saveUser(SignUpUserRequestDTO request) {
         switch (request.getRole()) {
             case ADMIN:
                 userDb.save(modelMapper.map(request, Admin.class));

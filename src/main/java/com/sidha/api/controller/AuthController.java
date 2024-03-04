@@ -28,23 +28,23 @@ public class AuthController {
   private PasswordEncoder passwordEncoder;
 
   @PostMapping("/register")
-  public BaseResponse<UserResponse> register(@RequestBody SignUpUserRequestDTO<?> request) {
+  public BaseResponse<UserResponse> register(@RequestBody SignUpUserRequestDTO request) {
     try {
       // Jika field kosong, maka akan mengembalikan response error
       if (request.getEmail().isEmpty() || request.getPassword().isEmpty()) {
-        return new BaseResponse<UserResponse>(false, 400, "Email and password cannot be empty", null);
+        return new BaseResponse<>(false, 400, "Email and password cannot be empty", null);
       }
       
       request.setUsername(request.getEmail().split("@")[0]);
       if (userService.findByUsername(request.getUsername()) != null) {
-        return new BaseResponse<UserResponse>(false, 400, "Username already exists", null);
+        return new BaseResponse<>(false, 400, "Username already exists", null);
       }
 
       request.setPassword(passwordEncoder.encode(request.getPassword()));
       UserResponse response = authService.register(request);
-      return new BaseResponse<UserResponse>(true, 200, "User registered successfully", response);
+      return new BaseResponse<>(true, 200, "User registered successfully", response);
     } catch (Exception e) {
-      return new BaseResponse<UserResponse>(false, 500, e.getMessage(), null);
+      return new BaseResponse<>(false, 500, e.getMessage(), null);
     }
   }
 
@@ -53,22 +53,22 @@ public class AuthController {
     try {
       // Jika field kosong, maka akan mengembalikan response error
       if (request.getEmail().isEmpty() || request.getPassword().isEmpty()) {
-        return new BaseResponse<UserResponse>(false, 400, "Email and password cannot be empty", null);
+        return new BaseResponse<>(false, 400, "Email and password cannot be empty", null);
       }
 
       UserModel user = userService.findByEmail(request.getEmail());
       if (user == null) {
-        return new BaseResponse<UserResponse>(false, 400, "User not found", null);
+        return new BaseResponse<>(false, 400, "User not found", null);
       }
 
       if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-        return new BaseResponse<UserResponse>(false, 400, "Invalid password", null);
+        return new BaseResponse<>(false, 400, "Invalid password", null);
       }
 
       UserResponse response = authService.login(request);
-      return new BaseResponse<UserResponse>(true, 200, "User logged in successfully", response);
+      return new BaseResponse<>(true, 200, "User logged in successfully", response);
     } catch (Exception e) {
-      return new BaseResponse<UserResponse>(false, 500, e.getMessage(), null);
+      return new BaseResponse<>(false, 500, e.getMessage(), null);
     }
   }
 

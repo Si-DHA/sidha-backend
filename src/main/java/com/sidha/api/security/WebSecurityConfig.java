@@ -16,7 +16,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-// import com.apapedia.user.constant.Constant;
 import com.sidha.api.security.jwt.JwtTokenFilter;
 
 @Configuration
@@ -34,8 +33,6 @@ public class WebSecurityConfig {
         http.securityMatcher("/api/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        // .requestMatchers("/api/user/**").hasAnyAuthority(Constant.ROLE_SELLER, Constant.ROLE_CUSTOMER)
-                        // .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -55,12 +52,12 @@ public class WebSecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin((form) -> form
+                .formLogin(form -> form
                         .loginPage("/login")
                         .permitAll()
                         .defaultSuccessUrl("/")
                 )
-                .logout((logout) -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                         .logoutSuccessUrl("/login"))
 
         ;

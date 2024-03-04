@@ -8,5 +8,5 @@ import com.sidha.api.model.UserModel;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    UserModel toUserModel(SignUpUserRequestDTO<?> request);
+    UserModel toUserModel(SignUpUserRequestDTO request);
 }

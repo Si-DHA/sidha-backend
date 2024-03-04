@@ -12,11 +12,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.sidha.api.model.enumerator.Role;
 
-// import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
-// import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -71,11 +69,6 @@ public class UserModel implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
-    }
-
-    @Override
-    public String getUsername() {
-        return this.email;
     }
 
     @Override
