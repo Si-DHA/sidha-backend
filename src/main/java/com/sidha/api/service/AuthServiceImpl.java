@@ -15,6 +15,7 @@ import com.sidha.api.model.Klien;
 import com.sidha.api.model.Sopir;
 import com.sidha.api.repository.UserDb;
 import com.sidha.api.security.jwt.JwtUtils;
+import com.sidha.api.utils.MailSenderUtils;
 
 import java.util.UUID;
 import java.time.LocalDateTime;
@@ -34,6 +35,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private MailSenderUtils mailSenderUtils;
 
     private static final long EXPIRE_TOKEN=30;
 
@@ -78,13 +82,25 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String forgotPassword(ForgotPassUserRequestDTO request) {
+    public void forgotPassword(ForgotPassUserRequestDTO request) {
         var token = generateToken();
         var user = userDb.findByEmail(request.getEmail());
         user.setToken(token);
         user.setTokenCreatedAt(LocalDateTime.now());
         userDb.save(user);
-        return token;
+        mailSenderUtils.sendMail(request.getEmail(), "Reset Password", generateMessage(token, user.getName()));
+    }
+
+    private String generateMessage(String token, String name) {
+        var message = new StringBuilder();
+        message.append("Hai, ").append(name).append("\n\n");
+        message.append("Lupa password?").append("\n");
+        message.append("Kami menerima permintaan untuk mereset password akun anda").append("\n\n");
+        message.append("Untuk melanjutkan proses reset password, silahkan klik link berikut").append("\n");
+        message.append("https://sidha-frontend.vercel.app/reset-password?token=").append(token).append("\n\n");
+        message.append("Jika anda tidak merasa melakukan permintaan ini, abaikan email ini.").append("\n\n");
+        message.append("Terima kasih!").append("\n");
+        return message.toString();
     }
 
     @Override

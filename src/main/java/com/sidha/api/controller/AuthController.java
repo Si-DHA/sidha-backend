@@ -86,8 +86,8 @@ public class AuthController {
         return new BaseResponse<>(false, 400, "User not found", null);
       }
 
-      var response = authService.forgotPassword(request);
-      return new BaseResponse<>(true, 200, "Reset password link sent to your email", response);
+      authService.forgotPassword(request);
+      return new BaseResponse<>(true, 200, "Reset password link sent to your email", null);
     } catch (Exception e) {
       return new BaseResponse<>(false, 500, e.getMessage(), null);
     }

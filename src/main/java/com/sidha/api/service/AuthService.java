@@ -10,7 +10,7 @@ public interface AuthService {
 
     UserResponse login(LoginUserRequestDTO request);
 
-    String forgotPassword(ForgotPassUserRequestDTO request);
+    void forgotPassword(ForgotPassUserRequestDTO request);
 
     void resetPassword(String token, String password);
     
