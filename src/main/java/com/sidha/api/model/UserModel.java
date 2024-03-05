@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.sidha.api.filedata.model.ImageData;
 import com.sidha.api.model.enumerator.Role;
 
 import java.io.Serializable;
@@ -67,6 +68,9 @@ public class UserModel implements Serializable, UserDetails {
 
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
+
+    @OneToOne(mappedBy = "userModel", cascade = CascadeType.ALL)
+    private ImageData imageData;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
