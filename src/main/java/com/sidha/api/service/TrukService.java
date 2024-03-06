@@ -45,13 +45,13 @@ public class TrukService {
         return truk;
     }
 
-    public Truk updateTruk(UpdateTrukRequestDTO updateTrukRequestDTO) {
-        Truk trukFromDto = trukMapper.updateTrukRequestDTOToTruk(updateTrukRequestDTO);
-        Truk truk = trukDb.findById(trukFromDto.getIdTruk()).orElse(null);
-        if (truk != null) {
-            truk.setLicensePlate(trukFromDto.getLicensePlate());
-            truk.setMerk(trukFromDto.getMerk());
+    // public Truk updateTruk(UpdateTrukRequestDTO updateTrukRequestDTO) {
+    //     Truk trukFromDto = trukMapper.updateTrukRequestDTOToTruk(updateTrukRequestDTO);
+    //     Truk truk = trukDb.findById(trukFromDto.getIdTruk()).orElse(null);
+    //     if (truk != null) {
+    //         truk.setLicensePlate(trukFromDto.getLicensePlate());
+    //         truk.setMerk(trukFromDto.getMerk());
 
-        }
-    }
+    //     }
+    // }
 }

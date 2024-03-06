@@ -49,31 +49,31 @@ public class TrukController {
         }
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<Truk> updateTruk(@Valid @RequestBody UpdateTrukRequestDTO updateTrukRequestDTOTrukRequestDTO, BindingResult bindingResult) {
-        if (bindingResult.hasFieldErrors()) {
-            String errorMessages = "";
-            List<FieldError> errors = bindingResult.getFieldErrors();
-            for (FieldError error : errors ) {
-                errorMessages += error.getField() + " - " + error.getDefaultMessage() + "\n";
-            }
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    errorMessages
-            );
-        }
+    // @PutMapping("/update")
+    // public ResponseEntity<Truk> updateTruk(@Valid @RequestBody UpdateTrukRequestDTO updateTrukRequestDTOTrukRequestDTO, BindingResult bindingResult) {
+    //     if (bindingResult.hasFieldErrors()) {
+    //         String errorMessages = "";
+    //         List<FieldError> errors = bindingResult.getFieldErrors();
+    //         for (FieldError error : errors ) {
+    //             errorMessages += error.getField() + " - " + error.getDefaultMessage() + "\n";
+    //         }
+    //         throw new ResponseStatusException(
+    //                 HttpStatus.BAD_REQUEST,
+    //                 errorMessages
+    //         );
+    //     }
 
 
 
-        try {
-            Truk truk = trukService.createTruk(createTrukRequestDTO);
-            return ResponseEntity.ok(truk);
-        } catch (NoSuchElementException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    e.getMessage()
-            );
-        }
-    }
+    //     try {
+    //         Truk truk = trukService.createTruk(createTrukRequestDTO);
+    //         return ResponseEntity.ok(truk);
+    //     } catch (NoSuchElementException e) {
+    //         throw new ResponseStatusException(
+    //                 HttpStatus.NOT_FOUND,
+    //                 e.getMessage()
+    //         );
+    //     }
+    // }
 
 }
