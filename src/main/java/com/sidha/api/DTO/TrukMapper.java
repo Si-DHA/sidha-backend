@@ -10,7 +10,4 @@ public interface TrukMapper {
 
     Truk createTrukRequestDTOToTruk(CreateTrukRequestDTO createTrukRequestDTO);
 
-    Truk updateTrukRequestDTOToTruk(UpdateTrukRequestDTO updateTrukRequestDTO);
-
-
 }
