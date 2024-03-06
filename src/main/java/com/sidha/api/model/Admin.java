@@ -3,20 +3,18 @@ package com.sidha.api.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @DiscriminatorValue(value = "admin")
 public class Admin extends UserModel{
   @Column(name = "is_super_admin")
-  private boolean isSuperAdmin = false; 
-
+  private boolean isSuperAdmin = false;
 }

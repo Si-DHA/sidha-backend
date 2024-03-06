@@ -9,7 +9,9 @@ import java.util.UUID;
 
 @Repository
 public interface UserDb extends JpaRepository<UserModel, UUID>{
-
     UserModel findByUsername(String username);
-    
+
+    UserModel findByEmail(String email);
+
+    UserModel findByToken(String token);   
 }
