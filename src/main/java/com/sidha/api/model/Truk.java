@@ -29,7 +29,7 @@ public class Truk {
     @Id
     private UUID idTruk = UUID.randomUUID();
 
-    @Column(name = "license_plate", nullable = false)
+    @Column(name = "license_plate", nullable = false, unique = true)
     private String licensePlate;
 
     @Column(name = "merk", nullable = false)

@@ -2,10 +2,12 @@ package com.sidha.api.service;
 
 import com.sidha.api.DTO.TrukMapper;
 import com.sidha.api.DTO.request.CreateTrukRequestDTO;
+import com.sidha.api.DTO.request.UpdateTrukRequestDTO;
 import com.sidha.api.model.Sopir;
 import com.sidha.api.model.Truk;
 import com.sidha.api.model.UserModel;
 import com.sidha.api.repository.TrukDb;
+import com.sidha.api.repository.UserDb;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -17,7 +19,7 @@ import static com.sidha.api.model.enumerator.Role.SOPIR;
 @Service
 @AllArgsConstructor
 public class TrukService {
-    private UserRepository userRepository;
+    private UserDb userRepository;
 
     private TrukMapper trukMapper;
 
@@ -41,5 +43,15 @@ public class TrukService {
             }
         }
         return truk;
+    }
+
+    public Truk updateTruk(UpdateTrukRequestDTO updateTrukRequestDTO) {
+        Truk trukFromDto = trukMapper.updateTrukRequestDTOToTruk(updateTrukRequestDTO);
+        Truk truk = trukDb.findById(trukFromDto.getIdTruk()).orElse(null);
+        if (truk != null) {
+            truk.setLicensePlate(trukFromDto.getLicensePlate());
+            truk.setMerk(trukFromDto.getMerk());
+
+        }
     }
 }
