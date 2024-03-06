@@ -19,5 +19,4 @@ public class Admin extends UserModel{
   @Column(name = "is_super_admin")
   private boolean isSuperAdmin = false; 
 
-  
 }

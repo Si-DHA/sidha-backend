@@ -1,8 +1,7 @@
 package com.sidha.api.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,5 +16,8 @@ public class Sopir extends UserModel{
   @Column(name = "is_available")
   private boolean isAvailable = false;
 
+  @OneToOne(mappedBy = "sopir", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JsonBackReference
+  private Truk truk;
   
 }
