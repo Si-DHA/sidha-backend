@@ -16,5 +16,5 @@ import lombok.Setter;
 @DiscriminatorValue(value = "admin")
 public class Admin extends UserModel{
   @Column(name = "is_super_admin")
-  private boolean isSuperAdmin = false; 
+  private boolean isSuperAdmin = false;
 }
