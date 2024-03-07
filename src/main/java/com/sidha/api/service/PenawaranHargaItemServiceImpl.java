@@ -7,6 +7,7 @@ import java.util.*;
 
 import com.sidha.api.DTO.PenawaranHargaItemMapper;
 import com.sidha.api.DTO.request.CreatePenawaranHargaItemRequestDTO;
+import com.sidha.api.DTO.request.UpdatePenawaranHargaItemRequestDTO;
 import com.sidha.api.model.Klien;
 import com.sidha.api.model.PenawaranHarga;
 import com.sidha.api.model.PenawaranHargaItem;
@@ -86,5 +87,35 @@ public class PenawaranHargaItemServiceImpl implements PenawaranHargaItemService 
     @Override
     public List<PenawaranHargaItem> getAllPenawaranHargaItemByIdKlien(UUID klien) {
         return penawaranHargaItemDb.findByIdKlien(klien);
+    }
+
+    @Override
+    public PenawaranHargaItem updatePenawaranHargaItem(
+            @Valid UpdatePenawaranHargaItemRequestDTO updatePenawaranHargaItemRequestDTO) {
+        UUID idPenawaranHargaItem = updatePenawaranHargaItemRequestDTO.getIdPenawaranHargaItem();
+        PenawaranHargaItem existingItem = penawaranHargaItemDb.findById(idPenawaranHargaItem).orElse(null);
+
+        if (existingItem != null) {
+            existingItem.setCddPrice(updatePenawaranHargaItemRequestDTO.getCddPrice());
+            existingItem.setCddLongPrice(updatePenawaranHargaItemRequestDTO.getCddLongPrice());
+            existingItem.setWingboxPrice(updatePenawaranHargaItemRequestDTO.getWingboxPrice());
+            existingItem.setFusoPrice(updatePenawaranHargaItemRequestDTO.getFusoPrice());
+
+            return penawaranHargaItemDb.save(existingItem);
+        } else {
+            throw new NoSuchElementException("Penawaran Harga Item with id " + idPenawaranHargaItem + " not found");
+        }
+    }
+
+    @Override
+    public void deletePenawaranHargaItem(UUID idPenawaranHargaItem) {
+        PenawaranHargaItem existingItem = penawaranHargaItemDb.findById(idPenawaranHargaItem).orElse(null);
+
+        if (existingItem != null) {
+            existingItem.setIsDeleted(true);
+            penawaranHargaItemDb.save(existingItem);
+        } else {
+            throw new NoSuchElementException("PenawaranHargaItem with id " + idPenawaranHargaItem + " not found");
+        }
     }
 }
