@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sidha.api.DTO.UserMapper;
 import com.sidha.api.DTO.request.EditUserDetailRequestDTO;
 import com.sidha.api.DTO.response.BaseResponse;
 import com.sidha.api.DTO.response.GetUserDetailResponseDTO;
@@ -23,6 +24,9 @@ import com.sidha.api.service.UserService;
 public class UserController {
   @Autowired
   private UserService userService;
+
+  @Autowired
+  private UserMapper userMapper;
   
   @GetMapping("/{id}")
   private BaseResponse<GetUserDetailResponseDTO> getUserDetail(@PathVariable UUID id) {
@@ -46,8 +50,9 @@ public class UserController {
       request.setPosition(position);
       request.setSuperAdmin(isSuperAdmin);
       request.setImageFile(imageFile);
-      userService.editUserDetail(request, id);
-      return new BaseResponse<>(true, 200, "User edited successfully", null);
+      var editedUser = userService.editUserDetail(request, id);
+      var userDetail =  userMapper.toGetDetailUserResponseDTO(editedUser);
+      return new BaseResponse<>(true, 200, "User edited successfully",userDetail );
     } catch (Exception e) {
       return new BaseResponse<>(false, 500, e.getMessage(), null);
     }
@@ -55,7 +60,7 @@ public class UserController {
 
 
   @PostMapping("/change-password/{id}")
-  private BaseResponse<?> changePassword(@RequestBody String currentPassword, @RequestBody String newPassword, @PathVariable UUID id) {
+  private BaseResponse<?> changePassword(@RequestParam String currentPassword, @RequestParam String newPassword, @PathVariable UUID id) {
     try {
       userService.changePassword(currentPassword, newPassword, id);
       return new BaseResponse<>(true, 200, "Password changed successfully", null);

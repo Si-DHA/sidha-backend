@@ -56,50 +56,56 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private static final long EXPIRE_TOKEN=30;
+    private static final long EXPIRE_TOKEN = 30;
 
     @Override
-    public UserResponse register(SignUpUserRequestDTO request)  {
+    public UserResponse register(SignUpUserRequestDTO request) {
         MultipartFile imageFile = request.getImageFile();
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
         var user = userMapper.toUserModel(request);
         var jwt = jwtUtils.generateJwtToken(user);
         var userResponse = new UserResponse();
         userResponse.setToken(jwt);
-        userResponse.setUser(user);
-        if(request.getPassword().isEmpty() && request.getRole() == Role.KLIEN){
-            var randomPassword = passwordGenerator.generatePassword(8);
-            user.setPassword(passwordEncoder.encode(randomPassword)) ;
+        var randomPassword = passwordGenerator.generatePassword(8);
+        if (request.getPassword().isEmpty() && request.getRole() == Role.KLIEN) {
+            user.setPassword(passwordEncoder.encode(randomPassword));
         }
 
         var savedUser = saveUser(request);
-        try{
+        try {
             if (imageFile != null) {
-               ImageData imgData =  storageService.uploadImageAndSaveToDB(imageFile, savedUser);
+                ImageData imgData = storageService.uploadImageAndSaveToDB(imageFile, savedUser);
                 user.setImageData(imgData);
                 userDb.save(savedUser);
 
             }
+            userResponse.setUser(savedUser);
+            if (request.getRole() == Role.KLIEN) {
+                mailSenderUtils.sendMail(request.getEmail(), "Welcome to SIDHA",
+                        generateMessageForNewClient(request.getName(), request.getEmail(), randomPassword));
+            }
             return userResponse;
 
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
+
         return userResponse;
-        
+
     }
 
     private UserModel saveUser(SignUpUserRequestDTO request) {
         switch (request.getRole()) {
             case ADMIN:
-               return  userDb.save(modelMapper.map(request, Admin.class));
+                return userDb.save(modelMapper.map(request, Admin.class));
             case KARYAWAN:
                 return userDb.save(modelMapper.map(request, Karyawan.class));
             case SOPIR:
                 return userDb.save(modelMapper.map(request, Sopir.class));
-                
+
             case KLIEN:
                 var randomPassword = passwordGenerator.generatePassword(8);
-                request.setPassword(passwordEncoder.encode(randomPassword)) ;
+                request.setPassword(passwordEncoder.encode(randomPassword));
                 return userDb.save(modelMapper.map(request, Klien.class));
             default:
                 throw new IllegalArgumentException("Invalid role");
@@ -134,6 +140,19 @@ public class AuthServiceImpl implements AuthService {
         message.append("Untuk melanjutkan proses reset password, silahkan klik link berikut").append("\n");
         message.append("https://sidha-frontend.vercel.app/reset-password?token=").append(token).append("\n\n");
         message.append("Jika anda tidak merasa melakukan permintaan ini, abaikan email ini.").append("\n\n");
+        message.append("Terima kasih!").append("\n");
+        return message.toString();
+    }
+
+    private String generateMessageForNewClient(String name, String email, String Password) {
+        var message = new StringBuilder();
+        message.append("Hai, ").append(name).append("\n\n");
+        message.append("Selamat datang di SIDHA!").append("\n");
+        message.append("Akun anda telah berhasil dibuat").append("\n\n");
+        message.append("Berikut adalah informasi Akun Anda: ").append("\n");
+        message.append("Email: ").append(email).append("\n");
+        message.append("Password: ").append(Password).append("\n\n");
+        message.append("Silahkan login dengan email dan password diatas").append("\n\n");
         message.append("Terima kasih!").append("\n");
         return message.toString();
     }

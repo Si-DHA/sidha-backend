@@ -2,7 +2,6 @@ package com.sidha.api.service;
 
 import java.io.IOException;
 
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sidha.api.model.ImageData;

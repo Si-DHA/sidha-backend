@@ -99,4 +99,7 @@ public class UserModel implements UserDetails {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private ImageData imageData;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Kontrak kontrak;
 }

@@ -50,6 +50,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserModel save(UserModel user) {
+        return userDb.save(user);
+    }
+
+    @Override
     public GetUserDetailResponseDTO getUserDetail(UUID id){
         UserModel user = userDb.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         ImageData imageData = user.getImageData();
@@ -63,7 +68,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void editUserDetail(EditUserDetailRequestDTO requestDTO, UUID id) {
+    public UserModel editUserDetail(EditUserDetailRequestDTO requestDTO, UUID id) {
         UserModel user = userDb.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         user.setName(null != requestDTO.getName() ? requestDTO.getName() : user.getName());
         user.setAddress(null != requestDTO.getAddress() ? requestDTO.getAddress() : user.getAddress());
@@ -72,11 +77,11 @@ public class UserServiceImpl implements UserService {
         if(userRole.equals("ADMIN")){
             var userAdmin = (Admin) user;
             userAdmin.setSuperAdmin(requestDTO.isSuperAdmin() ? requestDTO.isSuperAdmin() : userAdmin.isSuperAdmin());
-            userDb.save(userAdmin);}
+            return userDb.save(userAdmin);}
         else if(userRole.equals("KARYAWAN")){
             var userKaryawan = (Karyawan) user;
             userKaryawan.setPosition(null != requestDTO.getPosition() ? requestDTO.getPosition() : userKaryawan.getPosition());
-            userDb.save(userKaryawan);}
+            return userDb.save(userKaryawan);}
         else{
             if(null != requestDTO.getImageFile()){
                 try {
@@ -86,8 +91,7 @@ public class UserServiceImpl implements UserService {
                     throw new RuntimeException("Failed to upload image");
                 }
             }
-            userDb.save(user);
-            return;
+            return userDb.save(user);
         }
     }
 
@@ -102,7 +106,7 @@ public class UserServiceImpl implements UserService {
         if (passwordMatch) {
             // Memeriksa apakah password yang baru tidak sama dengan password yang lama
             if (!currentPassword.equals(newPassword)) {
-                user.setPassword(newPassword);
+                user.setPassword(passwordEncoder.encode(newPassword));
                 userDb.save(user);
             } else {
                 throw new RuntimeException("New password cannot be the same as the current password");

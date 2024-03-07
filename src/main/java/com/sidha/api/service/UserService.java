@@ -14,9 +14,11 @@ public interface UserService {
 
     UserModel findById(UUID id);
 
+    UserModel save(UserModel user);
+
     GetUserDetailResponseDTO getUserDetail(UUID id);
 
-    void editUserDetail( EditUserDetailRequestDTO requestDTO, UUID id);
+    UserModel editUserDetail( EditUserDetailRequestDTO requestDTO, UUID id);
 
     void changePassword(String currentPassword, String newPassword, UUID id);
 }
