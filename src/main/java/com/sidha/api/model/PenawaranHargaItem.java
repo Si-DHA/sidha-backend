@@ -18,10 +18,11 @@ import lombok.Setter;
 public class PenawaranHargaItem{
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_klien", referencedColumnName = "id")
+    @JsonBackReference
     private Klien klien;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_penawaran_harga", referencedColumnName = "idPenawaranHarga")
+    @JoinColumn(name = "id_penawaran_harga", referencedColumnName = "id_penawaran_harga")
     @JsonBackReference
     private PenawaranHarga penawaranHarga;
 

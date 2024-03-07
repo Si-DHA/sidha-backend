@@ -31,4 +31,9 @@ public class PenawaranHargaController {
         }
     }
 
+    @GetMapping(value="/penawaran-harga/klien/{klien}/view-all")
+    public PenawaranHarga getPenawaranHargaByIdKlien(@PathVariable("klien") String klien){
+        return penawaranHargaService.getPenawaranHargaByIdKlien(UUID.fromString(klien));
+    }
+
 }

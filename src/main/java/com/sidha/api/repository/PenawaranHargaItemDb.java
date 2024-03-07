@@ -12,4 +12,8 @@ public interface PenawaranHargaItemDb extends JpaRepository<PenawaranHargaItem, 
     @Query("SELECT phi FROM PenawaranHargaItem phi WHERE phi.penawaranHarga.id = :idPenawaranHarga")
     List<PenawaranHargaItem> findByIdPenawaranHarga(@Param("idPenawaranHarga") UUID idPenawaranHarga);
 
+    List<PenawaranHargaItem> findBySource(@Param("source") String source);
+
+    @Query("SELECT phi FROM PenawaranHargaItem phi WHERE phi.klien.id = :klien")
+    List<PenawaranHargaItem> findByIdKlien(@Param("klien") UUID klien);
 }

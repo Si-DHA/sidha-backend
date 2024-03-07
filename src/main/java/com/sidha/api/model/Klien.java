@@ -2,12 +2,10 @@ package com.sidha.api.model;
 
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,9 +22,10 @@ public class Klien extends UserModel {
   private String companyName;
 
   @OneToMany(mappedBy = "klien", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JsonManagedReference
   private List<PenawaranHargaItem> listPenawaranHargaItem;
 
-  @OneToMany(mappedBy = "klien", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  private List<PenawaranHarga> listPenawaranHarga;
-
+  @OneToOne(mappedBy = "klien", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JsonManagedReference
+  private PenawaranHarga penawaranHarga;
 }
