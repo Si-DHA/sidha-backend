@@ -13,6 +13,8 @@ import jakarta.validation.Valid;
 
 import com.sidha.api.DTO.request.CreatePenawaranHargaRequestDTO;
 import com.sidha.api.model.*;
+import com.sidha.api.repository.PenawaranHargaDb;
+
 import java.util.*;
 
 @RestController
@@ -20,6 +22,9 @@ import java.util.*;
 public class PenawaranHargaController {
     @Autowired
     PenawaranHargaService penawaranHargaService;
+
+    @Autowired
+    PenawaranHargaDb penawaranHargaDb;
 
     @GetMapping(value="/penawaran-harga/view-all")
     private List<PenawaranHarga> getAllPenawaranHarga(){
@@ -55,6 +60,7 @@ public class PenawaranHargaController {
 
         try {
             PenawaranHarga penawaranHarga = penawaranHargaService.createPenawaranHarga(createPenawaranHargaRequestDTO);
+            penawaranHargaDb.save(penawaranHarga);
             return ResponseEntity.ok(penawaranHarga);
         } catch (Exception e) {
             throw new ResponseStatusException(
@@ -63,4 +69,9 @@ public class PenawaranHargaController {
             );
         }
     }
+    @GetMapping(value="/penawaran-harga/klien/{klien}/view-all")
+    public PenawaranHarga getPenawaranHargaByIdKlien(@PathVariable("klien") String klien){
+        return penawaranHargaService.getPenawaranHargaByIdKlien(UUID.fromString(klien));
+    }
+
 }

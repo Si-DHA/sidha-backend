@@ -17,10 +17,5 @@ public class CreatePenawaranHargaRequestDTO {
     @NotNull(message = "Klien tidak boleh kosong")
     private UUID idKlien;
 
-    @NotNull(message = "List PenawaranHargaItem tidak boleh kosong")
     private List<CreatePenawaranHargaItemRequestDTO> listPenawaranHargaItem;
-
-    private LocalDateTime penawaranHargaCreatedAt;
-
-    private LocalDateTime penawaranHargaUpdatedAt;
 }

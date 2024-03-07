@@ -17,12 +17,13 @@ import com.sidha.api.repository.UserDb;
 import static com.sidha.api.model.enumerator.Role.KLIEN;
 
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class PenawaranHargaServiceImpl implements PenawaranHargaService {
 
-    @Autowired
     PenawaranHargaDb penawaranHargaDb;
     private UserDb userRepository;
     private ModelMapper modelMapper;
@@ -30,21 +31,23 @@ public class PenawaranHargaServiceImpl implements PenawaranHargaService {
     private PenawaranHargaMapper penawaranHargaMapper;
 
     @Override
-    public List<PenawaranHarga> getAllPenawaranHarga(){
+    public List<PenawaranHarga> getAllPenawaranHarga() {
         return penawaranHargaDb.findAll();
     }
 
     @Override
-    public PenawaranHarga getPenawaranHargaById(UUID idPenawaranHarga){
+    public PenawaranHarga getPenawaranHargaById(UUID idPenawaranHarga) {
         return penawaranHargaDb.findById(idPenawaranHarga).get();
     }
 
     @Override
     public PenawaranHarga createPenawaranHarga(CreatePenawaranHargaRequestDTO createPenawaranHargaRequestDTO) {
         try {
-            PenawaranHarga penawaranHarga = new PenawaranHarga();
-            
-            Klien idKlien = createPenawaranHargaRequestDTO.getKlien();
+            PenawaranHarga penawaranHarga = penawaranHargaMapper
+                    .createPenawaranDTOToPenawaran(createPenawaranHargaRequestDTO);
+            penawaranHarga = penawaranHargaDb.save(penawaranHarga);
+
+            UUID idKlien = createPenawaranHargaRequestDTO.getIdKlien();
             if (idKlien != null) {
                 UserModel klien = userRepository.findById(idKlien).orElse(null);
                 if (klien != null && klien.getRole() == KLIEN) {
@@ -55,19 +58,14 @@ public class PenawaranHargaServiceImpl implements PenawaranHargaService {
                 }
             }
 
-            List<PenawaranHargaItem> listPenawaranHargaItem = new ArrayList<>();
-            for (CreatePenawaranHargaItemRequestDTO itemDTO : createPenawaranHargaRequestDTO.getListPenawaranHargaItem()) {
-                PenawaranHargaItem penawaranHargaItem = penawaranHargaItemService.createPenawaranHargaItem(itemDTO);
-                listPenawaranHargaItem.add(penawaranHargaItem);
-            }
-
-            penawaranHarga.setListPenawaranHargaItem(listPenawaranHargaItem);
-            penawaranHarga.setPenawaranHargaCreatedAt(createPenawaranHargaRequestDTO.getPenawaranHargaCreatedAt());
-            penawaranHarga.setPenawaranHargaUpdatedAt(createPenawaranHargaRequestDTO.getPenawaranHargaUpdatedAt());
-
-            return penawaranHargaDb.save(penawaranHarga);
+            return penawaranHarga;
         } catch (Exception e) {
             throw new RuntimeException("Error creating Penawaran Harga", e);
         }
+    }
+
+    @Override
+    public PenawaranHarga getPenawaranHargaByIdKlien(UUID klien) {
+        return penawaranHargaDb.findByIdKlien(klien);
     }
 }

@@ -13,15 +13,19 @@ import jakarta.validation.Valid;
 
 import com.sidha.api.DTO.request.CreatePenawaranHargaItemRequestDTO;
 import com.sidha.api.model.*;
-import java.util.*;
+import com.sidha.api.repository.PenawaranHargaDb;
+import com.sidha.api.repository.PenawaranHargaItemDb;
 
-import javax.xml.catalog.Catalog;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
 public class PenawaranHargaItemController {
     @Autowired
     PenawaranHargaItemService penawaranHargaItemService;
+
+    @Autowired
+    PenawaranHargaItemDb penawaranHargaItemDb;
 
     @GetMapping(value="/penawaran-harga-item/{idPenawaranHargaItem}")
     public PenawaranHargaItem getPenawaranHargaItemById(@PathVariable("idPenawaranHargaItem") String idPenawaranHargaItem){
@@ -35,7 +39,7 @@ public class PenawaranHargaItemController {
         }
     }
 
-    @GetMapping(value="/penawaran-harga/{idPenawaranHarga}/penawaran-harga-item/view-all")
+    @GetMapping(value="/penawaran-harga-item/{idPenawaranHarga}/view-all")
     public List<PenawaranHargaItem> getAllPenawaranHargaItemByIdPenawaranHarga(@PathVariable("idPenawaranHarga") UUID idPenawaranHarga){
         List<PenawaranHargaItem> listPenawaranHargaItem = penawaranHargaItemService.getAllPenawaranHargaItemByIdPenawaranHarga(idPenawaranHarga);
         return listPenawaranHargaItem;
@@ -58,6 +62,7 @@ public class PenawaranHargaItemController {
 
         try {
             PenawaranHargaItem penawaranHargaItem = penawaranHargaItemService.createPenawaranHargaItem(createPenawaranHargaItemRequestDTO);
+            penawaranHargaItemDb.save(penawaranHargaItem);
             return ResponseEntity.ok(penawaranHargaItem);
         } catch (Exception e) {
             throw new ResponseStatusException(
@@ -65,5 +70,16 @@ public class PenawaranHargaItemController {
                     "Error creating PenawaranHargaItem: " + e.getMessage()
             );
         }
+        }
+    @GetMapping(value="/penawaran-harga-item/source/{source}/view-all")
+    public List<PenawaranHargaItem> getAllPenawaranHargaItemBySource(@PathVariable("source") String source){
+        List<PenawaranHargaItem> listPenawaranHargaItem = penawaranHargaItemService.getAllPenawaranHargaItemBySource(source);
+        return listPenawaranHargaItem;
+    }
+
+    @GetMapping(value="/penawaran-harga-item/klien/{klien}/view-all")
+    public List<PenawaranHargaItem> getAllPenawaranHargaItemByIdKlien(@PathVariable("klien") String klien){
+        List<PenawaranHargaItem> listPenawaranHargaItem = penawaranHargaItemService.getAllPenawaranHargaItemByIdKlien(UUID.fromString(klien));
+        return listPenawaranHargaItem;
     }
 }

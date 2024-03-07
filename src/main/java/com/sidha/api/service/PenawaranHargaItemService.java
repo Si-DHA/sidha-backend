@@ -11,6 +11,10 @@ public interface PenawaranHargaItemService {
     PenawaranHargaItem getPenawaranHargaItemById(UUID idPenawaranHargaItem);
 
     List<PenawaranHargaItem> getAllPenawaranHargaItemByIdPenawaranHarga(UUID idPenawaranHarga);
-    
+
     PenawaranHargaItem createPenawaranHargaItem( @Valid CreatePenawaranHargaItemRequestDTO createPenawaranHargaItemRequestDTO);
+
+    List<PenawaranHargaItem> getAllPenawaranHargaItemBySource(String source);
+    
+    List<PenawaranHargaItem> getAllPenawaranHargaItemByIdKlien(UUID klien);
 }

@@ -14,6 +14,9 @@ public class CreatePenawaranHargaItemRequestDTO {
     @NotNull(message = "Klien tidak boleh kosong")
     private UUID idKlien;
 
+    @NotNull(message = "ID penawaran harga tidak boleh kosong")
+    private UUID idPenawaranHarga;
+
     @NotNull(message = "Source tidak boleh kosong")
     private String source;
 

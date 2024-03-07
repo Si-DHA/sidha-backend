@@ -13,5 +13,5 @@ public interface PenawaranHargaService {
     PenawaranHarga getPenawaranHargaById(UUID idPenawaranHarga);
     List<PenawaranHarga> getAllPenawaranHarga();
     PenawaranHarga createPenawaranHarga(CreatePenawaranHargaRequestDTO createPenawaranHargaRequestDTO);
-
+    PenawaranHarga getPenawaranHargaByIdKlien(UUID klien);
 }

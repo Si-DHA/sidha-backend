@@ -4,6 +4,7 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.time.LocalDateTime;
@@ -24,12 +25,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @DiscriminatorValue(value = "penawaran_harga")
 public class PenawaranHarga{
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_klien", referencedColumnName = "id")
+    @JsonBackReference
     private Klien klien;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name="id_penawaran_harga")
     private UUID idPenawaranHarga = UUID.randomUUID();
 
     @OneToMany(mappedBy = "penawaranHarga", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -45,4 +48,5 @@ public class PenawaranHarga{
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at", nullable = false)
     private Date penawaranHargaUpdatedAt;
+
 }
