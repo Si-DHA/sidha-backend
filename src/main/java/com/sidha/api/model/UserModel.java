@@ -96,4 +96,7 @@ public class UserModel implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private ImageData imageData;
 }

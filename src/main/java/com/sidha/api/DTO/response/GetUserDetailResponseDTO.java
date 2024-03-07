@@ -1,16 +1,18 @@
-package com.sidha.api.DTO.request;
-
-import org.springframework.web.multipart.MultipartFile;
+package com.sidha.api.DTO.response;
 
 import com.sidha.api.model.enumerator.Role;
+
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+@Builder
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class SignUpUserRequestDTO{
+@NoArgsConstructor
+public class GetUserDetailResponseDTO {
   private String name;
   private String password;
   private String email;
@@ -18,10 +20,10 @@ public class SignUpUserRequestDTO{
   private Role role;
   private String address;
   private String phone;
-  private boolean isSuperAdmin = false;
+  private boolean isSuperAdmin;
   private String position;
   private String companyName;
-  private boolean isAvailable = false;
-  private MultipartFile imageFile;
-
+  private boolean isAvailable ;
+  private String imageUrl;
+  
 }

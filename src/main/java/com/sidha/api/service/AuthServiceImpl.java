@@ -2,7 +2,9 @@ package com.sidha.api.service;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sidha.api.DTO.UserMapper;
 import com.sidha.api.DTO.request.ForgotPassUserRequestDTO;
@@ -10,15 +12,21 @@ import com.sidha.api.DTO.request.LoginUserRequestDTO;
 import com.sidha.api.DTO.request.SignUpUserRequestDTO;
 import com.sidha.api.DTO.response.UserResponse;
 import com.sidha.api.model.Admin;
+import com.sidha.api.model.ImageData;
 import com.sidha.api.model.Karyawan;
 import com.sidha.api.model.Klien;
 import com.sidha.api.model.Sopir;
+import com.sidha.api.model.UserModel;
+import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.repository.UserDb;
 import com.sidha.api.security.jwt.JwtUtils;
 import com.sidha.api.utils.MailSenderUtils;
+import com.sidha.api.utils.PasswordGenerator;
+import com.sidha.api.service.StorageService;
 
 import java.util.UUID;
 import java.time.LocalDateTime;
+import java.io.IOException;
 import java.time.Duration;
 
 @Service
@@ -39,33 +47,60 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private MailSenderUtils mailSenderUtils;
 
+    @Autowired
+    private StorageService storageService;
+
+    @Autowired
+    private PasswordGenerator passwordGenerator;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     private static final long EXPIRE_TOKEN=30;
 
     @Override
-    public UserResponse register(SignUpUserRequestDTO request) {
+    public UserResponse register(SignUpUserRequestDTO request)  {
+        MultipartFile imageFile = request.getImageFile();
         var user = userMapper.toUserModel(request);
         var jwt = jwtUtils.generateJwtToken(user);
         var userResponse = new UserResponse();
         userResponse.setToken(jwt);
         userResponse.setUser(user);
-        saveUser(request);
+        if(request.getPassword().isEmpty() && request.getRole() == Role.KLIEN){
+            var randomPassword = passwordGenerator.generatePassword(8);
+            user.setPassword(passwordEncoder.encode(randomPassword)) ;
+        }
+
+        var savedUser = saveUser(request);
+        try{
+            if (imageFile != null) {
+               ImageData imgData =  storageService.uploadImageAndSaveToDB(imageFile, savedUser);
+                user.setImageData(imgData);
+                userDb.save(savedUser);
+
+            }
+            return userResponse;
+
+        } catch (IOException e){
+            e.printStackTrace();
+        }
         return userResponse;
+        
     }
 
-    private void saveUser(SignUpUserRequestDTO request) {
+    private UserModel saveUser(SignUpUserRequestDTO request) {
         switch (request.getRole()) {
             case ADMIN:
-                userDb.save(modelMapper.map(request, Admin.class));
-                break;
+               return  userDb.save(modelMapper.map(request, Admin.class));
             case KARYAWAN:
-                userDb.save(modelMapper.map(request, Karyawan.class));
-                break;
+                return userDb.save(modelMapper.map(request, Karyawan.class));
             case SOPIR:
-                userDb.save(modelMapper.map(request, Sopir.class));
-                break;
+                return userDb.save(modelMapper.map(request, Sopir.class));
+                
             case KLIEN:
-                userDb.save(modelMapper.map(request, Klien.class));
-                break;
+                var randomPassword = passwordGenerator.generatePassword(8);
+                request.setPassword(passwordEncoder.encode(randomPassword)) ;
+                return userDb.save(modelMapper.map(request, Klien.class));
             default:
                 throw new IllegalArgumentException("Invalid role");
         }
