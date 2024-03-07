@@ -15,11 +15,21 @@ public class PenawaranHargaItemServiceImpl implements PenawaranHargaItemService{
 
     @Override
     public PenawaranHargaItem getPenawaranHargaItemById(UUID idPenawaranHargaItem){
-        return penawaranHargaItemDb.findById(idPenawaranHargaItem).get();
+        return penawaranHargaItemDb.findById(idPenawaranHargaItem).orElse(null);
     }
 
     @Override
     public List<PenawaranHargaItem> getAllPenawaranHargaItemByIdPenawaranHarga(UUID idPenawaranHarga){
         return penawaranHargaItemDb.findByIdPenawaranHarga(idPenawaranHarga);
+    }
+
+    @Override
+    public List<PenawaranHargaItem> getAllPenawaranHargaItemBySource(String source){
+        return penawaranHargaItemDb.findBySource(source);
+    }
+
+    @Override
+    public List<PenawaranHargaItem> getAllPenawaranHargaItemByIdKlien(UUID klien){
+        return penawaranHargaItemDb.findByIdKlien(klien);
     }
 }

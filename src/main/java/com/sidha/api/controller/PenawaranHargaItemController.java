@@ -8,8 +8,6 @@ import com.sidha.api.service.PenawaranHargaItemService;
 import com.sidha.api.model.*;
 import java.util.*;
 
-import javax.xml.catalog.Catalog;
-
 @RestController
 @RequestMapping("/api")
 public class PenawaranHargaItemController {
@@ -28,9 +26,21 @@ public class PenawaranHargaItemController {
         }
     }
 
-    @GetMapping(value="/penawaran-harga/{idPenawaranHarga}/penawaran-harga-item/view-all")
+    @GetMapping(value="/penawaran-harga-item/{idPenawaranHarga}/view-all")
     public List<PenawaranHargaItem> getAllPenawaranHargaItemByIdPenawaranHarga(@PathVariable("idPenawaranHarga") UUID idPenawaranHarga){
         List<PenawaranHargaItem> listPenawaranHargaItem = penawaranHargaItemService.getAllPenawaranHargaItemByIdPenawaranHarga(idPenawaranHarga);
+        return listPenawaranHargaItem;
+    }
+
+    @GetMapping(value="/penawaran-harga-item/source/{source}/view-all")
+    public List<PenawaranHargaItem> getAllPenawaranHargaItemBySource(@PathVariable("source") String source){
+        List<PenawaranHargaItem> listPenawaranHargaItem = penawaranHargaItemService.getAllPenawaranHargaItemBySource(source);
+        return listPenawaranHargaItem;
+    }
+
+    @GetMapping(value="/penawaran-harga-item/klien/{klien}/view-all")
+    public List<PenawaranHargaItem> getAllPenawaranHargaItemByIdKlien(@PathVariable("klien") String klien){
+        List<PenawaranHargaItem> listPenawaranHargaItem = penawaranHargaItemService.getAllPenawaranHargaItemByIdKlien(UUID.fromString(klien));
         return listPenawaranHargaItem;
     }
 }
