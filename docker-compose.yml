@@ -1,19 +1,19 @@
 version: '3.3'
 services:
-  # web:
-  #   build: 
-  #     context: .
-  #   restart: always
-  #   ports:
-  #     - "10001:8080"
-  #   volumes:
-  #     - ./file-storage:/file-storage
-  #     - ./log:/log
-  #   depends_on:
-  #     - db
-  #   networks:
-  #     - backend-network
-  #   platform: linux/amd64
+  web:
+    build: 
+      context: .
+    restart: always
+    ports:
+      - "10001:8080"
+    volumes:
+      - ./file-storage:/file-storage
+      - ./log:/log
+    depends_on:
+      - db
+    networks:
+      - backend-network
+    platform: linux/amd64
   db:
     image: postgres:14-alpine
     ports:

@@ -1,5 +1,6 @@
 package com.sidha.api.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -23,7 +24,7 @@ public class Klien extends UserModel {
 
   @OneToMany(mappedBy = "klien", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JsonManagedReference
-  private List<PenawaranHargaItem> listPenawaranHargaItem;
+  private List<PenawaranHargaItem> listPenawaranHargaItem = new ArrayList<>();
 
   @OneToOne(mappedBy = "klien", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JsonManagedReference

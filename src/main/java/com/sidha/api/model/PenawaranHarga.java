@@ -1,10 +1,15 @@
 package com.sidha.api.model;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -32,16 +37,16 @@ public class PenawaranHarga{
 
     @OneToMany(mappedBy = "penawaranHarga", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<PenawaranHargaItem> listPenawaranHargaItem;
+    private List<PenawaranHargaItem> listPenawaranHargaItem = new ArrayList<>();
 
-    @Column(name = "penawaran_harga_created_at", nullable = true)
-    private LocalDateTime penawaranHargaCreatedAt;
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private Date penawaranHargaCreatedAt;
 
-    @Column(name = "penawaran_harga_updated_at", nullable = true)
-    private LocalDateTime penawaranHargaUpdatedAt;
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at", nullable = false)
+    private Date penawaranHargaUpdatedAt;
 
-    // @OneToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "user_id")
-    // @JsonManagedReference
-    // private UserModel userModel;
 }
