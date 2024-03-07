@@ -21,7 +21,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@SQLDelete(sql = "UPDATE user_table SET is_deleted = true WHERE id=?")
+@SQLDelete(sql = "UPDATE truk SET is_deleted = true WHERE id_truk=?")
 @SQLRestriction(value = "is_deleted = false")
 @Table(name = "truk")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -56,7 +56,7 @@ public class Truk {
     @Column(name = "kubikasi_box", nullable = false)
     private Double kubikasiBox;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "truk")
     @JsonManagedReference
     private Sopir sopir;
