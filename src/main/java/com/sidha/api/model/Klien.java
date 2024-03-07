@@ -1,5 +1,6 @@
 package com.sidha.api.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -24,9 +25,9 @@ public class Klien extends UserModel {
   private String companyName;
 
   @OneToMany(mappedBy = "klien", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  private List<PenawaranHargaItem> listPenawaranHargaItem;
+  private List<PenawaranHargaItem> listPenawaranHargaItem = new ArrayList<>();
 
   @OneToMany(mappedBy = "klien", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  private List<PenawaranHarga> listPenawaranHarga;
+  private List<PenawaranHarga> listPenawaranHarga = new ArrayList<>();
 
 }
