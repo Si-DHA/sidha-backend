@@ -15,4 +15,6 @@ public interface TrukService {
     void deleteTrukById(UUID idTruk);
 
     List<Truk> findAllTruk();
+
+    Truk findTrukByIdSopir(UUID idSopir);
 }

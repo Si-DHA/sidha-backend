@@ -2,6 +2,7 @@ package com.sidha.api.controller;
 
 import com.sidha.api.DTO.request.CreateTrukRequestDTO;
 import com.sidha.api.DTO.request.UpdateTrukRequestDTO;
+import com.sidha.api.DTO.response.BaseResponse;
 import com.sidha.api.model.Truk;
 import com.sidha.api.repository.TrukDb;
 import com.sidha.api.service.TrukService;
@@ -82,22 +83,39 @@ public class TrukController {
     }
 
     @DeleteMapping("/delete/{idTruk}")
-    public ResponseEntity<String> deleteTruk(@PathVariable("idTruk") UUID idTruk) {
+    public BaseResponse<String> deleteTruk(@PathVariable("idTruk") UUID idTruk) {
         try {
             trukService.deleteTrukById(idTruk);
-            return ResponseEntity.ok("Truk with ID " + idTruk + " is successfully deleted!");
+            String message = "Truk with ID " + idTruk + " is successfully deleted!";
+            return new BaseResponse<>(true, 200, message, null);
         } catch (NoSuchElementException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    e.getMessage()
-            );
+            return new BaseResponse<>(false, 404, e.getMessage(), null);
         }
     }
 
     @GetMapping("/view-all")
-    public ResponseEntity<List<Truk>> viewAllTruk() {
-        List<Truk> listTruk = trukService.findAllTruk();
-        return ResponseEntity.ok(listTruk);
+    public BaseResponse<List<Truk>> viewAllTruk() {
+        List<Truk> listTruk = new ArrayList<>();
+        listTruk = trukService.findAllTruk();
+        if (listTruk.isEmpty()) {
+            return new BaseResponse<>(true, 404, "No truck data found", null);
+        } else {
+            return new BaseResponse<>(true, 200, "Truck list is succesfully found", listTruk);
+        }
+    }
+
+    @GetMapping("/view-sopir/{idSopir}")
+    public BaseResponse<Truk> viewTrukbyIdSopir(@PathVariable("idSopir") UUID idSopir) {
+        try {
+            Truk truk = trukService.findTrukByIdSopir(idSopir);
+            if (truk == null) {
+                return new BaseResponse<>(true, 404, "No truck data found", null);
+            } else {
+                return new BaseResponse<>(true, 200, "Truck data is successfully found", truk);
+            }
+        } catch (NoSuchElementException e) {
+            return new BaseResponse<>(false, 400, e.getMessage(), null);
+        }
     }
 
 }

@@ -95,4 +95,21 @@ public class TrukServiceImpl implements TrukService {
     public List<Truk> findAllTruk() {
         return trukDb.findAll();
     }
+
+    @Override
+    public Truk findTrukByIdSopir(UUID idSopir) {
+        if (idSopir != null) {
+            UserModel sopir = userRepository.findById(idSopir).orElse(null);
+            if (sopir != null && sopir.getRole() == SOPIR) {
+                Sopir sopirConverted = modelMapper.map(sopir, Sopir.class);
+                List<Truk> listTruk = trukDb.findBySopir(sopirConverted);
+                if (listTruk != null && !listTruk.isEmpty()) {
+                    return listTruk.get(0);
+                }
+            } else {
+                throw new NoSuchElementException("Id sopir tidak valid");
+            }
+        }
+        return null;
+    }
 }
