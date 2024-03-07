@@ -17,4 +17,5 @@ public interface TrukService {
     List<Truk> findAllTruk();
 
     Truk findTrukByIdSopir(UUID idSopir);
+
 }

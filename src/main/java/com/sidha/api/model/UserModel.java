@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sidha.api.model.enumerator.Role;
 
 import java.time.LocalDateTime;
@@ -96,4 +97,7 @@ public class UserModel implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+    // @OneToOne(mappedBy = "userModel", cascade = CascadeType.ALL)
+    // @JsonBackReference
+    // private PenawaranHarga penawaranHarga;
 }

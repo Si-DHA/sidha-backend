@@ -6,7 +6,6 @@ import com.sidha.api.DTO.response.BaseResponse;
 import com.sidha.api.model.Truk;
 import com.sidha.api.repository.TrukDb;
 import com.sidha.api.service.TrukService;
-import com.sidha.api.service.TrukServiceImpl;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,7 +28,6 @@ public class TrukController {
     TrukService trukService;
 
     TrukDb trukDb;
-
     @PostMapping("/create")
     public ResponseEntity<Truk> createTruk(@Valid @RequestBody CreateTrukRequestDTO createTrukRequestDTO, BindingResult bindingResult) {
         if (bindingResult.hasFieldErrors()) {
