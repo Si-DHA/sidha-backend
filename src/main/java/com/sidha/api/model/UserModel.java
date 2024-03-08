@@ -96,4 +96,7 @@ public class UserModel implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+    // @OneToOne(mappedBy = "userModel", cascade = CascadeType.ALL)
+    // @JsonBackReference
+    // private PenawaranHarga penawaranHarga;
 }
