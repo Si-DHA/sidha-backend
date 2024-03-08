@@ -1,16 +1,13 @@
 package com.sidha.api.service;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
 import com.sidha.api.DTO.PenawaranHargaMapper;
-import com.sidha.api.DTO.request.CreatePenawaranHargaItemRequestDTO;
 import com.sidha.api.DTO.request.CreatePenawaranHargaRequestDTO;
 import com.sidha.api.model.Klien;
 import com.sidha.api.model.PenawaranHarga;
-import com.sidha.api.model.PenawaranHargaItem;
 import com.sidha.api.model.UserModel;
 import com.sidha.api.repository.PenawaranHargaDb;
 import com.sidha.api.repository.UserDb;
@@ -27,7 +24,6 @@ public class PenawaranHargaServiceImpl implements PenawaranHargaService {
     PenawaranHargaDb penawaranHargaDb;
     private UserDb userRepository;
     private ModelMapper modelMapper;
-    private PenawaranHargaItemService penawaranHargaItemService;
     private PenawaranHargaMapper penawaranHargaMapper;
 
     @Override

@@ -14,7 +14,6 @@ import jakarta.validation.Valid;
 import com.sidha.api.DTO.request.CreatePenawaranHargaItemRequestDTO;
 import com.sidha.api.DTO.request.UpdatePenawaranHargaItemRequestDTO;
 import com.sidha.api.model.*;
-import com.sidha.api.repository.PenawaranHargaDb;
 import com.sidha.api.repository.PenawaranHargaItemDb;
 
 import java.util.*;
