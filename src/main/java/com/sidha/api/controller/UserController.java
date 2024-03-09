@@ -17,7 +17,9 @@ import com.sidha.api.DTO.UserMapper;
 import com.sidha.api.DTO.request.EditUserDetailRequestDTO;
 import com.sidha.api.DTO.response.BaseResponse;
 import com.sidha.api.DTO.response.GetUserDetailResponseDTO;
+import com.sidha.api.model.UserModel;
 import com.sidha.api.service.UserService;
+import java.util.*;
 
 @RequestMapping("/api/user")
 @RestController
@@ -27,6 +29,12 @@ public class UserController {
 
   @Autowired
   private UserMapper userMapper;
+
+  @GetMapping("/klien")
+  public BaseResponse<List<UserModel>> getMethodName(@RequestParam String param) {
+      return new BaseResponse<>(true, 200, "User list", userService.findByRole("KLIEN"));
+  }
+  
   
   @GetMapping("/{id}")
   private BaseResponse<GetUserDetailResponseDTO> getUserDetail(@PathVariable UUID id) {
