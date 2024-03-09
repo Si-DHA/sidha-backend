@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import com.sidha.api.model.UserModel;
 
 import java.util.UUID;
+import java.util.List;
 
 @Repository
 public interface UserDb extends JpaRepository<UserModel, UUID>{
@@ -13,5 +14,7 @@ public interface UserDb extends JpaRepository<UserModel, UUID>{
 
     UserModel findByEmail(String email);
 
-    UserModel findByToken(String token);   
+    UserModel findByToken(String token);
+    
+    List<UserModel> findByRole(String role);
 }
