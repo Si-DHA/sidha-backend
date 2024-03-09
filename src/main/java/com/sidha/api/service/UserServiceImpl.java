@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.sidha.api.model.UserModel;
 import com.sidha.api.repository.UserDb;
-
+import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -22,4 +22,8 @@ public class UserServiceImpl implements UserService {
         return userDb.findByUsername(username);
     }
     
+    @Override
+    public List<UserModel> findByRole(String role) {
+        return userDb.findByRole(role);
+    }
 }
