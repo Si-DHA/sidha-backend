@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.sidha.api.DTO.response.BaseResponse;
+import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.service.UserService;
 
 @RequestMapping("/api/user")
@@ -18,7 +19,7 @@ public class UserController {
 
   @GetMapping("/klien")
   public BaseResponse<?> getMethodName() {
-      return new BaseResponse<>(true, 200, "User list", userService.findByRole("KLIEN"));
+      return new BaseResponse<>(true, 200, "User list", userService.findByRole(Role.KLIEN));
   }
   
 }
