@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sidha.api.DTO.UserMapper;
 import com.sidha.api.DTO.response.BaseResponse;
 import com.sidha.api.model.UserModel;
+import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.service.UserService;
 import java.util.*;
 
@@ -29,8 +30,8 @@ public class UserController {
   private UserMapper userMapper;
 
   @GetMapping("/klien")
-  public BaseResponse<List<UserModel>> getMethodName(@RequestParam String param) {
-      return new BaseResponse<>(true, 200, "User list", userService.findByRole("KLIEN"));
+  public BaseResponse<List<UserModel>> getMethodName() {
+      return new BaseResponse<>(true, 200, "User list", userService.findByRole(Role.KLIEN));
   }
   
 }

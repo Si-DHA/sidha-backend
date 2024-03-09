@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sidha.api.model.UserModel;
+import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.repository.UserDb;
 import java.util.List;
 @Service
@@ -23,7 +24,7 @@ public class UserServiceImpl implements UserService {
     }
     
     @Override
-    public List<UserModel> findByRole(String role) {
+    public List<UserModel> findByRole(Role role) {
         return userDb.findByRole(role);
     }
 }
