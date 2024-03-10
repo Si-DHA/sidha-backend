@@ -18,4 +18,6 @@ public interface TrukService {
 
     Truk findTrukByIdSopir(UUID idSopir);
 
+    Truk findTrukByIdTruk(UUID idTruk);
+
 }

@@ -79,17 +79,14 @@ public class TrukServiceImpl implements TrukService {
         return truk;
     }
 
+
+
     @Override
     public void deleteTrukById(UUID idTruk) {
         Truk truk = trukDb.findById(idTruk).orElse(null);
         if (truk != null) {
             var sopir = truk.getSopir();
-<<<<<<< HEAD
             if (sopir != null) sopir.setTruk(null);
-=======
-            if (sopir != null)
-                sopir.setTruk(null);
->>>>>>> 5e47f4520fa3de4bb406d0deb1bb44041d98f2ad
             trukDb.deleteById(idTruk);
         } else {
             throw new NoSuchElementException("Id truk tidak valid");
@@ -116,5 +113,11 @@ public class TrukServiceImpl implements TrukService {
             }
         }
         return null;
+    }
+
+    @Override
+    public Truk findTrukByIdTruk(UUID idTruk) {
+        Truk truk = trukDb.findById(idTruk).orElse(null);
+        return truk;
     }
 }
