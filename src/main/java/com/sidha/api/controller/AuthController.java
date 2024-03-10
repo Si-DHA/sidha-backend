@@ -36,7 +36,7 @@ public class AuthController {
 
   @PostMapping(value = "/register")
   public ResponseEntity<?> register(
-      @RequestParam String name, @RequestParam(required = false) String password, @RequestParam String email,
+      @RequestParam String name,  @RequestParam String email,
       @RequestParam String role,
       @RequestParam String address, @RequestParam String phone,
       @RequestParam(required = false) String position, @RequestParam(required = false) String companyName,
@@ -44,7 +44,6 @@ public class AuthController {
     try {
       SignUpUserRequestDTO request = new SignUpUserRequestDTO();
       request.setName(name);
-      request.setPassword(password);
       request.setEmail(email);
       request.setRole(Role.valueOf(role));
       request.setAddress(address);
@@ -52,11 +51,6 @@ public class AuthController {
       request.setPosition(position);
       request.setCompanyName(companyName);
       request.setImageFile(imageFile);
-
-      // Jika field kosong, maka akan mengembalikan response error
-      if (request.getEmail().isEmpty() || password == null) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(false, 400, "Email and password cannot be empty", null));
-      }
 
       request.setUsername(request.getEmail().split("@")[0]);
       if (userService.findByUsername(request.getUsername()) != null) {

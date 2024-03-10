@@ -57,16 +57,12 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserResponse register(SignUpUserRequestDTO request) {
         MultipartFile imageFile = request.getImageFile();
-        request.setPassword(passwordEncoder.encode(request.getPassword()));
         var user = userMapper.toUserModel(request);
         var jwt = jwtUtils.generateJwtToken(user);
         var userResponse = new UserResponse();
         userResponse.setToken(jwt);
         var randomPassword = PasswordGenerator.generatePassword(8);
-        if (request.getPassword().isEmpty() && request.getRole() == Role.KLIEN) {
-            user.setPassword(passwordEncoder.encode(randomPassword));
-        }
-
+        user.setPassword(passwordEncoder.encode(randomPassword));
         var savedUser = saveUser(request);
         try {
             if (imageFile != null) {

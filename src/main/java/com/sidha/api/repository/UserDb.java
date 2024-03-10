@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.sidha.api.model.UserModel;
-import com.sidha.api.model.enumerator.Role;
+// import com.sidha.api.model.enumerator.Role;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,5 +17,7 @@ public interface UserDb extends JpaRepository<UserModel, UUID> {
 
     UserModel findByToken(String token);
 
-    List<UserModel> findByRole(Role role);
+    // List<UserModel> findAllByRole(Role role);
+
+    List<UserModel> findAll();
 }
