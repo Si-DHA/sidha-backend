@@ -8,7 +8,7 @@ import com.sidha.api.DTO.PenawaranHargaMapper;
 import com.sidha.api.DTO.request.CreatePenawaranHargaRequestDTO;
 import com.sidha.api.model.Klien;
 import com.sidha.api.model.PenawaranHarga;
-import com.sidha.api.model.UserModel;
+import com.sidha.api.model.PenawaranHargaItem;
 import com.sidha.api.repository.PenawaranHargaDb;
 import com.sidha.api.repository.UserDb;
 import static com.sidha.api.model.enumerator.Role.KLIEN;
