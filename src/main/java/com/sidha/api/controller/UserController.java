@@ -31,7 +31,12 @@ public class UserController {
 
   @GetMapping("/klien")
   public ResponseEntity<?> getKlienList() {
-    return ResponseEntity.ok(new BaseResponse<>(true, 200, "User list", userService.getListKlien(Role.KLIEN)));
+    return ResponseEntity.ok(new BaseResponse<>(true, 200, "User list", userService.getListRole(Role.KLIEN)));
+  }
+
+  @GetMapping("/sopir")
+  public ResponseEntity<?> getSopirList() {
+    return ResponseEntity.ok(new BaseResponse<>(true, 200, "Sopir list", userService.getListRole(Role.SOPIR)));
   }
 
   @GetMapping("/{id}")
