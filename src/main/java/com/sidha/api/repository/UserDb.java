@@ -18,6 +18,4 @@ public interface UserDb extends JpaRepository<UserModel, UUID> {
     UserModel findByToken(String token);
 
     List<UserModel> findByRole(Role role);
-
-    
 }

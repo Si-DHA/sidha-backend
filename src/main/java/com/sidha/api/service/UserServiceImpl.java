@@ -2,7 +2,6 @@ package com.sidha.api.service;
 
 import java.util.UUID;
 
-import org.glassfish.jaxb.core.annotation.OverrideAnnotationOf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +17,6 @@ import com.sidha.api.model.UserModel;
 import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.repository.UserDb;
 import java.util.List;
-
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -123,7 +121,4 @@ public class UserServiceImpl implements UserService {
     public List<UserModel> findByRole(Role role) {
         return userDb.findByRole(role);
     }
-
-
-    
 }
