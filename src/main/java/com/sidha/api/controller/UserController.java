@@ -17,6 +17,7 @@ import com.sidha.api.DTO.request.EditUserDetailRequestDTO;
 import com.sidha.api.DTO.response.BaseResponse;
 import com.sidha.api.DTO.response.GetUserDetailResponseDTO;
 import com.sidha.api.model.UserModel;
+import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.service.UserService;
 import java.util.*;
 
@@ -32,7 +33,7 @@ public class UserController {
 
   @GetMapping("/klien")
   public BaseResponse<List<UserModel>> getMethodName() {
-    return new BaseResponse<>(true, 200, "User list", userService.findByRole("KLIEN"));
+    return new BaseResponse<>(true, 200, "User list", userService.findByRole(Role.KLIEN));
   }
 
   @GetMapping("/{id}")

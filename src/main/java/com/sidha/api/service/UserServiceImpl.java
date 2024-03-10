@@ -15,6 +15,7 @@ import com.sidha.api.model.Admin;
 import com.sidha.api.model.ImageData;
 import com.sidha.api.model.Karyawan;
 import com.sidha.api.model.UserModel;
+import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.repository.UserDb;
 import java.util.List;
 
@@ -119,7 +120,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserModel> findByRole(String role) {
+    public List<UserModel> findByRole(Role role) {
         return userDb.findByRole(role);
     }
 
