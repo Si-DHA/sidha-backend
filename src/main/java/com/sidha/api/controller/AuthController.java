@@ -1,12 +1,15 @@
 package com.sidha.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sidha.api.DTO.request.ForgotPassUserRequestDTO;
 import com.sidha.api.DTO.request.LoginUserRequestDTO;
@@ -14,6 +17,7 @@ import com.sidha.api.DTO.request.SignUpUserRequestDTO;
 import com.sidha.api.DTO.response.BaseResponse;
 import com.sidha.api.DTO.response.UserResponse;
 import com.sidha.api.model.UserModel;
+import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.service.AuthService;
 import com.sidha.api.service.UserService;
 
@@ -29,11 +33,26 @@ public class AuthController {
   @Autowired
   private PasswordEncoder passwordEncoder;
 
-  @PostMapping("/register")
-  public BaseResponse<UserResponse> register(@RequestBody SignUpUserRequestDTO request) {
+  @PostMapping(value = "/register")
+  public BaseResponse<UserResponse> register(
+      @RequestParam String name, @RequestParam(required = false) String password, @RequestParam String email, @RequestParam String role,
+      @RequestParam String address, @RequestParam String phone,
+      @RequestParam(required = false) String position, @RequestParam(required = false) String companyName, 
+      @RequestPart(required = false) MultipartFile imageFile) {
     try {
+      SignUpUserRequestDTO request = new SignUpUserRequestDTO();
+      request.setName(name);
+      request.setPassword(password);
+      request.setEmail(email);
+      request.setRole(Role.valueOf(role));
+      request.setAddress(address);
+      request.setPhone(phone);
+      request.setPosition(position);
+      request.setCompanyName(companyName);
+      request.setImageFile(imageFile);
+
       // Jika field kosong, maka akan mengembalikan response error
-      if (request.getEmail().isEmpty() || request.getPassword().isEmpty()) {
+      if (request.getEmail().isEmpty() || password == null) {
         return new BaseResponse<>(false, 400, "Email and password cannot be empty", null);
       }
 
@@ -42,7 +61,6 @@ public class AuthController {
         return new BaseResponse<>(false, 400, "Username already exists", null);
       }
 
-      request.setPassword(passwordEncoder.encode(request.getPassword()));
       UserResponse response = authService.register(request);
       return new BaseResponse<>(true, 200, "User registered successfully", response);
     } catch (Exception e) {

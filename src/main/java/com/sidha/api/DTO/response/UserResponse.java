@@ -1,5 +1,6 @@
 package com.sidha.api.DTO.response;
 
+
 import com.sidha.api.model.UserModel;
 
 import lombok.AllArgsConstructor;
@@ -14,4 +15,5 @@ import lombok.Setter;
 public class UserResponse {
   private String token;
   private UserModel user;
+  private String imageUrl;
 }
