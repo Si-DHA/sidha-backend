@@ -83,10 +83,8 @@ public class AuthServiceImpl implements AuthService {
             return userResponse;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to save image");
         }
-
-        return userResponse;
 
     }
 

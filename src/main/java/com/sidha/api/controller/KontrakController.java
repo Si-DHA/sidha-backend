@@ -39,14 +39,14 @@ public class KontrakController {
   }
 
   @PostMapping("/{userId}")
-  public BaseResponse<?> uploadDocumentAndSaveToDB(@PathVariable String userId,
+  public ResponseEntity<?> uploadDocumentAndSaveToDB(@PathVariable String userId,
       @RequestParam("file") MultipartFile file) throws IOException {
     try {
       UUID userUUID = UUID.fromString(userId);
       service.uploadDocumentAndSaveToDB(file, userUUID);
-      return new BaseResponse<>(true, 200, "Document uploaded successfully", null);
+      return new ResponseEntity<>(new BaseResponse<>(true, 200, "Document uploaded successfully", null), HttpStatus.OK);
     } catch (Exception e) {
-      return new BaseResponse<>(false, 500, "Failed to upload document", null);
+      return new ResponseEntity<>(new BaseResponse<>(false, 500, e.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

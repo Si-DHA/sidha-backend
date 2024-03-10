@@ -74,11 +74,11 @@ public class UserServiceImpl implements UserService {
         user.setAddress(null != requestDTO.getAddress() ? requestDTO.getAddress() : user.getAddress());
         user.setPhone(null != requestDTO.getPhone() ? requestDTO.getPhone() : user.getPhone());
         var userRole = user.getRole();
-        if (userRole.equals("ADMIN")) {
+        if (userRole.equals(Role.ADMIN)) {
             var userAdmin = (Admin) user;
             userAdmin.setSuperAdmin(requestDTO.isSuperAdmin() ? requestDTO.isSuperAdmin() : userAdmin.isSuperAdmin());
             return userDb.save(userAdmin);
-        } else if (userRole.equals("KARYAWAN")) {
+        } else if (userRole.equals(Role.KARYAWAN)) {
             var userKaryawan = (Karyawan) user;
             userKaryawan.setPosition(
                     null != requestDTO.getPosition() ? requestDTO.getPosition() : userKaryawan.getPosition());
