@@ -119,7 +119,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserModel> getListKlien() {
-        return userDb.findAll();
+    public List<UserModel> getListKlien(Role role) {
+        return userDb.findAllByRole(role);
     }
 }
