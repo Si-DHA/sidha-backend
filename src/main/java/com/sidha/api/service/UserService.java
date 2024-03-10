@@ -24,5 +24,5 @@ public interface UserService {
 
     void changePassword(String currentPassword, String newPassword, UUID id);
 
-    List<UserModel> getListKlien(Role role);
+    List<UserModel> getListRole(Role role);
 }
