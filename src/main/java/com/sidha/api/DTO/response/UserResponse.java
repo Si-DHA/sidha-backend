@@ -14,4 +14,5 @@ import lombok.Setter;
 public class UserResponse {
   private String token;
   private UserModel user;
+  private String imageUrl;
 }

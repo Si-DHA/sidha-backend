@@ -16,12 +16,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @DiscriminatorValue(value = "sopir")
-public class Sopir extends UserModel{
+public class Sopir extends UserModel {
   @Column(name = "is_available")
   private boolean isAvailable = false;
 
   @OneToOne(mappedBy = "sopir", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JsonBackReference
   private Truk truk;
-  
+
 }

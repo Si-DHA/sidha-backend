@@ -19,5 +19,4 @@ public class MailSenderUtils {
         emailSender.send(message);
     }
 
-   
 }

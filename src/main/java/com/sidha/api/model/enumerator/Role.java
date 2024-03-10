@@ -7,6 +7,6 @@ public enum Role {
   SOPIR;
 
   public String getName() {
-      return name();
+    return name();
   }
 }

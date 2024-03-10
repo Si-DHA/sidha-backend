@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.sidha.api.model.*;
 
 @Repository
-public interface PenawaranHargaItemDb extends JpaRepository<PenawaranHargaItem, UUID>{
+public interface PenawaranHargaItemDb extends JpaRepository<PenawaranHargaItem, UUID> {
     @Query("SELECT phi FROM PenawaranHargaItem phi WHERE phi.penawaranHarga.id = :idPenawaranHarga")
     List<PenawaranHargaItem> findByIdPenawaranHarga(@Param("idPenawaranHarga") UUID idPenawaranHarga);
 

@@ -7,6 +7,6 @@ public enum TipeTruk {
   Fuso;
 
   public String getName() {
-      return name();
+    return name();
   }
 }
