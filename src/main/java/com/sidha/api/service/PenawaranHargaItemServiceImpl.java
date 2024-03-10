@@ -65,7 +65,7 @@ public class PenawaranHargaItemServiceImpl implements PenawaranHargaItemService 
             if (idPenawaranHarga != null) {
                 PenawaranHarga penawaranHarga = penawaranHargaDb.findById(idPenawaranHarga).orElse(null);
                 if (penawaranHarga != null) {
-                    penawaranHargaItem.setPenawaranHarga(null);
+                    penawaranHargaItem.setPenawaranHarga(penawaranHarga);
                     penawaranHarga.getListPenawaranHargaItem().add(penawaranHargaItem);
                     penawaranHargaDb.save(penawaranHarga);
                 } else {
