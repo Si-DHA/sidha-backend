@@ -13,5 +13,4 @@ public interface AuthService {
     void forgotPassword(ForgotPassUserRequestDTO request);
 
     void resetPassword(String token, String password);
-    
 }
