@@ -17,6 +17,7 @@ import com.sidha.api.model.UserModel;
 import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.repository.UserDb;
 import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -56,17 +57,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public GetUserDetailResponseDTO getUserDetail(UUID id){
+    public GetUserDetailResponseDTO getUserDetail(UUID id) {
         UserModel user = userDb.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         ImageData imageData = user.getImageData();
-        var userDTO =  userMapper.toGetDetailUserResponseDTO(user);
+        var userDTO = userMapper.toGetDetailUserResponseDTO(user);
         if (imageData != null) {
             userDTO.setImageUrl(IMAGE_URL + imageData.getName());
         }
-        return userDTO;        
+        return userDTO;
     }
-
-
 
     @Override
     public UserModel editUserDetail(EditUserDetailRequestDTO requestDTO, UUID id) {
@@ -75,16 +74,17 @@ public class UserServiceImpl implements UserService {
         user.setAddress(null != requestDTO.getAddress() ? requestDTO.getAddress() : user.getAddress());
         user.setPhone(null != requestDTO.getPhone() ? requestDTO.getPhone() : user.getPhone());
         var userRole = user.getRole();
-        if(userRole.equals("ADMIN")){
+        if (userRole.equals("ADMIN")) {
             var userAdmin = (Admin) user;
             userAdmin.setSuperAdmin(requestDTO.isSuperAdmin() ? requestDTO.isSuperAdmin() : userAdmin.isSuperAdmin());
-            return userDb.save(userAdmin);}
-        else if(userRole.equals("KARYAWAN")){
+            return userDb.save(userAdmin);
+        } else if (userRole.equals("KARYAWAN")) {
             var userKaryawan = (Karyawan) user;
-            userKaryawan.setPosition(null != requestDTO.getPosition() ? requestDTO.getPosition() : userKaryawan.getPosition());
-            return userDb.save(userKaryawan);}
-        else{
-            if(null != requestDTO.getImageFile()){
+            userKaryawan.setPosition(
+                    null != requestDTO.getPosition() ? requestDTO.getPosition() : userKaryawan.getPosition());
+            return userDb.save(userKaryawan);
+        } else {
+            if (null != requestDTO.getImageFile()) {
                 try {
                     ImageData imageData = storageService.updateImagaData(requestDTO.getImageFile(), user);
                     user.setImageData(imageData);
@@ -100,10 +100,11 @@ public class UserServiceImpl implements UserService {
     public void changePassword(String currentPassword, String newPassword, UUID id) {
         UserModel user = userDb.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         String userPasswordDb = user.getPassword();
-    
-        // Memeriksa apakah password yang diinput saat ini cocok dengan password yang ada di database
+
+        // Memeriksa apakah password yang diinput saat ini cocok dengan password yang
+        // ada di database
         boolean passwordMatch = passwordEncoder.matches(currentPassword, userPasswordDb);
-    
+
         if (passwordMatch) {
             // Memeriksa apakah password yang baru tidak sama dengan password yang lama
             if (!currentPassword.equals(newPassword)) {

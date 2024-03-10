@@ -28,18 +28,19 @@ public class TrukController {
     TrukService trukService;
 
     TrukDb trukDb;
+
     @PostMapping("/create")
-    public ResponseEntity<Truk> createTruk(@Valid @RequestBody CreateTrukRequestDTO createTrukRequestDTO, BindingResult bindingResult) {
+    public ResponseEntity<Truk> createTruk(@Valid @RequestBody CreateTrukRequestDTO createTrukRequestDTO,
+            BindingResult bindingResult) {
         if (bindingResult.hasFieldErrors()) {
             String errorMessages = "";
             List<FieldError> errors = bindingResult.getFieldErrors();
-            for (FieldError error : errors ) {
+            for (FieldError error : errors) {
                 errorMessages += error.getField() + " - " + error.getDefaultMessage() + "\n";
             }
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    errorMessages
-            );
+                    errorMessages);
         }
 
         try {
@@ -49,23 +50,22 @@ public class TrukController {
         } catch (NoSuchElementException e) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
-                    e.getMessage()
-            );
+                    e.getMessage());
         }
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Truk> updateTruk(@Valid @RequestBody UpdateTrukRequestDTO updateTrukRequestDTO, BindingResult bindingResult) {
+    public ResponseEntity<Truk> updateTruk(@Valid @RequestBody UpdateTrukRequestDTO updateTrukRequestDTO,
+            BindingResult bindingResult) {
         if (bindingResult.hasFieldErrors()) {
             String errorMessages = "";
             List<FieldError> errors = bindingResult.getFieldErrors();
-            for (FieldError error : errors ) {
+            for (FieldError error : errors) {
                 errorMessages += error.getField() + " - " + error.getDefaultMessage() + "\n";
             }
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    errorMessages
-            );
+                    errorMessages);
         }
 
         try {
@@ -75,8 +75,7 @@ public class TrukController {
         } catch (NoSuchElementException e) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
-                    e.getMessage()
-            );
+                    e.getMessage());
         }
     }
 

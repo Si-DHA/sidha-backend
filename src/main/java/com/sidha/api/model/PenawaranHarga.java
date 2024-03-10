@@ -1,4 +1,5 @@
 package com.sidha.api.model;
+
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,7 +24,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @DiscriminatorValue(value = "penawaran_harga")
-public class PenawaranHarga{
+public class PenawaranHarga {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_klien", referencedColumnName = "id")
     @JsonBackReference
@@ -31,7 +32,7 @@ public class PenawaranHarga{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="id_penawaran_harga")
+    @Column(name = "id_penawaran_harga")
     private UUID idPenawaranHarga = UUID.randomUUID();
 
     @OneToMany(mappedBy = "penawaranHarga", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

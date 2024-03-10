@@ -84,7 +84,8 @@ public class TrukServiceImpl implements TrukService {
         Truk truk = trukDb.findById(idTruk).orElse(null);
         if (truk != null) {
             var sopir = truk.getSopir();
-            if (sopir != null) sopir.setTruk(null);
+            if (sopir != null)
+                sopir.setTruk(null);
             trukDb.deleteById(idTruk);
         } else {
             throw new NoSuchElementException("Id truk tidak valid");

@@ -51,4 +51,3 @@ public class Contract {
     @Column(name = "signature", nullable = true)
     private byte[] signature;
 }
-

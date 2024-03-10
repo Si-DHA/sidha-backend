@@ -1,7 +1,6 @@
 package com.sidha.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,9 +34,10 @@ public class AuthController {
 
   @PostMapping(value = "/register")
   public BaseResponse<UserResponse> register(
-      @RequestParam String name, @RequestParam(required = false) String password, @RequestParam String email, @RequestParam String role,
+      @RequestParam String name, @RequestParam(required = false) String password, @RequestParam String email,
+      @RequestParam String role,
       @RequestParam String address, @RequestParam String phone,
-      @RequestParam(required = false) String position, @RequestParam(required = false) String companyName, 
+      @RequestParam(required = false) String position, @RequestParam(required = false) String companyName,
       @RequestPart(required = false) MultipartFile imageFile) {
     try {
       SignUpUserRequestDTO request = new SignUpUserRequestDTO();

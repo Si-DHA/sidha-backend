@@ -13,7 +13,7 @@ import jakarta.validation.constraints.NotNull;
 public class UpdatePenawaranHargaItemRequestDTO {
     @NotNull
     private UUID idPenawaranHargaItem;
-    
+
     private Integer cddPrice;
 
     private Integer cddLongPrice;

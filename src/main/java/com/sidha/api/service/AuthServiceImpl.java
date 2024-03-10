@@ -22,7 +22,6 @@ import com.sidha.api.repository.UserDb;
 import com.sidha.api.security.jwt.JwtUtils;
 import com.sidha.api.utils.MailSenderUtils;
 import com.sidha.api.utils.PasswordGenerator;
-import com.sidha.api.service.StorageService;
 
 import java.util.UUID;
 import java.time.LocalDateTime;
@@ -51,9 +50,6 @@ public class AuthServiceImpl implements AuthService {
     private StorageService storageService;
 
     @Autowired
-    private PasswordGenerator passwordGenerator;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     private static final long EXPIRE_TOKEN = 30;
@@ -66,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
         var jwt = jwtUtils.generateJwtToken(user);
         var userResponse = new UserResponse();
         userResponse.setToken(jwt);
-        var randomPassword = passwordGenerator.generatePassword(8);
+        var randomPassword = PasswordGenerator.generatePassword(8);
         if (request.getPassword().isEmpty() && request.getRole() == Role.KLIEN) {
             user.setPassword(passwordEncoder.encode(randomPassword));
         }
@@ -104,7 +100,7 @@ public class AuthServiceImpl implements AuthService {
                 return userDb.save(modelMapper.map(request, Sopir.class));
 
             case KLIEN:
-                var randomPassword = passwordGenerator.generatePassword(8);
+                var randomPassword = PasswordGenerator.generatePassword(8);
                 request.setPassword(passwordEncoder.encode(randomPassword));
                 return userDb.save(modelMapper.map(request, Klien.class));
             default:

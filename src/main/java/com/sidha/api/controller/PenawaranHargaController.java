@@ -26,26 +26,25 @@ public class PenawaranHargaController {
     @Autowired
     PenawaranHargaDb penawaranHargaDb;
 
-    @GetMapping(value="/penawaran-harga/view-all")
-    private List<PenawaranHarga> getAllPenawaranHarga(){
+    @GetMapping(value = "/penawaran-harga/view-all")
+    private List<PenawaranHarga> getAllPenawaranHarga() {
         return penawaranHargaService.getAllPenawaranHarga();
     }
 
-    @GetMapping(value="/penawaran-harga/{idPenawaranHarga}")
-    public PenawaranHarga getPenawaranHargaById(@PathVariable("idPenawaranHarga") String idPenawaranHarga){
-        try{
+    @GetMapping(value = "/penawaran-harga/{idPenawaranHarga}")
+    public PenawaranHarga getPenawaranHargaById(@PathVariable("idPenawaranHarga") String idPenawaranHarga) {
+        try {
             return penawaranHargaService.getPenawaranHargaById(UUID.fromString(idPenawaranHarga));
-        }
-        catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Penawaran harga tidak ditemukan"
-            );
+                    HttpStatus.NOT_FOUND, "Penawaran harga tidak ditemukan");
         }
     }
 
-    @PostMapping(value="/penawaran-harga/create")
-    public ResponseEntity<PenawaranHarga> createPenawaranHarga(@Valid @RequestBody CreatePenawaranHargaRequestDTO createPenawaranHargaRequestDTO,
-                                                               BindingResult bindingResult) {
+    @PostMapping(value = "/penawaran-harga/create")
+    public ResponseEntity<PenawaranHarga> createPenawaranHarga(
+            @Valid @RequestBody CreatePenawaranHargaRequestDTO createPenawaranHargaRequestDTO,
+            BindingResult bindingResult) {
         if (bindingResult.hasFieldErrors()) {
             String errorMessages = "";
             List<FieldError> errors = bindingResult.getFieldErrors();
@@ -54,8 +53,7 @@ public class PenawaranHargaController {
             }
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    errorMessages
-            );
+                    errorMessages);
         }
 
         try {
@@ -65,12 +63,12 @@ public class PenawaranHargaController {
         } catch (Exception e) {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Error creating Penawaran Harga: " + e.getMessage()
-            );
+                    "Error creating Penawaran Harga: " + e.getMessage());
         }
     }
-    @GetMapping(value="/penawaran-harga/klien/{klien}/view-all")
-    public PenawaranHarga getPenawaranHargaByIdKlien(@PathVariable("klien") String klien){
+
+    @GetMapping(value = "/penawaran-harga/klien/{klien}/view-all")
+    public PenawaranHarga getPenawaranHargaByIdKlien(@PathVariable("klien") String klien) {
         return penawaranHargaService.getPenawaranHargaByIdKlien(UUID.fromString(klien));
     }
 

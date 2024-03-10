@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sidha.api.DTO.response.BaseResponse;
-import com.sidha.api.model.Kontrak;
 import com.sidha.api.service.KontrakService;
 
 import java.io.IOException;
@@ -44,7 +43,7 @@ public class KontrakController {
       @RequestParam("file") MultipartFile file) throws IOException {
     try {
       UUID userUUID = UUID.fromString(userId);
-      Kontrak kontrak = service.uploadDocumentAndSaveToDB(file, userUUID);
+      service.uploadDocumentAndSaveToDB(file, userUUID);
       return new BaseResponse<>(true, 200, "Document uploaded successfully", null);
     } catch (Exception e) {
       return new BaseResponse<>(false, 500, "Failed to upload document", null);

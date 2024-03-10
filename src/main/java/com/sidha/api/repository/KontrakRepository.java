@@ -9,9 +9,8 @@ import com.sidha.api.model.Kontrak;
 import com.sidha.api.model.UserModel;
 
 @Repository
-public interface KontrakRepository extends JpaRepository<Kontrak, Long>{
+public interface KontrakRepository extends JpaRepository<Kontrak, Long> {
   Optional<Kontrak> findByName(String name);
+
   Optional<Kontrak> findByUser(UserModel user);
 }
-
-

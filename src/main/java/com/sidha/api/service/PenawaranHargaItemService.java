@@ -13,9 +13,11 @@ public interface PenawaranHargaItemService {
 
     List<PenawaranHargaItem> getAllPenawaranHargaItemByIdPenawaranHarga(UUID idPenawaranHarga);
 
-    PenawaranHargaItem createPenawaranHargaItem( @Valid CreatePenawaranHargaItemRequestDTO createPenawaranHargaItemRequestDTO);
+    PenawaranHargaItem createPenawaranHargaItem(
+            @Valid CreatePenawaranHargaItemRequestDTO createPenawaranHargaItemRequestDTO);
 
-    PenawaranHargaItem updatePenawaranHargaItem( @Valid UpdatePenawaranHargaItemRequestDTO updatePenawaranHargaItemRequestDTO);
+    PenawaranHargaItem updatePenawaranHargaItem(
+            @Valid UpdatePenawaranHargaItemRequestDTO updatePenawaranHargaItemRequestDTO);
 
     List<PenawaranHargaItem> getAllPenawaranHargaItemBySource(String source);
 

@@ -1,4 +1,5 @@
 package com.sidha.api.model;
+
 import java.util.UUID;
 
 import org.hibernate.annotations.SQLDelete;
@@ -43,7 +44,7 @@ public class PenawaranHargaItem {
 
     @Column(name = "cdd_price")
     private Integer cddPrice;
-    
+
     @Column(name = "cdd_long_price")
     private Integer cddLongPrice;
 

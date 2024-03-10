@@ -50,7 +50,8 @@ public class JwtUtils {
     }
 
     public String getUserNameFromJwtToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(token).getBody().get("username").toString();
+        return Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(token).getBody().get("username")
+                .toString();
     }
 
     public String getTokenFromHeader(Map<String, String> header) {

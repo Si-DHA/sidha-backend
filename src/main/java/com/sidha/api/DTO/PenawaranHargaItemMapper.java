@@ -7,7 +7,9 @@ import com.sidha.api.model.PenawaranHargaItem;
 
 @Mapper(componentModel = "spring")
 public interface PenawaranHargaItemMapper {
-    PenawaranHargaItem createPenawaranHargaItemDTOToEntity(CreatePenawaranHargaItemRequestDTO createPenawaranHargaItemDTO);
+    PenawaranHargaItem createPenawaranHargaItemDTOToEntity(
+            CreatePenawaranHargaItemRequestDTO createPenawaranHargaItemDTO);
 
-    PenawaranHargaItem updatePenawaranHargaItemDTOToEntity(UpdatePenawaranHargaItemRequestDTO cupdatePenawaranHargaItemDTO);
+    PenawaranHargaItem updatePenawaranHargaItemDTOToEntity(
+            UpdatePenawaranHargaItemRequestDTO cupdatePenawaranHargaItemDTO);
 }

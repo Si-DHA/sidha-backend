@@ -2,7 +2,6 @@ package com.sidha.api.DTO.response;
 
 import com.sidha.api.model.enumerator.Role;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
