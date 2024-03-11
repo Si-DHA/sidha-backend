@@ -35,6 +35,14 @@ public class PenawaranHargaItemController {
         }
     }
 
+    @GetMapping(value = "/penawaran-harga-item/{idPenawaranHarga}/view-all")
+    public List<PenawaranHargaItem> getAllPenawaranHargaItemByIdPenawaranHargaPathVariable(
+            @PathVariable("idPenawaranHarga") UUID idPenawaranHarga) {
+        List<PenawaranHargaItem> listPenawaranHargaItem = penawaranHargaItemService
+                .getAllPenawaranHargaItemByIdPenawaranHarga(idPenawaranHarga);
+        return listPenawaranHargaItem;
+    }
+
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value="/penawaran-harga-item/id-penawaran-harga/view-all")
     public List<PenawaranHargaItem> getAllPenawaranHargaItemByIdPenawaranHarga(){
