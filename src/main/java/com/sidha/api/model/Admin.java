@@ -14,7 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @DiscriminatorValue(value = "admin")
-public class Admin extends UserModel{
+public class Admin extends UserModel {
   @Column(name = "is_super_admin")
-  private boolean isSuperAdmin = false; 
+  private boolean isSuperAdmin = false;
 }

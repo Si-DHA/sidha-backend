@@ -10,7 +10,10 @@ import com.sidha.api.model.UserModel;
 
 public interface KontrakService {
   public String uploadDocumentToFilesystem(MultipartFile file, UserModel user) throws IOException;
-  public Kontrak  uploadDocumentAndSaveToDB(MultipartFile file, UUID userId) throws IOException;
+
+  public Kontrak uploadDocumentAndSaveToDB(MultipartFile file, UUID userId) throws IOException;
+
   public byte[] getDocumentFromFileSystem(String filename) throws IOException;
+
   public Kontrak updateDocumentFile(MultipartFile file, UUID userId) throws IOException;
 }

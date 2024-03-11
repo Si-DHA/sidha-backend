@@ -16,7 +16,7 @@ import java.util.Optional;
 @Service
 public class StorageServiceImpl implements StorageService {
 
-  private final String FOLDER_PATH = "C:\\Users\\User\\Desktop\\filedata\\";
+  private final String FOLDER_PATH = "/home/nur_fajar11/filedata/";
 
   @Autowired
   private ImageDataRepository imageDataRepository;
@@ -71,7 +71,7 @@ public class StorageServiceImpl implements StorageService {
   }
 
   @Override
-  public ImageData updateImagaData(MultipartFile file, UserModel user) throws IOException{
+  public ImageData updateImagaData(MultipartFile file, UserModel user) throws IOException {
     String updatedFilename = user.getId() + "_" + replaceWhitespaceWithUnderscore(file.getOriginalFilename());
     String filePath = FOLDER_PATH + updatedFilename;
 
@@ -81,11 +81,8 @@ public class StorageServiceImpl implements StorageService {
 
     file.transferTo(new File(filePath));
 
-    if (imageData != null) {
-      return imageData;
-    }
-    return null;
-  }
+    return imageData;
 
+  }
 
 }

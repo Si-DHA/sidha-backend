@@ -1,6 +1,16 @@
 package com.sidha.api.service;
 
 import java.util.UUID;
+<<<<<<< HEAD
+=======
+
+import com.sidha.api.DTO.request.EditUserDetailRequestDTO;
+import com.sidha.api.DTO.response.GetUserDetailResponseDTO;
+import com.sidha.api.model.Sopir;
+import com.sidha.api.model.UserModel;
+import com.sidha.api.model.enumerator.Role;
+import java.util.List;
+>>>>>>> 67c2ffcde083c6aad2623d701930ce63fb41fe86
 
 
 import com.sidha.api.DTO.request.EditUserDetailRequestDTO;
@@ -21,9 +31,11 @@ public interface UserService {
 
     GetUserDetailResponseDTO getUserDetail(UUID id);
 
-    UserModel editUserDetail( EditUserDetailRequestDTO requestDTO, UUID id);
+    UserModel editUserDetail(EditUserDetailRequestDTO requestDTO, UUID id);
 
     void changePassword(String currentPassword, String newPassword, UUID id);
 
-    List<UserModel> findByRole(Role role);
+    List<UserModel> getListRole(Role role);
+
+    List<Sopir> getListSopirNoTruk();
 }

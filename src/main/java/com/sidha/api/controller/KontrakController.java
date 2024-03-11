@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sidha.api.DTO.response.BaseResponse;
-import com.sidha.api.model.Kontrak;
 import com.sidha.api.service.KontrakService;
 
 import java.io.IOException;
@@ -40,14 +39,14 @@ public class KontrakController {
   }
 
   @PostMapping("/{userId}")
-  public BaseResponse<?> uploadDocumentAndSaveToDB(@PathVariable String userId,
+  public ResponseEntity<?> uploadDocumentAndSaveToDB(@PathVariable String userId,
       @RequestParam("file") MultipartFile file) throws IOException {
     try {
       UUID userUUID = UUID.fromString(userId);
-      Kontrak kontrak = service.uploadDocumentAndSaveToDB(file, userUUID);
-      return new BaseResponse<>(true, 200, "Document uploaded successfully", null);
+      service.uploadDocumentAndSaveToDB(file, userUUID);
+      return new ResponseEntity<>(new BaseResponse<>(true, 200, "Document uploaded successfully", null), HttpStatus.OK);
     } catch (Exception e) {
-      return new BaseResponse<>(false, 500, "Failed to upload document", null);
+      return new ResponseEntity<>(new BaseResponse<>(false, 500, e.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

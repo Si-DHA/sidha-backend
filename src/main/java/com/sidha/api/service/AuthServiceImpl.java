@@ -22,7 +22,10 @@ import com.sidha.api.repository.UserDb;
 import com.sidha.api.security.jwt.JwtUtils;
 import com.sidha.api.utils.MailSenderUtils;
 import com.sidha.api.utils.PasswordGenerator;
+<<<<<<< HEAD
 import com.sidha.api.service.StorageService;
+=======
+>>>>>>> 67c2ffcde083c6aad2623d701930ce63fb41fe86
 
 import java.util.UUID;
 import java.time.LocalDateTime;
@@ -51,9 +54,12 @@ public class AuthServiceImpl implements AuthService {
     private StorageService storageService;
 
     @Autowired
+<<<<<<< HEAD
     private PasswordGenerator passwordGenerator;
 
     @Autowired
+=======
+>>>>>>> 67c2ffcde083c6aad2623d701930ce63fb41fe86
     private PasswordEncoder passwordEncoder;
 
     private static final long EXPIRE_TOKEN = 30;
@@ -61,16 +67,24 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserResponse register(SignUpUserRequestDTO request) {
         MultipartFile imageFile = request.getImageFile();
+<<<<<<< HEAD
         request.setPassword(passwordEncoder.encode(request.getPassword()));
+=======
+        var randomPassword = PasswordGenerator.generatePassword(8);
+        request.setPassword(passwordEncoder.encode(randomPassword));
+>>>>>>> 67c2ffcde083c6aad2623d701930ce63fb41fe86
         var user = userMapper.toUserModel(request);
         var jwt = jwtUtils.generateJwtToken(user);
         var userResponse = new UserResponse();
         userResponse.setToken(jwt);
+<<<<<<< HEAD
         var randomPassword = passwordGenerator.generatePassword(8);
         if (request.getPassword().isEmpty() && request.getRole() == Role.KLIEN) {
             user.setPassword(passwordEncoder.encode(randomPassword));
         }
 
+=======
+>>>>>>> 67c2ffcde083c6aad2623d701930ce63fb41fe86
         var savedUser = saveUser(request);
         try {
             if (imageFile != null) {
@@ -87,11 +101,17 @@ public class AuthServiceImpl implements AuthService {
             return userResponse;
 
         } catch (IOException e) {
+<<<<<<< HEAD
             e.printStackTrace();
         }
 
         return userResponse;
 
+=======
+            throw new RuntimeException("Failed to save image");
+        }
+
+>>>>>>> 67c2ffcde083c6aad2623d701930ce63fb41fe86
     }
 
     private UserModel saveUser(SignUpUserRequestDTO request) {
@@ -102,10 +122,7 @@ public class AuthServiceImpl implements AuthService {
                 return userDb.save(modelMapper.map(request, Karyawan.class));
             case SOPIR:
                 return userDb.save(modelMapper.map(request, Sopir.class));
-
             case KLIEN:
-                var randomPassword = passwordGenerator.generatePassword(8);
-                request.setPassword(passwordEncoder.encode(randomPassword));
                 return userDb.save(modelMapper.map(request, Klien.class));
             default:
                 throw new IllegalArgumentException("Invalid role");

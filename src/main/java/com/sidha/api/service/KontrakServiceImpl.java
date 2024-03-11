@@ -63,17 +63,14 @@ public class KontrakServiceImpl implements KontrakService {
     kontrak.setFilePath(filePath);
     kontrak.setUser(user);
     kontrakRepository.save(kontrak);
-    
+
     user.setKontrak(kontrak);
     userService.save(user);
 
-
     file.transferTo(new File(filePath));
 
-    if (kontrak != null) {
-      return kontrak;
-    }
-    return null;
+    return kontrak;
+
   }
 
   public String replaceWhitespaceWithUnderscore(String fileName) {
@@ -92,10 +89,15 @@ public class KontrakServiceImpl implements KontrakService {
 
     file.transferTo(new File(filePath));
 
+<<<<<<< HEAD
     if (kontrak != null) {
       return kontrak;
     }
     return null;
+=======
+    return kontrak;
+
+>>>>>>> 67c2ffcde083c6aad2623d701930ce63fb41fe86
   }
 
 }

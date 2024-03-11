@@ -17,5 +17,5 @@ import lombok.Setter;
 public class Karyawan extends UserModel {
   @Column(name = "position")
   private String position;
-    
+
 }

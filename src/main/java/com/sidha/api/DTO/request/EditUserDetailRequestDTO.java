@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EditUserDetailRequestDTO{
+public class EditUserDetailRequestDTO {
   private String name;
   private String address;
   private String phone;
-  private boolean isSuperAdmin ;
+  private boolean isSuperAdmin;
   private String position;
   private MultipartFile imageFile;
 }

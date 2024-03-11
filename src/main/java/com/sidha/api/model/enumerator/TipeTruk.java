@@ -1,10 +1,10 @@
 package com.sidha.api.model.enumerator;
 
-public enum Role {
-  KLIEN,
-  KARYAWAN,
-  ADMIN,
-  SOPIR;
+public enum TipeTruk {
+  CDD,
+  CDL,
+  Wingbox,
+  Fuso;
 
   public String getName() {
     return name();

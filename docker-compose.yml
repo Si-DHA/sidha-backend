@@ -13,6 +13,7 @@ services:
       - db
     networks:
       - backend-network
+    platform: linux/amd64
   db:
     image: postgres:14-alpine
     ports:
@@ -21,7 +22,7 @@ services:
     environment:
       - POSTGRES_USER=admin-sidha
       - POSTGRES_PASSWORD=propenzjaya-d01
-    volumes: 
+    volumes:
       - db:/var/lib/postgresql/data
     networks:
       - backend-network
