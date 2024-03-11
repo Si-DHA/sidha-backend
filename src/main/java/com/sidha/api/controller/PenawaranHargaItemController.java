@@ -1,5 +1,9 @@
 package com.sidha.api.controller;
 
+import com.sidha.api.DTO.request.CreatePenawaranHargaItemRequestDTO;
+import com.sidha.api.DTO.request.UpdatePenawaranHargaItemRequestDTO;
+import com.sidha.api.repository.PenawaranHargaItemDb;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,14 +12,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import com.sidha.api.service.PenawaranHargaItemService;
-
-import jakarta.validation.Valid;
-
-import com.sidha.api.DTO.request.CreatePenawaranHargaItemRequestDTO;
-import com.sidha.api.DTO.request.UpdatePenawaranHargaItemRequestDTO;
 import com.sidha.api.model.*;
-import com.sidha.api.repository.PenawaranHargaItemDb;
-
 import java.util.*;
 
 @RestController
@@ -23,18 +20,18 @@ import java.util.*;
 public class PenawaranHargaItemController {
     @Autowired
     PenawaranHargaItemService penawaranHargaItemService;
-
     @Autowired
     PenawaranHargaItemDb penawaranHargaItemDb;
 
-    @GetMapping(value = "/penawaran-harga-item/{idPenawaranHargaItem}")
-    public PenawaranHargaItem getPenawaranHargaItemById(
-            @PathVariable("idPenawaranHargaItem") String idPenawaranHargaItem) {
-        try {
+    @GetMapping(value="/penawaran-harga-item/{idPenawaranHargaItem}")
+    public PenawaranHargaItem getPenawaranHargaItemById(@PathVariable("idPenawaranHargaItem") String idPenawaranHargaItem){
+        try{
             return penawaranHargaItemService.getPenawaranHargaItemById(UUID.fromString(idPenawaranHargaItem));
-        } catch (NoSuchElementException e) {
+        }
+        catch (NoSuchElementException e){
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Penawaran harga item tidak ditemukan");
+                    HttpStatus.NOT_FOUND, "Penawaran harga item tidak ditemukan"
+            );
         }
     }
 
@@ -44,12 +41,6 @@ public class PenawaranHargaItemController {
         List<PenawaranHargaItem> listPenawaranHargaItem = penawaranHargaItemService.getAllPenawaranHargaItemByIdPenawaranHarga(UUID.fromString("2b33d521-ae29-4776-a7f7-349a5456e5c9"));
         return listPenawaranHargaItem;
     }
-
-    // @GetMapping(value="/penawaran-harga-item/{idPenawaranHarga}/view-all")
-    // public List<PenawaranHargaItem> getAllPenawaranHargaItemByIdPenawaranHarga(@PathVariable("idPenawaranHarga") UUID idPenawaranHarga){
-    //     List<PenawaranHargaItem> listPenawaranHargaItem = penawaranHargaItemService.getAllPenawaranHargaItemByIdPenawaranHarga(idPenawaranHarga);
-    //     return listPenawaranHargaItem;
-    // }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value="/penawaran-harga-item/source/{source}/view-all")
@@ -89,20 +80,6 @@ public class PenawaranHargaItemController {
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     "Error creating PenawaranHargaItem: " + e.getMessage());
         }
-    }
-
-    @GetMapping(value = "/penawaran-harga-item/source/{source}/view-all")
-    public List<PenawaranHargaItem> getAllPenawaranHargaItemBySource(@PathVariable("source") String source) {
-        List<PenawaranHargaItem> listPenawaranHargaItem = penawaranHargaItemService
-                .getAllPenawaranHargaItemBySource(source);
-        return listPenawaranHargaItem;
-    }
-
-    @GetMapping(value = "/penawaran-harga-item/klien/{klien}/view-all")
-    public List<PenawaranHargaItem> getAllPenawaranHargaItemByIdKlien(@PathVariable("klien") String klien) {
-        List<PenawaranHargaItem> listPenawaranHargaItem = penawaranHargaItemService
-                .getAllPenawaranHargaItemByIdKlien(UUID.fromString(klien));
-        return listPenawaranHargaItem;
     }
 
     @PutMapping("/penawaran-harga-item/update")

@@ -98,6 +98,8 @@ public class TrukServiceImpl implements TrukService {
                 sopir.setTruk(null);
                 updateSopir(sopir);
             }
+            truk.setSopir(null);
+            trukDb.save(truk);
             trukDb.deleteById(idTruk);
         } else {
             throw new NoSuchElementException("Id truk tidak valid");
