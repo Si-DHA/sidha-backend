@@ -1,5 +1,9 @@
 package com.sidha.api.model;
 import java.util.ArrayList;
+<<<<<<< HEAD
+import java.util.Date;
+=======
+>>>>>>> c2d441ce76071445b0895a1e52ccf204a56897f5
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -13,6 +17,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Getter
@@ -35,9 +41,13 @@ public class PenawaranHarga{
     @JsonManagedReference
     private List<PenawaranHargaItem> listPenawaranHargaItem = new ArrayList<>();
 
-    @Column(name = "penawaran_harga_created_at", nullable = true)
-    private LocalDateTime penawaranHargaCreatedAt;
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private Date penawaranHargaCreatedAt;
 
-    @Column(name = "penawaran_harga_updated_at", nullable = true)
-    private LocalDateTime penawaranHargaUpdatedAt;
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at", nullable = false)
+    private Date penawaranHargaUpdatedAt;
 }

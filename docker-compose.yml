@@ -22,7 +22,7 @@ services:
     environment:
       - POSTGRES_USER=admin-sidha
       - POSTGRES_PASSWORD=propenzjaya-d01
-    volumes: 
+    volumes:
       - db:/var/lib/postgresql/data
     networks:
       - backend-network
