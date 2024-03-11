@@ -21,7 +21,7 @@ import static com.sidha.api.model.enumerator.Role.SOPIR;
 @Service
 @AllArgsConstructor
 public class TrukServiceImpl implements TrukService {
-    private UserDb userRepository;
+    private UserDb userDb;
 
     private TrukMapper trukMapper;
 
@@ -35,7 +35,7 @@ public class TrukServiceImpl implements TrukService {
         truk = trukDb.save(truk);
         var idSopir = trukFromDto.getIdSopir();
         if (idSopir != null) {
-            UserModel sopir = userRepository.findById(idSopir).orElse(null);
+            UserModel sopir = userDb.findById(idSopir).orElse(null);
             if (sopir != null && sopir.getRole() == SOPIR) {
                 Sopir sopirConverted = modelMapper.map(sopir, Sopir.class);
                 truk.setSopir(sopirConverted);
@@ -65,14 +65,22 @@ public class TrukServiceImpl implements TrukService {
             trukDb.save(truk);
             var idSopir = trukFromDto.getIdSopir();
             if (idSopir != null) {
-                UserModel sopir = userRepository.findById(idSopir).orElse(null);
+                UserModel sopir = userDb.findById(idSopir).orElse(null);
                 if (sopir != null && sopir.getRole() == SOPIR) {
                     Sopir sopirConverted = modelMapper.map(sopir, Sopir.class);
                     truk.setSopir(sopirConverted);
                     sopirConverted.setTruk(truk);
+                    updateSopir(sopirConverted);
                 } else {
                     throw new NoSuchElementException("Id sopir tidak valid");
                 }
+            } else {
+                Sopir sopir = truk.getSopir();
+                if (sopir != null) {
+                    sopir.setTruk(null);
+                    updateSopir(sopir);
+                }
+                truk.setSopir(null);
             }
         }
 
@@ -86,7 +94,10 @@ public class TrukServiceImpl implements TrukService {
         Truk truk = trukDb.findById(idTruk).orElse(null);
         if (truk != null) {
             var sopir = truk.getSopir();
-            if (sopir != null) sopir.setTruk(null);
+            if (sopir != null) {
+                sopir.setTruk(null);
+                updateSopir(sopir);
+            }
             trukDb.deleteById(idTruk);
         } else {
             throw new NoSuchElementException("Id truk tidak valid");
@@ -101,7 +112,7 @@ public class TrukServiceImpl implements TrukService {
     @Override
     public Truk findTrukByIdSopir(UUID idSopir) {
         if (idSopir != null) {
-            UserModel sopir = userRepository.findById(idSopir).orElse(null);
+            UserModel sopir = userDb.findById(idSopir).orElse(null);
             if (sopir != null && sopir.getRole() == SOPIR) {
                 Sopir sopirConverted = modelMapper.map(sopir, Sopir.class);
                 List<Truk> listTruk = trukDb.findBySopir(sopirConverted);
@@ -119,5 +130,10 @@ public class TrukServiceImpl implements TrukService {
     public Truk findTrukByIdTruk(UUID idTruk) {
         Truk truk = trukDb.findById(idTruk).orElse(null);
         return truk;
+    }
+
+    @Override
+    public void updateSopir(Sopir sopir) {
+        userDb.save(sopir);
     }
 }
