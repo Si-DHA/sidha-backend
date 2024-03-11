@@ -1,7 +1,12 @@
 package com.sidha.api.service;
 
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import com.sidha.api.model.*;
+import com.sidha.api.repository.TrukDb;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,13 +15,11 @@ import org.springframework.stereotype.Service;
 import com.sidha.api.DTO.UserMapper;
 import com.sidha.api.DTO.request.EditUserDetailRequestDTO;
 import com.sidha.api.DTO.response.GetUserDetailResponseDTO;
-import com.sidha.api.model.Admin;
-import com.sidha.api.model.ImageData;
-import com.sidha.api.model.Karyawan;
-import com.sidha.api.model.UserModel;
 import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.repository.UserDb;
 import java.util.List;
+
+import static com.sidha.api.model.enumerator.Role.SOPIR;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -32,6 +35,11 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private StorageService storageService;
+
+    @Autowired
+    private TrukDb trukDb;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Value("${app.image.url}")
     private String IMAGE_URL;
@@ -121,5 +129,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserModel> getListRole(Role role) {
         return userDb.findAllByRole(role);
+    }
+
+    @Override
+    public List<Sopir> getListSopirNoTruk() {
+        List<UserModel> listSopir = userDb.findAllByRole(Role.SOPIR);
+        List<Sopir> listSopirNoTruk = new ArrayList<>();
+        for (UserModel user : listSopir) {
+            if (user.getRole() == SOPIR) {
+                Sopir sopirConverted = modelMapper.map(user, Sopir.class);
+                if (trukDb.findBySopir(sopirConverted).isEmpty()) {
+                    listSopirNoTruk.add(sopirConverted);
+                }
+            }
+        }
+        return listSopirNoTruk;
     }
 }

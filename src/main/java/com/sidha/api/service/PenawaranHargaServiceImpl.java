@@ -1,5 +1,6 @@
 package com.sidha.api.service;
 
+import com.sidha.api.model.UserModel;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.util.*;

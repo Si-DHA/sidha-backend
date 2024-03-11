@@ -2,6 +2,7 @@ package com.sidha.api.service;
 
 import com.sidha.api.DTO.request.CreateTrukRequestDTO;
 import com.sidha.api.DTO.request.UpdateTrukRequestDTO;
+import com.sidha.api.model.Sopir;
 import com.sidha.api.model.Truk;
 
 import java.util.List;
@@ -19,5 +20,7 @@ public interface TrukService {
     Truk findTrukByIdSopir(UUID idSopir);
 
     Truk findTrukByIdTruk(UUID idTruk);
+
+    void updateSopir(Sopir sopir);
 
 }
