@@ -57,12 +57,12 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserResponse register(SignUpUserRequestDTO request) {
         MultipartFile imageFile = request.getImageFile();
+        var randomPassword = PasswordGenerator.generatePassword(8);
+        request.setPassword(passwordEncoder.encode(randomPassword));
         var user = userMapper.toUserModel(request);
         var jwt = jwtUtils.generateJwtToken(user);
         var userResponse = new UserResponse();
         userResponse.setToken(jwt);
-        var randomPassword = PasswordGenerator.generatePassword(8);
-        user.setPassword(passwordEncoder.encode(randomPassword));
         var savedUser = saveUser(request);
         try {
             if (imageFile != null) {
@@ -92,10 +92,7 @@ public class AuthServiceImpl implements AuthService {
                 return userDb.save(modelMapper.map(request, Karyawan.class));
             case SOPIR:
                 return userDb.save(modelMapper.map(request, Sopir.class));
-
             case KLIEN:
-                var randomPassword = PasswordGenerator.generatePassword(8);
-                request.setPassword(passwordEncoder.encode(randomPassword));
                 return userDb.save(modelMapper.map(request, Klien.class));
             default:
                 throw new IllegalArgumentException("Invalid role");
