@@ -1,10 +1,8 @@
 package com.sidha.api.service;
 
-<<<<<<< HEAD
 import java.util.UUID;
 
 import org.glassfish.jaxb.core.annotation.OverrideAnnotationOf;
-=======
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -12,7 +10,6 @@ import java.util.UUID;
 import com.sidha.api.model.*;
 import com.sidha.api.repository.TrukDb;
 import org.modelmapper.ModelMapper;
->>>>>>> 67c2ffcde083c6aad2623d701930ce63fb41fe86
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -136,6 +133,7 @@ public class UserServiceImpl implements UserService {
     public List<UserModel> getListRole(Role role) {
         return userDb.findAllByRole(role);
     }
+
 
     @Override
     public List<Sopir> getListSopirNoTruk() {
