@@ -34,9 +34,19 @@ public class UserController {
     return ResponseEntity.ok(new BaseResponse<>(true, 200, "User list", userService.getListRole(Role.KLIEN)));
   }
 
+  @GetMapping("/karyawan")
+  public ResponseEntity<?> getKaryawanList() {
+    return ResponseEntity.ok(new BaseResponse<>(true, 200, "Sopir List", userService.getListRole(Role.KARYAWAN)));
+  }
+
   @GetMapping("/sopir")
   public ResponseEntity<?> getSopirList() {
-    return ResponseEntity.ok(new BaseResponse<>(true, 200, "Sopir list", userService.getListRole(Role.SOPIR)));
+    return ResponseEntity.ok(new BaseResponse<>(true, 200, "Sopir List", userService.getListRole(Role.SOPIR)));
+  }
+
+  @GetMapping("/sopir-no-truk")
+  public ResponseEntity<?> getSopirNoTrukList() {
+    return ResponseEntity.ok(new BaseResponse<>(true, 200, "Sopir No Truk List", userService.getListSopirNoTruk()));
   }
 
   @GetMapping("/{id}")

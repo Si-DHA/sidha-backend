@@ -1,9 +1,5 @@
 package com.sidha.api.model;
-
 import java.util.UUID;
-
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -12,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
@@ -21,7 +19,7 @@ import lombok.Setter;
 @SQLDelete(sql = "UPDATE user_table SET is_deleted = true WHERE id=?")
 @SQLRestriction(value = "is_deleted = false")
 @DiscriminatorValue(value = "penawaran_harga_item")
-public class PenawaranHargaItem {
+public class PenawaranHargaItem{
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_klien", referencedColumnName = "id")
     @JsonBackReference
