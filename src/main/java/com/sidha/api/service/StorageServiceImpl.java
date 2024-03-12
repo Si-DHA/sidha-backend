@@ -7,19 +7,23 @@ import com.sidha.api.model.ImageData;
 import com.sidha.api.model.UserModel;
 import com.sidha.api.repository.ImageDataRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Optional;
 
+
 @Service
 public class StorageServiceImpl implements StorageService {
 
-  private final String FOLDER_PATH = "/home/nur_fajar11/filedata/";
+  private final String FOLDER_PATH = "E:\\filedata\\";
 
   @Autowired
   private ImageDataRepository imageDataRepository;
+
 
   @Override
   public String uploadImageToFileSystem(MultipartFile file, UserModel user) throws IOException {
@@ -52,6 +56,7 @@ public class StorageServiceImpl implements StorageService {
     String updatedFilename = user.getId() + "_" + replaceWhitespaceWithUnderscore(file.getOriginalFilename());
     String filePath = FOLDER_PATH + updatedFilename;
 
+
     ImageData imageData = imageDataRepository.save(ImageData.builder()
         .name(updatedFilename)
         .type(file.getContentType())
@@ -72,16 +77,28 @@ public class StorageServiceImpl implements StorageService {
 
   @Override
   public ImageData updateImagaData(MultipartFile file, UserModel user) throws IOException {
+    Logger logger = LoggerFactory.getLogger(StorageServiceImpl.class);
     String updatedFilename = user.getId() + "_" + replaceWhitespaceWithUnderscore(file.getOriginalFilename());
     String filePath = FOLDER_PATH + updatedFilename;
 
-    ImageData imageData = imageDataRepository.findByUser(user).orElse(null);
+    ImageData imageData = imageDataRepository.findByUserId(user.getId()).get();
+    logger.info("image data : " + imageData);
+    if (imageData != null) {
+      File fileToDelete = new File(imageData.getFilePath());
+      fileToDelete.delete();
+      logger.info("image ada");
+    }
+    if(imageData == null) {
+      logger.info("imageNull");
+      throw new RuntimeException("Image not found");
+    }
+
     imageData.setName(updatedFilename);
     imageData.setFilePath(filePath);
-
+    imageData.setType(file.getContentType());
     file.transferTo(new File(filePath));
 
-    return imageData;
+    return imageDataRepository.save(imageData);
 
   }
 
