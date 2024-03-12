@@ -1,9 +1,6 @@
 package com.sidha.api.model;
 import java.util.ArrayList;
-<<<<<<< HEAD
 import java.util.Date;
-=======
->>>>>>> c2d441ce76071445b0895a1e52ccf204a56897f5
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;

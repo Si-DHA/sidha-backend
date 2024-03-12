@@ -11,6 +11,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sidha.api.model.enumerator.Role;
 
 import java.time.LocalDateTime;
@@ -64,10 +66,14 @@ public class UserModel implements UserDetails {
     @Column(name = "phone", nullable = false)
     private String phone;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
+     @JsonFormat
+      (shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at", nullable = false)
+    @JsonFormat
+    (shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @Column(name = "is_deleted", nullable = false)
@@ -99,8 +105,10 @@ public class UserModel implements UserDetails {
     }
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private ImageData imageData;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Kontrak kontrak;
 }

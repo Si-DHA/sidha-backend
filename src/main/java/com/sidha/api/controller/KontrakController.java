@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.http.MediaType;
 
 @RestController
@@ -40,7 +41,7 @@ public class KontrakController {
 
   @PostMapping("/{userId}")
   public ResponseEntity<?> uploadDocumentAndSaveToDB(@PathVariable String userId,
-      @RequestParam("file") MultipartFile file) throws IOException {
+      @RequestPart("file") MultipartFile file) throws IOException {
     try {
       UUID userUUID = UUID.fromString(userId);
       service.uploadDocumentAndSaveToDB(file, userUUID);
