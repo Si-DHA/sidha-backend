@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetUserDetailResponseDTO {
+  private String id;
   private String name;
   private String password;
   private String email;
@@ -25,8 +26,10 @@ public class GetUserDetailResponseDTO {
   private String companyName;
   private boolean isAvailable;
   private String imageUrl;
+  private String kontrakUrl;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
   private Boolean isDeleted;
+
 
 }

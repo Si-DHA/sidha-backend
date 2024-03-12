@@ -6,6 +6,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sidha.api.DTO.UserMapper;
 import com.sidha.api.DTO.request.ForgotPassUserRequestDTO;
 import com.sidha.api.DTO.request.LoginUserRequestDTO;
@@ -52,14 +54,19 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     private static final long EXPIRE_TOKEN = 30;
 
     @Override
     public UserResponse register(SignUpUserRequestDTO request) {
+        objectMapper.registerModule(new JavaTimeModule());
+
         MultipartFile imageFile = request.getImageFile();
         var randomPassword = PasswordGenerator.generatePassword(8);
         request.setPassword(passwordEncoder.encode(randomPassword));
-        var user = userMapper.toUserModel(request);
+        var user = objectMapper.convertValue(request, UserModel.class);
         var jwt = jwtUtils.generateJwtToken(user);
         var userResponse = new UserResponse();
         userResponse.setToken(jwt);
@@ -67,15 +74,13 @@ public class AuthServiceImpl implements AuthService {
         try {
             if (imageFile != null) {
                 ImageData imgData = storageService.uploadImageAndSaveToDB(imageFile, savedUser);
-                user.setImageData(imgData);
+                savedUser.setImageData(imgData);
                 userDb.save(savedUser);
 
             }
             userResponse.setUser(savedUser);
-            if (request.getRole() == Role.KLIEN) {
-                mailSenderUtils.sendMail(request.getEmail(), "Welcome to SIDHA",
-                        generateMessageForNewClient(request.getName(), request.getEmail(), randomPassword));
-            }
+            mailSenderUtils.sendMail(request.getEmail(), "Welcome to SIDHA",
+                    generateMessageForNewClient(request.getName(), request.getEmail(), randomPassword));
             return userResponse;
 
         } catch (IOException e) {
@@ -140,6 +145,8 @@ public class AuthServiceImpl implements AuthService {
         message.append("Email: ").append(email).append("\n");
         message.append("Password: ").append(Password).append("\n\n");
         message.append("Silahkan login dengan email dan password diatas").append("\n\n");
+        message.append("Jangan lupa untuk mengganti password anda setelah login").append("\n\n");
+        message.append("Jika anda tidak merasa melakukan permintaan ini, abaikan email ini.").append("\n\n");
         message.append("Terima kasih!").append("\n");
         return message.toString();
     }

@@ -2,6 +2,7 @@ package com.sidha.api.DTO.request;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sidha.api.model.enumerator.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,7 @@ public class SignUpUserRequestDTO {
   private String position;
   private String companyName;
   private boolean isAvailable = false;
+  @JsonIgnore
   private MultipartFile imageFile;
 
 }

@@ -1,13 +1,15 @@
 package com.sidha.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
-import java.util.UUID;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.util.List;
+import java.util.UUID;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -17,8 +19,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sidha.api.DTO.UserMapper;
 import com.sidha.api.DTO.request.EditUserDetailRequestDTO;
 import com.sidha.api.DTO.response.BaseResponse;
+import com.sidha.api.DTO.response.GetUserDetailResponseDTO;
+import com.sidha.api.model.UserModel;
 import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.service.UserService;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @RequestMapping("/api/user")
 @RestController
@@ -49,11 +56,17 @@ public class UserController {
     return ResponseEntity.ok(new BaseResponse<>(true, 200, "Sopir No Truk List", userService.getListSopirNoTruk()));
   }
 
+  public BaseResponse<List<UserModel>> getMethodName() {
+    return new BaseResponse<>(true, 200, "User list", userService.getListRole(Role.KLIEN));
+  }
+
   @GetMapping("/{id}")
   private ResponseEntity<?> getUserDetail(@PathVariable UUID id) {
     try {
+      var user = userService.findById(id);
+      
       return ResponseEntity.ok(new BaseResponse<>(true, 200, "User detail",
-          userMapper.toGetDetailUserResponseDTO(userService.findById(id))));
+          user));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(new BaseResponse<>(false, 500, e.getMessage(), null));
