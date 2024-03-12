@@ -6,6 +6,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sidha.api.DTO.UserMapper;
 import com.sidha.api.DTO.request.ForgotPassUserRequestDTO;
 import com.sidha.api.DTO.request.LoginUserRequestDTO;
@@ -22,10 +24,6 @@ import com.sidha.api.repository.UserDb;
 import com.sidha.api.security.jwt.JwtUtils;
 import com.sidha.api.utils.MailSenderUtils;
 import com.sidha.api.utils.PasswordGenerator;
-<<<<<<< HEAD
-import com.sidha.api.service.StorageService;
-=======
->>>>>>> 67c2ffcde083c6aad2623d701930ce63fb41fe86
 
 import java.util.UUID;
 import java.time.LocalDateTime;
@@ -54,64 +52,41 @@ public class AuthServiceImpl implements AuthService {
     private StorageService storageService;
 
     @Autowired
-<<<<<<< HEAD
-    private PasswordGenerator passwordGenerator;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-=======
->>>>>>> 67c2ffcde083c6aad2623d701930ce63fb41fe86
-    private PasswordEncoder passwordEncoder;
+    private ObjectMapper objectMapper;
 
     private static final long EXPIRE_TOKEN = 30;
 
     @Override
     public UserResponse register(SignUpUserRequestDTO request) {
+        objectMapper.registerModule(new JavaTimeModule());
+
         MultipartFile imageFile = request.getImageFile();
-<<<<<<< HEAD
-        request.setPassword(passwordEncoder.encode(request.getPassword()));
-=======
         var randomPassword = PasswordGenerator.generatePassword(8);
         request.setPassword(passwordEncoder.encode(randomPassword));
->>>>>>> 67c2ffcde083c6aad2623d701930ce63fb41fe86
-        var user = userMapper.toUserModel(request);
+        var user = objectMapper.convertValue(request, UserModel.class);
         var jwt = jwtUtils.generateJwtToken(user);
         var userResponse = new UserResponse();
         userResponse.setToken(jwt);
-<<<<<<< HEAD
-        var randomPassword = passwordGenerator.generatePassword(8);
-        if (request.getPassword().isEmpty() && request.getRole() == Role.KLIEN) {
-            user.setPassword(passwordEncoder.encode(randomPassword));
-        }
-
-=======
->>>>>>> 67c2ffcde083c6aad2623d701930ce63fb41fe86
         var savedUser = saveUser(request);
         try {
             if (imageFile != null) {
                 ImageData imgData = storageService.uploadImageAndSaveToDB(imageFile, savedUser);
-                user.setImageData(imgData);
+                savedUser.setImageData(imgData);
                 userDb.save(savedUser);
 
             }
             userResponse.setUser(savedUser);
-            if (request.getRole() == Role.KLIEN) {
-                mailSenderUtils.sendMail(request.getEmail(), "Welcome to SIDHA",
-                        generateMessageForNewClient(request.getName(), request.getEmail(), randomPassword));
-            }
+            mailSenderUtils.sendMail(request.getEmail(), "Welcome to SIDHA",
+                    generateMessageForNewClient(request.getName(), request.getEmail(), randomPassword));
             return userResponse;
 
         } catch (IOException e) {
-<<<<<<< HEAD
-            e.printStackTrace();
-        }
-
-        return userResponse;
-
-=======
             throw new RuntimeException("Failed to save image");
         }
 
->>>>>>> 67c2ffcde083c6aad2623d701930ce63fb41fe86
     }
 
     private UserModel saveUser(SignUpUserRequestDTO request) {
@@ -170,6 +145,8 @@ public class AuthServiceImpl implements AuthService {
         message.append("Email: ").append(email).append("\n");
         message.append("Password: ").append(Password).append("\n\n");
         message.append("Silahkan login dengan email dan password diatas").append("\n\n");
+        message.append("Jangan lupa untuk mengganti password anda setelah login").append("\n\n");
+        message.append("Jika anda tidak merasa melakukan permintaan ini, abaikan email ini.").append("\n\n");
         message.append("Terima kasih!").append("\n");
         return message.toString();
     }

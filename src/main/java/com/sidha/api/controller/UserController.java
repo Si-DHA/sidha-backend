@@ -19,9 +19,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sidha.api.DTO.UserMapper;
 import com.sidha.api.DTO.request.EditUserDetailRequestDTO;
 import com.sidha.api.DTO.response.BaseResponse;
+import com.sidha.api.DTO.response.GetUserDetailResponseDTO;
 import com.sidha.api.model.UserModel;
 import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.service.UserService;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @RequestMapping("/api/user")
 @RestController
@@ -51,7 +55,7 @@ public class UserController {
   public ResponseEntity<?> getSopirNoTrukList() {
     return ResponseEntity.ok(new BaseResponse<>(true, 200, "Sopir No Truk List", userService.getListSopirNoTruk()));
   }
-  
+
   public BaseResponse<List<UserModel>> getMethodName() {
     return new BaseResponse<>(true, 200, "User list", userService.getListRole(Role.KLIEN));
   }
@@ -59,8 +63,10 @@ public class UserController {
   @GetMapping("/{id}")
   private ResponseEntity<?> getUserDetail(@PathVariable UUID id) {
     try {
+      var user = userService.findById(id);
+      
       return ResponseEntity.ok(new BaseResponse<>(true, 200, "User detail",
-          userMapper.toGetDetailUserResponseDTO(userService.findById(id))));
+          user));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(new BaseResponse<>(false, 500, e.getMessage(), null));

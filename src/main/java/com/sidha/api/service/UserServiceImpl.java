@@ -22,6 +22,9 @@ import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.repository.UserDb;
 import java.util.List;
 
+import static com.sidha.api.model.enumerator.Role.ADMIN;
+import static com.sidha.api.model.enumerator.Role.KARYAWAN;
+import static com.sidha.api.model.enumerator.Role.KLIEN;
 import static com.sidha.api.model.enumerator.Role.SOPIR;
 
 @Service
@@ -70,12 +73,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public GetUserDetailResponseDTO getUserDetail(UUID id) {
         UserModel user = userDb.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        UserModel savedUser = userDb.save(user);
         ImageData imageData = user.getImageData();
-        var userDTO = userMapper.toGetDetailUserResponseDTO(user);
+        var userDTO = modelMapper.map(user, GetUserDetailResponseDTO.class);
         if (imageData != null) {
             userDTO.setImageUrl(IMAGE_URL + imageData.getName());
         }
+        if (user.getRole().equals(Role.KLIEN)) {
+           var  user2 = (Klien) user;
+            userDTO.setCompanyName(user2.getCompanyName());
+            System.out.println(user2.getCompanyName());
+        }
+        if (user.getRole().equals(Role.KARYAWAN)) {
+            var user3 = (Karyawan) user;
+            userDTO.setPosition(user3.getPosition());
+            System.out.println(user3.getPosition());
+        }
         return userDTO;
+
     }
 
     @Override
@@ -84,6 +99,14 @@ public class UserServiceImpl implements UserService {
         user.setName(null != requestDTO.getName() ? requestDTO.getName() : user.getName());
         user.setAddress(null != requestDTO.getAddress() ? requestDTO.getAddress() : user.getAddress());
         user.setPhone(null != requestDTO.getPhone() ? requestDTO.getPhone() : user.getPhone());
+        if (null != requestDTO.getImageFile()) {
+            try {
+                storageService.updateImagaData(requestDTO.getImageFile(), user);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to upload image");
+            }
+        }
+
         var userRole = user.getRole();
         if (userRole.equals(Role.ADMIN)) {
             var userAdmin = (Admin) user;
@@ -95,14 +118,6 @@ public class UserServiceImpl implements UserService {
                     null != requestDTO.getPosition() ? requestDTO.getPosition() : userKaryawan.getPosition());
             return userDb.save(userKaryawan);
         } else {
-            if (null != requestDTO.getImageFile()) {
-                try {
-                    ImageData imageData = storageService.updateImagaData(requestDTO.getImageFile(), user);
-                    user.setImageData(imageData);
-                } catch (Exception e) {
-                    throw new RuntimeException("Failed to upload image");
-                }
-            }
             return userDb.save(user);
         }
     }
@@ -133,7 +148,6 @@ public class UserServiceImpl implements UserService {
     public List<UserModel> getListRole(Role role) {
         return userDb.findAllByRole(role);
     }
-
 
     @Override
     public List<Sopir> getListSopirNoTruk() {

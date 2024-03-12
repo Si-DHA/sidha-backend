@@ -89,15 +89,8 @@ public class KontrakServiceImpl implements KontrakService {
 
     file.transferTo(new File(filePath));
 
-<<<<<<< HEAD
-    if (kontrak != null) {
-      return kontrak;
-    }
-    return null;
-=======
     return kontrak;
 
->>>>>>> 67c2ffcde083c6aad2623d701930ce63fb41fe86
   }
 
 }
