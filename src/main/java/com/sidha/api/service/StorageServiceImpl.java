@@ -19,7 +19,7 @@ import java.util.Optional;
 @Service
 public class StorageServiceImpl implements StorageService {
 
-  private final String FOLDER_PATH = "E:\\filedata\\";
+  private final String FOLDER_PATH = "/home/nur_fajar11/imagedata/";
 
   @Autowired
   private ImageDataRepository imageDataRepository;
