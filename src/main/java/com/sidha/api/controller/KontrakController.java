@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.sidha.api.DTO.response.BaseResponse;
 import com.sidha.api.service.KontrakService;
+import com.sidha.api.service.UserService;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -28,6 +29,27 @@ public class KontrakController {
 
   @Autowired
   private KontrakService service;
+
+  @Autowired
+  private UserService userService;
+
+  @GetMapping("/doc/{userId}")
+  public ResponseEntity<?> getDocumentByUserId(@PathVariable String userId) {
+    try {
+      UUID userUUID = UUID.fromString(userId);
+      var user = userService.findById(userUUID);
+      var userKontrak = user.getKontrak();
+
+      byte[] kontrak = service.getDocumentFromFileSystem(userKontrak.getName());
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_PDF);
+      headers.setContentDisposition(ContentDisposition.builder("inline").filename("kontrak.pdf").build());
+      headers.setContentLength(kontrak.length);
+      return new ResponseEntity<>(kontrak, headers, HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<>(new BaseResponse<>(false, 500, e.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
   @GetMapping("/{fileName}")
   public ResponseEntity<?> downloadImageFromFileSystem(@PathVariable String fileName) throws IOException {
