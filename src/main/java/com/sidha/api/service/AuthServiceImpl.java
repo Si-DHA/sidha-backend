@@ -19,7 +19,6 @@ import com.sidha.api.model.Karyawan;
 import com.sidha.api.model.Klien;
 import com.sidha.api.model.Sopir;
 import com.sidha.api.model.UserModel;
-import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.repository.UserDb;
 import com.sidha.api.security.jwt.JwtUtils;
 import com.sidha.api.utils.MailSenderUtils;

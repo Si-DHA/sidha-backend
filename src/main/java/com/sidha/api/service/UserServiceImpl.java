@@ -20,6 +20,9 @@ import com.sidha.api.DTO.request.EditUserDetailRequestDTO;
 import com.sidha.api.DTO.response.GetUserDetailResponseDTO;
 import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.repository.UserDb;
+
+import jakarta.validation.OverridesAttribute;
+
 import java.util.List;
 
 import static com.sidha.api.model.enumerator.Role.ADMIN;
@@ -50,6 +53,11 @@ public class UserServiceImpl implements UserService {
     @Value("${app.image.url}")
     private String IMAGE_URL;
 
+    @Override
+    public List<UserModel> findAllList() {
+        return userDb.findAll();
+    }
+    
     @Override
     public UserModel findById(UUID id) {
         return userDb.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
