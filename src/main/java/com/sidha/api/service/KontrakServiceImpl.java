@@ -16,7 +16,7 @@ import com.sidha.api.repository.KontrakRepository;
 
 @Service
 public class KontrakServiceImpl implements KontrakService {
-
+  
   private final String FOLDER_PATH = "/home/nur_fajar11/filedata/";
 
   @Autowired
