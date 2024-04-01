@@ -36,6 +36,16 @@ public class UserController {
   @Autowired
   private UserMapper userMapper;
 
+  @GetMapping("/all")
+  public ResponseEntity<?> getUserList() {
+    return ResponseEntity.ok(new BaseResponse<>(true, 200, "User list", userService.findAllList() ));
+  }
+
+  @GetMapping("/admin")
+  public ResponseEntity<?> getAdminList() {
+    return ResponseEntity.ok(new BaseResponse<>(true, 200, "Admin list", userService.getListRole(Role.ADMIN)));
+  }
+
   @GetMapping("/klien")
   public ResponseEntity<?> getKlienList() {
     return ResponseEntity.ok(new BaseResponse<>(true, 200, "User list", userService.getListRole(Role.KLIEN)));

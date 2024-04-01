@@ -19,4 +19,7 @@ public interface UserDb extends JpaRepository<UserModel, UUID> {
 
     List<UserModel> findAllByRole(Role role);
 
+    @SuppressWarnings("null")
+    List<UserModel> findAll();
+
 }
