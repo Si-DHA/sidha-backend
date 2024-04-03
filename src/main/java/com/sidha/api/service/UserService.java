@@ -19,7 +19,7 @@ public interface UserService {
 
     UserModel save(UserModel user);
 
-    GetUserDetailResponseDTO getUserDetail(UUID id);
+    UserModel getUserDetail(UUID id);
 
     UserModel editUserDetail(EditUserDetailRequestDTO requestDTO, UUID id);
 
@@ -30,4 +30,6 @@ public interface UserService {
     List<Sopir> getListSopirNoTruk();
     
     List<UserModel> findAllList();
+
+    void deleteUser(UUID id);
 }

@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
     public List<UserModel> findAllList() {
         return userDb.findAll();
     }
-    
+
     @Override
     public UserModel findById(UUID id) {
         return userDb.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
@@ -79,25 +79,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public GetUserDetailResponseDTO getUserDetail(UUID id) {
-        UserModel user = userDb.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        UserModel savedUser = userDb.save(user);
-        ImageData imageData = user.getImageData();
-        var userDTO = modelMapper.map(user, GetUserDetailResponseDTO.class);
-        if (imageData != null) {
-            userDTO.setImageUrl(IMAGE_URL + imageData.getName());
-        }
-        if (user.getRole().equals(Role.KLIEN)) {
-           var  user2 = (Klien) user;
-            userDTO.setCompanyName(user2.getCompanyName());
-            System.out.println(user2.getCompanyName());
-        }
-        if (user.getRole().equals(Role.KARYAWAN)) {
-            var user3 = (Karyawan) user;
-            userDTO.setPosition(user3.getPosition());
-            System.out.println(user3.getPosition());
-        }
-        return userDTO;
+    public UserModel  getUserDetail(UUID id) {
+        return userDb.getDetailUserById(id).orElseThrow(() -> new RuntimeException("User not found"));
 
     }
 
@@ -170,5 +153,17 @@ public class UserServiceImpl implements UserService {
             }
         }
         return listSopirNoTruk;
+    }
+
+    @Override
+    public void deleteUser(UUID id) {
+        try {
+            var user = userDb.findById(id).get();
+            user.setIsDeleted(true);
+            userDb.save(user);
+        } catch (Exception e) {
+            throw new RuntimeException("User not found");
+
+        }
     }
 }
