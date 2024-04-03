@@ -29,8 +29,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
-@SQLDelete(sql = "UPDATE user_table SET is_deleted = true WHERE id=?")
-@SQLRestriction(value = "is_deleted = false")
+// @SQLDelete(sql = "UPDATE user_table SET is_deleted = true WHERE id=?")
+// @SQLRestriction(value = "is_deleted = false")
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue(value = "user")
 @Table(name = "user_table")
