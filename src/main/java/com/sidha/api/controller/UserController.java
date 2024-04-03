@@ -3,6 +3,7 @@ package com.sidha.api.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.http.HttpStatus;
@@ -19,13 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sidha.api.DTO.UserMapper;
 import com.sidha.api.DTO.request.EditUserDetailRequestDTO;
 import com.sidha.api.DTO.response.BaseResponse;
-import com.sidha.api.DTO.response.GetUserDetailResponseDTO;
 import com.sidha.api.model.UserModel;
 import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.service.UserService;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 @RequestMapping("/api/user")
 @RestController
@@ -73,7 +70,7 @@ public class UserController {
   @GetMapping("/{id}")
   private ResponseEntity<?> getUserDetail(@PathVariable UUID id) {
     try {
-      var user = userService.findById(id);
+      var user = userService.getUserDetail(id);
       
       return ResponseEntity.ok(new BaseResponse<>(true, 200, "User detail",
           user));
@@ -85,7 +82,7 @@ public class UserController {
 
   @PostMapping("/edit/{id}")
   private ResponseEntity<?> editUserDetail(@RequestParam(required = false) String name,
-      @RequestParam String address, @RequestParam String phone,
+      @RequestParam(required = false) String address, @RequestParam(required = false) String phone,
       @RequestParam(required = false) String position, @RequestParam(required = false) boolean isSuperAdmin,
       @RequestPart(required = false) MultipartFile imageFile, @PathVariable UUID id) {
     try {
@@ -116,4 +113,17 @@ public class UserController {
           .body(new BaseResponse<>(false, 500, e.getMessage(), null));
     }
   }
+
+  @DeleteMapping("/{id}")
+  private ResponseEntity<?> deleteUser(@PathVariable UUID id) {
+    try {
+      userService.deleteUser(id);
+      return ResponseEntity.ok(new BaseResponse<>(true, 200, "User deleted", null));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(new BaseResponse<>(false, 500, e.getMessage(), null));
+    }
+  }
+
+
 }
