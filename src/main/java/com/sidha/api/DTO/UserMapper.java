@@ -5,7 +5,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sidha.api.DTO.request.SignUpUserRequestDTO;
 import com.sidha.api.DTO.response.GetUserDetailResponseDTO;
 import com.sidha.api.model.Admin;

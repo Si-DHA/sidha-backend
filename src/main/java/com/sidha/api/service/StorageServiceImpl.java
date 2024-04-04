@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.sidha.api.model.ImageData;
 import com.sidha.api.model.UserModel;
-import com.sidha.api.repository.ImageDataRepository;
+import com.sidha.api.repository.ImageDataDb;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ public class StorageServiceImpl implements StorageService {
   private final String FOLDER_PATH = "/home/nur_fajar11/imagedata/";
 
   @Autowired
-  private ImageDataRepository imageDataRepository;
+  private ImageDataDb imageDataRepository;
 
   @Override
   public String uploadImageToFileSystem(MultipartFile file, UserModel user) throws IOException {
