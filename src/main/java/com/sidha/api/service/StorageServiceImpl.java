@@ -18,7 +18,8 @@ import java.util.Optional;
 @Service
 public class StorageServiceImpl implements StorageService {
 
-  private final String FOLDER_PATH = "/home/nur_fajar11/imagedata/";
+//  private final String FOLDER_PATH = "/home/nur_fajar11/imagedata/";
+  private final String FOLDER_PATH = "/Users/devina.hana/Documents/College/term 6/propensi/imagedata/";
 
   @Autowired
   private ImageDataRepository imageDataRepository;
@@ -62,10 +63,7 @@ public class StorageServiceImpl implements StorageService {
 
     file.transferTo(new File(filePath));
 
-    if (imageData != null) {
-      return imageData;
-    }
-    return null;
+    return imageData;
   }
 
   public String replaceWhitespaceWithUnderscore(String fileName) {
