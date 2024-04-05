@@ -9,6 +9,8 @@ services:
     volumes:
       - ./file-storage:/file-storage
       - ./log:/log
+      - /home/nur_fajar11/filedata:/home/nur_fajar11/filedata
+      - /home/nur_fajar11/imagedata:/home/nur_fajar11/imagedata
     depends_on:
       - db
     networks:

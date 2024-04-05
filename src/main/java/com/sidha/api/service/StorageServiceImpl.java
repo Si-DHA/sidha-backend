@@ -15,15 +15,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Optional;
 
-
 @Service
 public class StorageServiceImpl implements StorageService {
 
-  private final String FOLDER_PATH = "E:\\filedata\\";
+  private final String FOLDER_PATH = "/home/nur_fajar11/imagedata/";
 
   @Autowired
   private ImageDataRepository imageDataRepository;
-
 
   @Override
   public String uploadImageToFileSystem(MultipartFile file, UserModel user) throws IOException {
@@ -56,7 +54,6 @@ public class StorageServiceImpl implements StorageService {
     String updatedFilename = user.getId() + "_" + replaceWhitespaceWithUnderscore(file.getOriginalFilename());
     String filePath = FOLDER_PATH + updatedFilename;
 
-
     ImageData imageData = imageDataRepository.save(ImageData.builder()
         .name(updatedFilename)
         .type(file.getContentType())
@@ -88,7 +85,7 @@ public class StorageServiceImpl implements StorageService {
       fileToDelete.delete();
       logger.info("image ada");
     }
-    if(imageData == null) {
+    if (imageData == null) {
       logger.info("imageNull");
       throw new RuntimeException("Image not found");
     }
