@@ -6,6 +6,7 @@ import com.sidha.api.model.Invoice;
 import com.sidha.api.model.image.ImageData;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +21,7 @@ import lombok.Setter;
 @DiscriminatorValue(value = "invoice")
 public class InvoiceImage extends ImageData {
 
-    @OneToOne
+    @ManyToOne
     @JsonBackReference
     private Invoice invoice;
     private String alasanPenolakan;
@@ -28,5 +29,5 @@ public class InvoiceImage extends ImageData {
     // 0: belum dikonfirmasi
     // 1: dikonfirmasi
     // 2: ditolak
-    private int status = 0;
+    private int status;
 }

@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.sidha.api.model.image.ImageData;
 import com.sidha.api.model.UserModel;
-import com.sidha.api.repository.ImageDataRepository;
+import com.sidha.api.repository.ImageDataDb;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ public class StorageServiceImpl implements StorageService {
   private final String FOLDER_PATH = "/Users/devina.hana/Documents/College/term 6/propensi/imagedata/";
 
   @Autowired
-  private ImageDataRepository imageDataRepository;
+  private ImageDataDb imageDataDb;
 
   @Autowired
   private ModelMapper modelMapper;
@@ -41,7 +41,7 @@ public class StorageServiceImpl implements StorageService {
 
     modelMapper.map(imageData, ProfileImage.class).setUser(user);
 
-    imageDataRepository.save(imageData);
+    imageDataDb.save(imageData);
 
 
 
@@ -55,7 +55,7 @@ public class StorageServiceImpl implements StorageService {
 
   @Override
   public byte[] getImageFromFileSystem(String fileName) throws IOException {
-    Optional<ImageData> imageData = imageDataRepository.findByName(fileName);
+    Optional<ImageData> imageData = imageDataDb.findByName(fileName);
     String filePath = imageData.get().getFilePath();
     byte[] images = Files.readAllBytes(new File(filePath).toPath());
     return images;
@@ -63,6 +63,7 @@ public class StorageServiceImpl implements StorageService {
 
   @Override
   public ImageData uploadImageAndSaveToDB(MultipartFile file, String filename) throws IOException {
+    filename = replaceWhitespaceWithUnderscore(filename);
     String filePath = FOLDER_PATH + filename;
 
     ImageData imageData = ImageData.builder()
@@ -77,12 +78,10 @@ public class StorageServiceImpl implements StorageService {
 
   @Override
   public ImageData uploadProfile(MultipartFile file, UserModel user) throws IOException {
-    String updatedFilename = user.getId() + "_" + replaceWhitespaceWithUnderscore(file.getOriginalFilename());
-
+    String updatedFilename = user.getId() + "_" + file.getOriginalFilename();
     return this.uploadImageAndSaveToDB(file, updatedFilename);
   }
 
-  @Override
   public String replaceWhitespaceWithUnderscore(String fileName) {
     return fileName.replaceAll("\\s", "_");
   }
@@ -92,7 +91,7 @@ public class StorageServiceImpl implements StorageService {
     Logger logger = LoggerFactory.getLogger(StorageServiceImpl.class);
     String updatedFilename = user.getId() + "_" + replaceWhitespaceWithUnderscore(file.getOriginalFilename());
 
-    ImageData imageData = imageDataRepository.findProfileByUserId(user.getId()).get();
+    ImageData imageData = imageDataDb.findProfileByUserId(user.getId()).get();
     logger.info("image data : " + imageData);
     if (imageData != null) {
       logger.info("image ada");
@@ -106,15 +105,20 @@ public class StorageServiceImpl implements StorageService {
   @Override
   public ImageData updateImageInDB(MultipartFile file, ImageData imageData, String filename) throws IOException {
     String filePath = FOLDER_PATH + filename;
-    File fileToDelete = new File(imageData.getFilePath());
-    fileToDelete.delete();
+    this.deleteImageFile(imageData);
 
     imageData.setName(filename);
     imageData.setFilePath(filePath);
     imageData.setType(file.getContentType());
     file.transferTo(new File(filePath));
 
-    return imageDataRepository.save(imageData);
+    return imageDataDb.save(imageData);
+  }
+
+  @Override
+  public void deleteImageFile(ImageData imageData) {
+    File fileToDelete = new File(imageData.getFilePath());
+    fileToDelete.delete();
   }
 
 }

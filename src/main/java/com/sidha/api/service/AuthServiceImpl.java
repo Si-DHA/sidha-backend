@@ -7,7 +7,7 @@ import com.sidha.api.model.user.Admin;
 import com.sidha.api.model.user.Karyawan;
 import com.sidha.api.model.user.Klien;
 import com.sidha.api.model.user.Sopir;
-import com.sidha.api.repository.ImageDataRepository;
+import com.sidha.api.repository.ImageDataDb;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -59,7 +59,7 @@ public class AuthServiceImpl implements AuthService {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private ImageDataRepository imageDataRepository;
+    private ImageDataDb imageDataDb;
 
     private static final long EXPIRE_TOKEN = 30;
 
@@ -82,7 +82,7 @@ public class AuthServiceImpl implements AuthService {
                 savedUser.setImageData(profileImg);
                 userDb.save(savedUser);
                 profileImg.setUser(savedUser);
-                imageDataRepository.save(profileImg);
+                imageDataDb.save(profileImg);
             }
             userResponse.setUser(savedUser);
             mailSenderUtils.sendMail(request.getEmail(), "Welcome to SIDHA",

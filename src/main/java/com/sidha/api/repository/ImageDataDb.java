@@ -12,7 +12,7 @@ import com.sidha.api.model.image.ImageData;
 import java.util.UUID;
 
 @Repository
-public interface ImageDataRepository extends JpaRepository<ImageData, Long> {
+public interface ImageDataDb extends JpaRepository<ImageData, Long> {
   Optional<ImageData> findByName(String name);
 
   @Query("SELECT i FROM ProfileImage i WHERE i.user.id = :userId")

@@ -11,12 +11,14 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UploadBuktiPembayaranDTO {
+public class KonfirmasiBuktiPembayaranDTO {
     @NotNull(message = "ID invoice tidak boleh kosong")
     private UUID idInvoice;
     @NotNull(message = "Jenis bukti pembayaran tidak boleh kosong")
-    private boolean isPelunasan;
+    private Boolean isPelunasan;
 
-    @NotNull(message = "Foto bukti pembayaran tidak boleh kosong")
-    private MultipartFile imageFile;
+    @NotNull(message = "Status konfirmasi tidak boleh kosong")
+    private Boolean isConfirmed;
+
+    private String alasanPenolakan;
 }

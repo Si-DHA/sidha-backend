@@ -16,8 +16,8 @@ public interface StorageService {
 
   public byte[] getImageFromFileSystem(String filename) throws IOException;
 
-  String replaceWhitespaceWithUnderscore(String fileName);
-
   public ImageData updateProfileImage(MultipartFile file, UserModel user) throws IOException;
   public ImageData updateImageInDB(MultipartFile file, ImageData imageData, String filename) throws IOException;
+
+  void deleteImageFile(ImageData imageData);
 }
