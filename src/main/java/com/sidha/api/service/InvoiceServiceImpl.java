@@ -58,11 +58,15 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public Invoice uploadBuktiPembayaran(UUID idInvoice, boolean isPelunasan, MultipartFile imageFile) throws IOException {
+
         Invoice invoice = this.findInvoiceById(idInvoice);
+        if (this.getImageBuktiPembayaran(idInvoice, isPelunasan) != null) {
+            this.deleteImageBuktiPembayaran(idInvoice, isPelunasan);
+        }
+
         ImageData imageData = storageService.uploadImageAndSaveToDB(
                 imageFile,
                 idInvoice + "_" + isPelunasan + "_" + imageFile.getOriginalFilename());
-
         InvoiceImage invoiceImage = modelMapper.map(imageData, InvoiceImage.class);
 
         if (!isPelunasan) {
@@ -89,27 +93,27 @@ public class InvoiceServiceImpl implements InvoiceService {
             imageData = invoice.getBuktiPelunasan();
         }
 
-        if (imageData == null) {
-            throw new NoSuchElementException("Bukti pembayaran tidak ditemukan");
-        }
         return imageData;
     }
 
     @Override
     public void deleteImageBuktiPembayaran(UUID idInvoice, boolean isPelunasan) {
         ImageData imageData = this.getImageBuktiPembayaran(idInvoice, isPelunasan);
+        if (imageData != null) {
+            Invoice invoice = this.findInvoiceById(idInvoice);
 
-        Invoice invoice = this.findInvoiceById(idInvoice);
+            if (!isPelunasan) {
+                invoice.setBuktiDp(null);
+            } else {
+                invoice.setBuktiPelunasan(null);
+            }
+            this.saveInvoice(invoice);
 
-        if (!isPelunasan) {
-            invoice.setBuktiDp(null);
+            storageService.deleteImageFile(imageData);
+            imageDataDb.delete(imageData);
         } else {
-            invoice.setBuktiPelunasan(null);
+            throw new NoSuchElementException("Belum ada bukti yang diunggah");
         }
-        this.saveInvoice(invoice);
-
-        storageService.deleteImageFile(imageData);
-        imageDataDb.delete(imageData);
     }
 
     @Override
