@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
         user.setPhone(null != requestDTO.getPhone() ? requestDTO.getPhone() : user.getPhone());
         if (null != requestDTO.getImageFile()) {
             try {
-                storageService.updateImagaData(requestDTO.getImageFile(), user);
+                storageService.updateProfileImage(requestDTO.getImageFile(), user);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to upload image");
             }

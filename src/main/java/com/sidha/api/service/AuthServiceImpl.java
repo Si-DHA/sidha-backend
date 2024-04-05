@@ -1,5 +1,7 @@
 package com.sidha.api.service;
 
+import com.sidha.api.model.*;
+import com.sidha.api.repository.ImageDataRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,12 +15,6 @@ import com.sidha.api.DTO.request.ForgotPassUserRequestDTO;
 import com.sidha.api.DTO.request.LoginUserRequestDTO;
 import com.sidha.api.DTO.request.SignUpUserRequestDTO;
 import com.sidha.api.DTO.response.UserResponse;
-import com.sidha.api.model.Admin;
-import com.sidha.api.model.ImageData;
-import com.sidha.api.model.Karyawan;
-import com.sidha.api.model.Klien;
-import com.sidha.api.model.Sopir;
-import com.sidha.api.model.UserModel;
 import com.sidha.api.repository.UserDb;
 import com.sidha.api.security.jwt.JwtUtils;
 import com.sidha.api.utils.MailSenderUtils;
@@ -56,6 +52,9 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private ImageDataRepository imageDataRepository;
+
     private static final long EXPIRE_TOKEN = 30;
 
     @Override
@@ -72,10 +71,12 @@ public class AuthServiceImpl implements AuthService {
         var savedUser = saveUser(request);
         try {
             if (imageFile != null) {
-                ImageData imgData = storageService.uploadImageAndSaveToDB(imageFile, savedUser);
-                savedUser.setImageData(imgData);
+                ImageData imgData = storageService.uploadProfile(imageFile, savedUser);
+                ProfileImage profileImg = modelMapper.map(imgData, ProfileImage.class);
+                savedUser.setImageData(profileImg);
                 userDb.save(savedUser);
-
+                profileImg.setUser(savedUser);
+                imageDataRepository.save(profileImg);
             }
             userResponse.setUser(savedUser);
             mailSenderUtils.sendMail(request.getEmail(), "Welcome to SIDHA",

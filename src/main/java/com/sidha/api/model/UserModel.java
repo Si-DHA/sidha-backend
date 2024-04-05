@@ -106,7 +106,7 @@ public class UserModel implements UserDetails {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JsonIgnore
-    private ImageData imageData;
+    private ProfileImage imageData;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore

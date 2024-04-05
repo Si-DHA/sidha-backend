@@ -1,6 +1,10 @@
 package com.sidha.api.repository;
 
+import java.util.List;
 import java.util.Optional;
+
+import com.sidha.api.model.ProfileImage;
+import com.sidha.api.model.enumerator.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -13,8 +17,7 @@ import java.util.UUID;
 public interface ImageDataRepository extends JpaRepository<ImageData, Long> {
   Optional<ImageData> findByName(String name);
 
-  Optional<ImageData> findByUser(UserModel user);
+  @Query("SELECT i FROM ProfileImage i WHERE i.user.id = :userId")
+  Optional<ProfileImage> findProfileByUserId(UUID userId);
 
-  @Query("SELECT i FROM ImageData i WHERE i.user.id = :userId")
-  Optional<ImageData> findByUserId(UUID userId);
 }
