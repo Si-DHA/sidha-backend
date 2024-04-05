@@ -5,9 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-
-import com.sidha.api.model.enumerator.TipeBarang;
-
 import java.util.Date;
 
 @Data

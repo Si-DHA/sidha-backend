@@ -17,7 +17,11 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.google.gson.annotations.JsonAdapter;
 import com.sidha.api.model.enumerator.StatusOrder;
 
 import java.time.LocalDateTime;
@@ -29,7 +33,7 @@ import jakarta.persistence.CascadeType;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "order")
+@Table(name = "orders")
 public class Order {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -44,14 +48,20 @@ public class Order {
   private LocalDateTime updatedAt = LocalDateTime.now();
 
   @Enumerated(EnumType.STRING)
-  private StatusOrder status;
+  private StatusOrder status = StatusOrder.DIBUAT;
 
-  @Column(name = "customer")
-  private String customer;
+  @Column(name = "is_diterima")
+  private boolean isDiterima = false;
+
+  @Column(name = "alasan_penolakan")
+  private String alasanPenolakan;
+
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
   private List<OrderItem> orderItems = new ArrayList<>();
 
   @ManyToOne
   @JoinColumn(name = "user_id")
+  @JsonBackReference
   private UserModel user;
 }

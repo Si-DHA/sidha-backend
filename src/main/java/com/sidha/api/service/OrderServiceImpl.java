@@ -22,6 +22,9 @@ public class OrderServiceImpl implements OrderService {
   @Autowired
   private UserDb userRepository;
 
+  @Autowired
+  private OrderItemService orderItemService;
+
   @Override
   public Order save(Order order) {
     return orderRepository.save(order);
@@ -37,9 +40,9 @@ public class OrderServiceImpl implements OrderService {
     } else{
       var order = new Order();
       order.setUser(user);
-      order.setStatus(StatusOrder.DIBUAT);
       var orderSaved = orderRepository.save(order);
       for (var orderItemDTO : listOrderItemDTO) {
+        orderItemService.saveOrderItem(orderItemDTO, orderSaved);
       }
 
       return orderSaved;
