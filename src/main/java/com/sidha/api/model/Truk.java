@@ -3,6 +3,7 @@ package com.sidha.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sidha.api.model.enumerator.TipeTruk;
+import com.sidha.api.model.user.Sopir;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

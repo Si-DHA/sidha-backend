@@ -1,4 +1,4 @@
-package com.sidha.api.model;
+package com.sidha.api.model.image;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

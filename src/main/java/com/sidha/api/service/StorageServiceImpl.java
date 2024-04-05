@@ -1,11 +1,11 @@
 package com.sidha.api.service;
 
-import com.sidha.api.model.ProfileImage;
+import com.sidha.api.model.image.ProfileImage;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sidha.api.model.ImageData;
+import com.sidha.api.model.image.ImageData;
 import com.sidha.api.model.UserModel;
 import com.sidha.api.repository.ImageDataRepository;
 
@@ -82,6 +82,7 @@ public class StorageServiceImpl implements StorageService {
     return this.uploadImageAndSaveToDB(file, updatedFilename);
   }
 
+  @Override
   public String replaceWhitespaceWithUnderscore(String fileName) {
     return fileName.replaceAll("\\s", "_");
   }

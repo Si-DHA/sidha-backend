@@ -2,6 +2,8 @@ package com.sidha.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.sidha.api.model.image.InvoiceImage;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,6 +12,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
@@ -26,27 +29,19 @@ public class Invoice {
 
     // TODO: one-to-one Order
 
-//    @JsonIgnore
-//    private ImageData buktiDP;
+    @JsonManagedReference
+    @OneToOne(cascade = CascadeType.ALL)
+    private InvoiceImage buktiDp;
 
-    // 0: belum dikonfirmasi
-    // 1: dikonfirmasi
-    // 2: ditolak
-    @Column(name = "status_dp", nullable = false)
-    private int statusDP = 0;
+    @Column(name = "total_dp")
+    private BigDecimal totalDp;
 
-    // alasan penolakan
-    @Column(name = "alasan_dp")
-    private String alasanDP;
+    @JsonManagedReference
+    @OneToOne(cascade = CascadeType.ALL)
+    private InvoiceImage buktiPelunasan;
 
-//    @JsonIgnore
-//    private ImageData buktiPelunasan;
-
-    @Column(name = "status_pelunasan", nullable = false)
-    private int statusPelunasan = 0;
-
-    @Column(name = "alasan_pelunasan")
-    private String alasanPelunasan;
+    @Column(name = "total_pelunasan")
+    private BigDecimal totalPelunasan;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

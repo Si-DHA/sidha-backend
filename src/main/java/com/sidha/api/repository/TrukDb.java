@@ -1,6 +1,6 @@
 package com.sidha.api.repository;
 
-import com.sidha.api.model.Sopir;
+import com.sidha.api.model.user.Sopir;
 import com.sidha.api.model.Truk;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

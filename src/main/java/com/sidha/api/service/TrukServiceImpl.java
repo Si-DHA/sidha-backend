@@ -3,7 +3,7 @@ package com.sidha.api.service;
 import com.sidha.api.DTO.TrukMapper;
 import com.sidha.api.DTO.request.CreateTrukRequestDTO;
 import com.sidha.api.DTO.request.UpdateTrukRequestDTO;
-import com.sidha.api.model.Sopir;
+import com.sidha.api.model.user.Sopir;
 import com.sidha.api.model.Truk;
 import com.sidha.api.model.UserModel;
 import com.sidha.api.repository.TrukDb;

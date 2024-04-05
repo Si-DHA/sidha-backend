@@ -1,16 +1,14 @@
 package com.sidha.api.repository;
 
-import java.util.List;
 import java.util.Optional;
 
-import com.sidha.api.model.ProfileImage;
-import com.sidha.api.model.enumerator.Role;
+import com.sidha.api.model.image.ProfileImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.sidha.api.model.ImageData;
-import com.sidha.api.model.UserModel;
+import com.sidha.api.model.image.ImageData;
+
 import java.util.UUID;
 
 @Repository

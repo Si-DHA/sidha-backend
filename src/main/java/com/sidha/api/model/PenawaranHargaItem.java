@@ -3,6 +3,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import com.sidha.api.model.user.Klien;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
