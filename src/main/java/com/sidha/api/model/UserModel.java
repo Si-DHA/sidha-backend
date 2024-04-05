@@ -4,13 +4,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+import com.sidha.api.model.image.ProfileImage;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sidha.api.model.enumerator.Role;
@@ -104,9 +102,9 @@ public class UserModel implements UserDetails {
         return true;
     }
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @JsonIgnore
-    private ImageData imageData;
+    private ProfileImage imageData;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore

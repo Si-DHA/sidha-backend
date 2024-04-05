@@ -6,9 +6,9 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
+import com.sidha.api.model.user.Klien;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
