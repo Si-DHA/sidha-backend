@@ -35,7 +35,7 @@ public class TrukController {
             String errorMessages = "";
             List<FieldError> errors = bindingResult.getFieldErrors();
             for (FieldError error : errors) {
-                errorMessages += error.getField() + " - " + error.getDefaultMessage() + "\n";
+                errorMessages += error.getDefaultMessage() + "; ";
             }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, errorMessages, null));
         }
@@ -56,7 +56,7 @@ public class TrukController {
             String errorMessages = "";
             List<FieldError> errors = bindingResult.getFieldErrors();
             for (FieldError error : errors) {
-                errorMessages += error.getField() + " - " + error.getDefaultMessage() + "\n";
+                errorMessages += error.getDefaultMessage() + "; ";
             }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, errorMessages, null));
         }
