@@ -2,10 +2,11 @@ package com.sidha.api.service;
 
 import java.util.UUID;
 
-import org.glassfish.jaxb.core.annotation.OverrideAnnotationOf;
+import com.sidha.api.model.user.Admin;
+import com.sidha.api.model.user.Karyawan;
+import com.sidha.api.model.user.Sopir;
+
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.UUID;
 
 import com.sidha.api.model.*;
 import com.sidha.api.repository.TrukDb;
@@ -15,19 +16,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.sidha.api.DTO.UserMapper;
 import com.sidha.api.DTO.request.EditUserDetailRequestDTO;
-import com.sidha.api.DTO.response.GetUserDetailResponseDTO;
 import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.repository.UserDb;
 
-import jakarta.validation.OverridesAttribute;
-
 import java.util.List;
 
-import static com.sidha.api.model.enumerator.Role.ADMIN;
-import static com.sidha.api.model.enumerator.Role.KARYAWAN;
-import static com.sidha.api.model.enumerator.Role.KLIEN;
 import static com.sidha.api.model.enumerator.Role.SOPIR;
 
 @Service
@@ -38,9 +32,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private UserMapper userMapper;
 
     @Autowired
     private StorageService storageService;
@@ -92,7 +83,7 @@ public class UserServiceImpl implements UserService {
         user.setPhone(null != requestDTO.getPhone() ? requestDTO.getPhone() : user.getPhone());
         if (null != requestDTO.getImageFile()) {
             try {
-                storageService.updateImagaData(requestDTO.getImageFile(), user);
+                storageService.updateProfileImage(requestDTO.getImageFile(), user);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to upload image");
             }

@@ -3,7 +3,7 @@ package com.sidha.api.service;
 import com.sidha.api.DTO.PenawaranHargaItemMapper;
 import com.sidha.api.DTO.request.CreatePenawaranHargaItemRequestDTO;
 import com.sidha.api.DTO.request.UpdatePenawaranHargaItemRequestDTO;
-import com.sidha.api.model.Klien;
+import com.sidha.api.model.user.Klien;
 import com.sidha.api.model.PenawaranHarga;
 import com.sidha.api.model.UserModel;
 import com.sidha.api.repository.PenawaranHargaDb;

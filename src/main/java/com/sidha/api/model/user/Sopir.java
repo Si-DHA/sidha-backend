@@ -1,6 +1,8 @@
-package com.sidha.api.model;
+package com.sidha.api.model.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.sidha.api.model.Truk;
+import com.sidha.api.model.UserModel;
 import jakarta.persistence.*;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;

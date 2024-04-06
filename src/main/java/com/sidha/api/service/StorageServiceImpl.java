@@ -1,11 +1,13 @@
 package com.sidha.api.service;
 
+import com.sidha.api.model.image.ProfileImage;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sidha.api.model.ImageData;
+import com.sidha.api.model.image.ImageData;
 import com.sidha.api.model.UserModel;
-import com.sidha.api.repository.ImageDataRepository;
+import com.sidha.api.repository.ImageDataDb;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,18 +22,28 @@ public class StorageServiceImpl implements StorageService {
 
   private final String FOLDER_PATH = "/home/nur_fajar11/imagedata/";
 
+
   @Autowired
-  private ImageDataRepository imageDataRepository;
+  private ImageDataDb imageDataDb;
+
+  @Autowired
+  private ModelMapper modelMapper;
 
   @Override
   public String uploadImageToFileSystem(MultipartFile file, UserModel user) throws IOException {
     String filePath = FOLDER_PATH + file.getOriginalFilename();
 
-    ImageData imageData = imageDataRepository.save(ImageData.builder()
+    ImageData imageData = ImageData.builder()
         .name(file.getOriginalFilename())
         .type(file.getContentType())
-        .user(user)
-        .filePath(filePath).build());
+//        .user(user)
+        .filePath(filePath).build();
+
+    modelMapper.map(imageData, ProfileImage.class).setUser(user);
+
+    imageDataDb.save(imageData);
+
+
 
     file.transferTo(new File(filePath));
 
@@ -43,29 +55,31 @@ public class StorageServiceImpl implements StorageService {
 
   @Override
   public byte[] getImageFromFileSystem(String fileName) throws IOException {
-    Optional<ImageData> imageData = imageDataRepository.findByName(fileName);
+    Optional<ImageData> imageData = imageDataDb.findByName(fileName);
     String filePath = imageData.get().getFilePath();
     byte[] images = Files.readAllBytes(new File(filePath).toPath());
     return images;
   }
 
   @Override
-  public ImageData uploadImageAndSaveToDB(MultipartFile file, UserModel user) throws IOException {
-    String updatedFilename = user.getId() + "_" + replaceWhitespaceWithUnderscore(file.getOriginalFilename());
-    String filePath = FOLDER_PATH + updatedFilename;
+  public ImageData uploadImageAndSaveToDB(MultipartFile file, String filename) throws IOException {
+    filename = replaceWhitespaceWithUnderscore(filename);
+    String filePath = FOLDER_PATH + filename;
 
-    ImageData imageData = imageDataRepository.save(ImageData.builder()
-        .name(updatedFilename)
-        .type(file.getContentType())
-        .user(user)
-        .filePath(filePath).build());
+    ImageData imageData = ImageData.builder()
+            .name(filename)
+            .type(file.getContentType())
+            .filePath(filePath).build();
 
     file.transferTo(new File(filePath));
 
-    if (imageData != null) {
-      return imageData;
-    }
-    return null;
+    return imageData;
+  }
+
+  @Override
+  public ImageData uploadProfile(MultipartFile file, UserModel user) throws IOException {
+    String updatedFilename = user.getId() + "_" + file.getOriginalFilename();
+    return this.uploadImageAndSaveToDB(file, updatedFilename);
   }
 
   public String replaceWhitespaceWithUnderscore(String fileName) {
@@ -73,30 +87,38 @@ public class StorageServiceImpl implements StorageService {
   }
 
   @Override
-  public ImageData updateImagaData(MultipartFile file, UserModel user) throws IOException {
+  public ImageData updateProfileImage(MultipartFile file, UserModel user) throws IOException {
     Logger logger = LoggerFactory.getLogger(StorageServiceImpl.class);
     String updatedFilename = user.getId() + "_" + replaceWhitespaceWithUnderscore(file.getOriginalFilename());
-    String filePath = FOLDER_PATH + updatedFilename;
 
-    ImageData imageData = imageDataRepository.findByUserId(user.getId()).get();
+    ImageData imageData = imageDataDb.findProfileByUserId(user.getId()).get();
     logger.info("image data : " + imageData);
     if (imageData != null) {
-      File fileToDelete = new File(imageData.getFilePath());
-      fileToDelete.delete();
       logger.info("image ada");
-    }
-    if (imageData == null) {
-      logger.info("imageNull");
+      return this.updateImageInDB(file, imageData, updatedFilename);
+    } else {
       throw new RuntimeException("Image not found");
     }
 
-    imageData.setName(updatedFilename);
+  }
+
+  @Override
+  public ImageData updateImageInDB(MultipartFile file, ImageData imageData, String filename) throws IOException {
+    String filePath = FOLDER_PATH + filename;
+    this.deleteImageFile(imageData);
+
+    imageData.setName(filename);
     imageData.setFilePath(filePath);
     imageData.setType(file.getContentType());
     file.transferTo(new File(filePath));
 
-    return imageDataRepository.save(imageData);
+    return imageDataDb.save(imageData);
+  }
 
+  @Override
+  public void deleteImageFile(ImageData imageData) {
+    File fileToDelete = new File(imageData.getFilePath());
+    fileToDelete.delete();
   }
 
 }

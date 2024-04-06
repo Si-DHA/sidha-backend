@@ -1,15 +1,18 @@
 package com.sidha.api.repository;
 
-import com.sidha.api.model.user.Sopir;
-import com.sidha.api.model.Truk;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.sidha.api.model.Order;
+import com.sidha.api.model.enumerator.StatusOrder;
 
 import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface TrukDb extends JpaRepository<Truk, UUID> {
+public interface  OrderDb extends JpaRepository<Order, UUID>{
 
-    List<Truk> findBySopir(Sopir sopir);
+  List<Order> findByStatus(StatusOrder status);
+  
+  
 }

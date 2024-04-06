@@ -1,8 +1,10 @@
-package com.sidha.api.model;
+package com.sidha.api.model.image;
 
-import jakarta.persistence.Column;
+
+import com.sidha.api.model.UserModel;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,8 +15,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@DiscriminatorValue(value = "admin")
-public class Admin extends UserModel {
-  @Column(name = "is_super_admin")
-  private boolean isSuperAdmin = false;
+@DiscriminatorValue(value = "profile")
+public class ProfileImage extends ImageData {
+    @OneToOne
+    private UserModel user;
 }

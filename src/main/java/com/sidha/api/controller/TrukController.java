@@ -35,7 +35,7 @@ public class TrukController {
             String errorMessages = "";
             List<FieldError> errors = bindingResult.getFieldErrors();
             for (FieldError error : errors) {
-                errorMessages += error.getField() + " - " + error.getDefaultMessage() + "\n";
+                errorMessages += error.getDefaultMessage() + "; ";
             }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, errorMessages, null));
         }
@@ -56,7 +56,7 @@ public class TrukController {
             String errorMessages = "";
             List<FieldError> errors = bindingResult.getFieldErrors();
             for (FieldError error : errors) {
-                errorMessages += error.getField() + " - " + error.getDefaultMessage() + "\n";
+                errorMessages += error.getDefaultMessage() + "; ";
             }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, errorMessages, null));
         }
@@ -75,7 +75,7 @@ public class TrukController {
         try {
             trukService.deleteTrukById(idTruk);
             String message = "Truk with ID " + idTruk + " is successfully deleted!";
-            return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Truck is succesfully deleted", null));
+            return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, message, null));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse<>(false, 404, e.getMessage(), null));
         }

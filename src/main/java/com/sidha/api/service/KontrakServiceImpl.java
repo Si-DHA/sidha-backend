@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.sidha.api.model.Kontrak;
 import com.sidha.api.model.UserModel;
-import com.sidha.api.repository.KontrakRepository;
+import com.sidha.api.repository.KontrakDb;
 
 @Service
 public class KontrakServiceImpl implements KontrakService {
@@ -20,7 +20,7 @@ public class KontrakServiceImpl implements KontrakService {
   private final String FOLDER_PATH = "/home/nur_fajar11/filedata/";
 
   @Autowired
-  private KontrakRepository kontrakRepository;
+  private KontrakDb kontrakDb;
 
   @Autowired
   private UserService userService;
@@ -29,7 +29,7 @@ public class KontrakServiceImpl implements KontrakService {
   public String uploadDocumentToFilesystem(MultipartFile file, UserModel user) throws IOException {
     String filePath = FOLDER_PATH + file.getOriginalFilename();
 
-    Kontrak imageData = kontrakRepository.save(Kontrak.builder()
+    Kontrak imageData = kontrakDb.save(Kontrak.builder()
         .name(file.getOriginalFilename())
         .type(file.getContentType())
         .user(user)
@@ -45,7 +45,7 @@ public class KontrakServiceImpl implements KontrakService {
 
   @Override
   public byte[] getDocumentFromFileSystem(String fileName) throws IOException {
-    Optional<Kontrak> kontrak = kontrakRepository.findByName(fileName);
+    Optional<Kontrak> kontrak = kontrakDb.findByName(fileName);
     String filePath = kontrak.get().getFilePath();
     byte[] kontrakDoc = Files.readAllBytes(new File(filePath).toPath());
     return kontrakDoc;
@@ -62,7 +62,7 @@ public class KontrakServiceImpl implements KontrakService {
     kontrak.setType(file.getContentType());
     kontrak.setFilePath(filePath);
     kontrak.setUser(user);
-    kontrakRepository.save(kontrak);
+    kontrakDb.save(kontrak);
 
     user.setKontrak(kontrak);
     userService.save(user);
@@ -83,7 +83,7 @@ public class KontrakServiceImpl implements KontrakService {
     String updatedFilename = user.getId() + "_" + replaceWhitespaceWithUnderscore(file.getOriginalFilename());
     String filePath = FOLDER_PATH + updatedFilename;
 
-    Kontrak kontrak = kontrakRepository.findByUser(user).orElse(null);
+    Kontrak kontrak = kontrakDb.findByUser(user).orElse(null);
     kontrak.setName(updatedFilename);
     kontrak.setFilePath(filePath);
 
