@@ -15,6 +15,5 @@ import java.util.UUID;
 public class UpdateTrukRequestDTO extends CreateTrukRequestDTO {
 
     @NotNull(message = "ID truk tidak boleh kosong")
-
     private UUID idTruk;
 }
