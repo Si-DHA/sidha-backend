@@ -1,18 +1,16 @@
 package com.sidha.api.controller;
 
-import com.sidha.api.DTO.request.CreateInsidenDTO;
-import com.sidha.api.DTO.request.UpdateInsidenDTO;
 import com.sidha.api.model.Insiden;
+import com.sidha.api.model.Insiden.InsidenStatus;
 import com.sidha.api.service.InsidenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import jakarta.validation.Valid;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -23,58 +21,73 @@ public class InsidenController {
     private InsidenService insidenService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createInsiden(@Valid @ModelAttribute CreateInsidenDTO createInsidenDTO,
-                                           BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
-        }
-
+    public ResponseEntity<?> createInsiden(
+            @RequestParam("sopirId") UUID sopirId,
+            @RequestParam("kategori") String kategori,
+            @RequestParam("lokasi") String lokasi,
+            @RequestParam("keterangan") String keterangan,
+            @RequestPart(value = "buktiFoto", required = false) MultipartFile buktiFoto) {
         try {
-            Insiden newInsiden = new Insiden();
-            newInsiden.setKategori(createInsidenDTO.getKategori());
-            newInsiden.setLokasi(createInsidenDTO.getLokasi());
-            newInsiden.setKeterangan(createInsidenDTO.getKeterangan());
-
-            Insiden createdInsiden = insidenService.createInsiden(
-                    newInsiden, 
-                    createInsidenDTO.getSopirId(), 
-                    createInsidenDTO.getBuktiFoto());
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdInsiden);
+            Insiden insiden = new Insiden();
+            insiden.setKategori(kategori);
+            insiden.setLokasi(lokasi);
+            insiden.setKeterangan(keterangan);
+            Insiden createdInsiden = insidenService.createInsiden(insiden, sopirId, buktiFoto);
+            return new ResponseEntity<>(createdInsiden, HttpStatus.CREATED);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Failed to upload image: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @PutMapping("update/{id}")
-    public ResponseEntity<?> updateInsiden(@PathVariable UUID id,
-                                           @Valid @ModelAttribute UpdateInsidenDTO insidenUpdateDTO,
-                                           BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
-        }
-
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateInsiden(
+            @PathVariable UUID id,
+            @RequestParam("kategori") String kategori,
+            @RequestParam("lokasi") String lokasi,
+            @RequestParam("keterangan") String keterangan,
+            @RequestPart(value = "buktiFoto", required = false) MultipartFile buktiFoto) {
         try {
-            Insiden updatedInsiden = insidenService.updateInsiden(
-                    id, 
-                    insidenUpdateDTO, 
-                    insidenUpdateDTO.getBuktiFoto());
-
+            Insiden insidenDetails = new Insiden();
+            insidenDetails.setKategori(kategori);
+            insidenDetails.setLokasi(lokasi);
+            insidenDetails.setKeterangan(keterangan);
+            Insiden updatedInsiden = insidenService.updateInsiden(id, insidenDetails, buktiFoto);
             return ResponseEntity.ok(updatedInsiden);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update insiden: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Failed to update image: " + e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteInsiden(@PathVariable UUID id) {
-        insidenService.deleteInsiden(id);
-        return ResponseEntity.ok("Insiden is deleted successfully!");
+        try {
+            insidenService.deleteInsiden(id);
+            return ResponseEntity
+            .ok("Insiden is deleted!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getInsidenById(@PathVariable UUID id) {
-        Insiden insiden = insidenService.getInsidenById(id);
-        return ResponseEntity.ok(insiden);
+    @PutMapping("/status/{id}")
+    public ResponseEntity<?> updateInsidenStatus(
+            @PathVariable UUID id,
+            @RequestParam("status") InsidenStatus status) {
+        try {
+            Insiden updatedInsiden = insidenService.updateInsidenStatus(id, status);
+            return ResponseEntity.ok(updatedInsiden);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Insiden>> getAllInsidens() {
+        List<Insiden> insidens = insidenService.getAllInsidens();
+        return ResponseEntity.ok(insidens);
     }
 }
