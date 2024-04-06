@@ -21,7 +21,8 @@ import java.util.Optional;
 public class StorageServiceImpl implements StorageService {
 
 //  private final String FOLDER_PATH = "/home/nur_fajar11/imagedata/";
-  private final String FOLDER_PATH = "/Users/devina.hana/Documents/College/term 6/propensi/imagedata/";
+  // private final String FOLDER_PATH = "/Users/devina.hana/Documents/College/term 6/propensi/imagedata/";
+  private final String FOLDER_PATH = "C:\\Users\\USER\\PROPENSI\\imagedata\\";
 
   @Autowired
   private ImageDataDb imageDataDb;
