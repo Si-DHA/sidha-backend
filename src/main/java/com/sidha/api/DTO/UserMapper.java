@@ -7,10 +7,10 @@ import org.mapstruct.MappingTarget;
 
 import com.sidha.api.DTO.request.SignUpUserRequestDTO;
 import com.sidha.api.DTO.response.GetUserDetailResponseDTO;
-import com.sidha.api.model.Admin;
-import com.sidha.api.model.Karyawan;
-import com.sidha.api.model.Klien;
-import com.sidha.api.model.Sopir;
+import com.sidha.api.model.user.Admin;
+import com.sidha.api.model.user.Karyawan;
+import com.sidha.api.model.user.Klien;
+import com.sidha.api.model.user.Sopir;
 import com.sidha.api.model.UserModel;
 
 @Mapper(componentModel = "spring")

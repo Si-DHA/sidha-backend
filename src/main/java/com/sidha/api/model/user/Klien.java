@@ -1,10 +1,13 @@
-package com.sidha.api.model;
+package com.sidha.api.model.user;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import com.sidha.api.model.PenawaranHarga;
+import com.sidha.api.model.PenawaranHargaItem;
+import com.sidha.api.model.UserModel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
