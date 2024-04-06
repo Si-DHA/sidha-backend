@@ -5,14 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateOrderItemRequestDTO {
 
-  private Date tanggalPengiriman;
+  private String status;
 
   private boolean isPecahBelah;
 
@@ -20,13 +19,13 @@ public class CreateOrderItemRequestDTO {
 
   private String tipeTruk;
 
-  private String kotaAsal;
+  private String source;
 
-  private String alamatAsal;
+  private String alamatPenjemputan;
 
-  private String kotaTujuan;
+  private String destination;
 
-  private String alamatTujuan;
+  private String alamatPengiriman;
 
   private List<String> multidrop;
 

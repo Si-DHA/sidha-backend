@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.sidha.api.DTO.request.CreateOrderRequestDTO;
 import com.sidha.api.model.Order;
-import com.sidha.api.model.enumerator.StatusOrder;
+import com.sidha.api.model.user.Klien;
 import com.sidha.api.repository.OrderDb;
 import com.sidha.api.repository.UserDb;
 
@@ -39,11 +39,20 @@ public class OrderServiceImpl implements OrderService {
       return null;
     } else{
       var order = new Order();
-      order.setUser(user);
+      order.setKlien((Klien) user);
+      order.setTanggalPengiriman(request.getTanggalPengiriman());
       var orderSaved = orderRepository.save(order);
+      
       for (var orderItemDTO : listOrderItemDTO) {
-        orderItemService.saveOrderItem(orderItemDTO, orderSaved);
+        orderItemService.saveOrderItem(orderItemDTO, orderSaved, (Klien) user);
       }
+
+      var totalPrice = 0;
+      for (var orderItem : orderSaved.getOrderItems()) {
+        totalPrice += orderItem.getPrice();
+      }
+      orderSaved.setTotalPrice(totalPrice);
+      orderRepository.save(orderSaved);
 
       return orderSaved;
     }
@@ -63,7 +72,6 @@ public class OrderServiceImpl implements OrderService {
     if (order == null) {
       return null;
     }
-    order.setStatus(StatusOrder.valueOf(status));
     return orderRepository.save(order);
   }
 
@@ -82,11 +90,6 @@ public class OrderServiceImpl implements OrderService {
   @Override
   public List<Order> getAllOrder() {
     return orderRepository.findAll();
-  }
-
-  @Override
-  public List<Order> getOrderByStatus(StatusOrder status) {
-    return orderRepository.findByStatus(status);
   }
 
 }

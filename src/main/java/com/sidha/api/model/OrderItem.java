@@ -7,25 +7,32 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.sidha.api.model.enumerator.StatusOrder;
 import com.sidha.api.model.enumerator.TipeBarang;
 import com.sidha.api.model.enumerator.TipeTruk;
+import com.sidha.api.model.user.Sopir;
 
 import java.util.List;
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "order_item")
-public class OrderItem {
+public class OrderItem { // 1 order item = 1 truk
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private UUID id = UUID.randomUUID();
 
-  @Column(name = "tanggal_pengiriman")
-  private Date tanggalPengiriman;
+  @Column(name = "price")
+  private double price;
+
+  @Enumerated(EnumType.STRING)
+  private StatusOrder status = StatusOrder.DIBUAT;
+
+  @Column(name = "alasan_penolakan")
+  private String alasanPenolakan;
 
   @Column(name = "is_pecah_belah")
   private boolean isPecahBelah;
@@ -36,17 +43,17 @@ public class OrderItem {
   @Column(name = "tipe_truk")
   private TipeTruk tipeTruk;
 
-  @Column(name = "kota_asal")
-  private String kotaAsal;
+  @Column(name = "source")
+  private String source;
 
-  @Column(name = "alamat_asal")
-  private String alamatAsal;
+  @Column(name = "alamat_penjemputan")
+  private String alamatPenjemputan;
 
-  @Column(name = "kota_tujuan")
-  private String kotaTujuan;
+  @Column(name = "destination")
+  private String destination;
 
-  @Column(name = "alamat_tujuan")
-  private String alamatTujuan;
+  @Column(name = "alamat_pengiriman")
+  private String alamatPengiriman;
 
   @ElementCollection
   @Column(name = "multidrop")
@@ -57,6 +64,11 @@ public class OrderItem {
 
   @ManyToOne
   @JoinColumn(name = "order_id")
-@JsonBackReference
+  @JsonBackReference
   private Order order;
+
+  @ManyToOne
+  @JoinColumn(name = "sopir_id")
+  @JsonBackReference
+  private Sopir sopir;
 }
