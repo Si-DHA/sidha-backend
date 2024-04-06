@@ -19,9 +19,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.google.gson.annotations.JsonAdapter;
 import com.sidha.api.model.enumerator.StatusOrder;
 
 import java.time.LocalDateTime;

@@ -1,6 +1,5 @@
 package com.sidha.api.controller;
 
-import com.sidha.api.DTO.request.CreateTrukRequestDTO;
 import com.sidha.api.DTO.request.KonfirmasiBuktiPembayaranDTO;
 import com.sidha.api.DTO.response.BaseResponse;
 import com.sidha.api.model.Invoice;

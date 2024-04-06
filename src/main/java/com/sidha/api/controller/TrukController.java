@@ -75,7 +75,7 @@ public class TrukController {
         try {
             trukService.deleteTrukById(idTruk);
             String message = "Truk with ID " + idTruk + " is successfully deleted!";
-            return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Truck is succesfully deleted", null));
+            return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, message, null));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse<>(false, 404, e.getMessage(), null));
         }
