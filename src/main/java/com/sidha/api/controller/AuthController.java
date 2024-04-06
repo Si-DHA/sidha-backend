@@ -36,7 +36,7 @@ public class AuthController {
 
   @PostMapping(value = "/register")
   public ResponseEntity<?> register(
-      @RequestParam String name,  @RequestParam String email,
+      @RequestParam String name, @RequestParam String email,
       @RequestParam String role,
       @RequestParam String address, @RequestParam String phone,
       @RequestParam(required = false) String position, @RequestParam(required = false) String companyName,
@@ -54,13 +54,16 @@ public class AuthController {
 
       request.setUsername(request.getEmail().split("@")[0]);
       if (userService.findByUsername(request.getUsername()) != null) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(false, 400, "Username already exists", null));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new BaseResponse<>(false, 400, "Username already exists", null));
       }
 
       UserResponse response = authService.register(request);
-      return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(true, 201, "User registered successfully", response));
+      return ResponseEntity.status(HttpStatus.CREATED)
+          .body(new BaseResponse<>(true, 201, "User registered successfully", response));
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, e.getMessage(), null));
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(new BaseResponse<>(false, 500, e.getMessage(), null));
     }
   }
 
@@ -69,22 +72,26 @@ public class AuthController {
     try {
       // Jika field kosong, maka akan mengembalikan response error
       if (request.getEmail().isEmpty() || request.getPassword().isEmpty()) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(false, 400, "Email and password cannot be empty", null));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new BaseResponse<>(false, 400, "Email and password cannot be empty", null));
       }
 
       UserModel user = userService.findByEmail(request.getEmail());
       if (user == null) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(false, 400, "User not found", null));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new BaseResponse<>(false, 400, "User not found", null));
       }
 
       if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(false, 400, "Invalid password", null));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new BaseResponse<>(false, 400, "Invalid password", null));
       }
 
       UserResponse response = authService.login(request);
       return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Login successfully", response));
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, e.getMessage(), null));
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(new BaseResponse<>(false, 500, e.getMessage(), null));
     }
   }
 
@@ -93,17 +100,21 @@ public class AuthController {
     try {
       // Jika field kosong, maka akan mengembalikan response error
       if (request.getEmail().isEmpty()) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(false, 400, "Email cannot be empty", null));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new BaseResponse<>(false, 400, "Email cannot be empty", null));
       }
 
       if (userService.findByEmail(request.getEmail()) == null) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(false, 400, "User not found", null));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new BaseResponse<>(false, 400, "User not found", null));
       }
 
       authService.forgotPassword(request);
-      return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Reset password link sent to your email", null));
+      return ResponseEntity.status(HttpStatus.OK)
+          .body(new BaseResponse<>(true, 200, "Reset password link sent to your email", null));
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, e.getMessage(), null));
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(new BaseResponse<>(false, 500, e.getMessage(), null));
     }
   }
 
@@ -112,13 +123,16 @@ public class AuthController {
     try {
       // Jika field kosong, maka akan mengembalikan response error
       if (token.isEmpty() || password.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(false, 400, "Token and password cannot be empty", null));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new BaseResponse<>(false, 400, "Token and password cannot be empty", null));
       }
 
       authService.resetPassword(token, passwordEncoder.encode(password));
-      return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Password reset successfully", null));
+      return ResponseEntity.status(HttpStatus.OK)
+          .body(new BaseResponse<>(true, 200, "Password reset successfully", null));
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, e.getMessage(), null));
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(new BaseResponse<>(false, 500, e.getMessage(), null));
     }
   }
 
