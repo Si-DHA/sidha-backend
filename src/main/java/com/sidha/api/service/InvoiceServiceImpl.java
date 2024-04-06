@@ -60,21 +60,26 @@ public class InvoiceServiceImpl implements InvoiceService {
     public Invoice uploadBuktiPembayaran(UUID idInvoice, boolean isPelunasan, MultipartFile imageFile) throws IOException {
 
         Invoice invoice = this.findInvoiceById(idInvoice);
-        if (this.getImageBuktiPembayaran(idInvoice, isPelunasan) != null) {
-            this.deleteImageBuktiPembayaran(idInvoice, isPelunasan);
-        }
 
         ImageData imageData = storageService.uploadImageAndSaveToDB(
                 imageFile,
                 idInvoice + "_" + isPelunasan + "_" + imageFile.getOriginalFilename());
         InvoiceImage invoiceImage = modelMapper.map(imageData, InvoiceImage.class);
 
+        ImageData currentImage;
         if (!isPelunasan) {
+            currentImage = invoice.getBuktiDp();
             invoice.setBuktiDp(invoiceImage);
         } else {
+            currentImage = invoice.getBuktiPelunasan();
             invoice.setBuktiPelunasan(invoiceImage);
         }
         this.saveInvoice(invoice);
+
+        if (currentImage != null) {
+            storageService.deleteImageFile(currentImage);
+            imageDataDb.delete(currentImage);
+        }
 
         invoiceImage.setInvoice(invoice);
         imageDataDb.save(invoiceImage);

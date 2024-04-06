@@ -117,8 +117,10 @@ public class StorageServiceImpl implements StorageService {
 
   @Override
   public void deleteImageFile(ImageData imageData) {
-    File fileToDelete = new File(imageData.getFilePath());
-    fileToDelete.delete();
+    if (imageData != null) {
+      File fileToDelete = new File(imageData.getFilePath());
+      fileToDelete.delete();
+    }
   }
 
 }
