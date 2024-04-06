@@ -11,8 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sidha.api.model.enumerator.Role;
-
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
@@ -20,6 +20,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.util.ArrayList;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -27,8 +29,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
-// @SQLDelete(sql = "UPDATE user_table SET is_deleted = true WHERE id=?")
-// @SQLRestriction(value = "is_deleted = false")
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue(value = "user")
 @Table(name = "user_table")
@@ -64,15 +64,15 @@ public class UserModel implements UserDetails {
     @Column(name = "phone", nullable = false)
     private String phone;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-     @JsonFormat
-      (shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private Date createdAt;
 
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at", nullable = false)
-    @JsonFormat
-    (shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    private Date updatedAt;
 
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
@@ -109,4 +109,9 @@ public class UserModel implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private Kontrak kontrak;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Order> orders = new ArrayList<>();
+
 }
