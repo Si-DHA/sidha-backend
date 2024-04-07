@@ -17,8 +17,8 @@ import com.sidha.api.DTO.request.LoginUserRequestDTO;
 import com.sidha.api.DTO.request.SignUpUserRequestDTO;
 import com.sidha.api.DTO.response.BaseResponse;
 import com.sidha.api.DTO.response.UserResponse;
-import com.sidha.api.model.UserModel;
 import com.sidha.api.model.enumerator.Role;
+import com.sidha.api.model.user.UserModel;
 import com.sidha.api.service.AuthService;
 import com.sidha.api.service.UserService;
 

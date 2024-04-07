@@ -5,9 +5,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.sidha.api.model.OrderItem;
 import com.sidha.api.model.Truk;
-import com.sidha.api.model.UserModel;
+import com.sidha.api.model.order.OrderItem;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

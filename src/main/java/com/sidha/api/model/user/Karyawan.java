@@ -1,6 +1,5 @@
 package com.sidha.api.model.user;
 
-import com.sidha.api.model.UserModel;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;

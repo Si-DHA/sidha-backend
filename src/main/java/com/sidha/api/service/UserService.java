@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.sidha.api.DTO.request.EditUserDetailRequestDTO;
 import com.sidha.api.model.user.Sopir;
-import com.sidha.api.model.UserModel;
+import com.sidha.api.model.user.UserModel;
 import com.sidha.api.model.enumerator.Role;
 import java.util.List;
 

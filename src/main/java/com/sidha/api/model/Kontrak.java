@@ -2,6 +2,8 @@ package com.sidha.api.model;
 
 import java.time.LocalDateTime;
 
+import com.sidha.api.model.user.UserModel;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

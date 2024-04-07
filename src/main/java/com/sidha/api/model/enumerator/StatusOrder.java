@@ -2,7 +2,7 @@ package com.sidha.api.model.enumerator;
 
 public enum StatusOrder {
   DIBUAT,
-  DIPROSES_KARYAWAN,
+  DIPROSES,
   DITOLAK,
   MENUNGGU_DP,
   DIANGKUT,

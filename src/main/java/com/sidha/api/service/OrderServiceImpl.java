@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sidha.api.DTO.request.CreateOrderRequestDTO;
-import com.sidha.api.model.Order;
+import com.sidha.api.model.order.Order;
 import com.sidha.api.model.user.Klien;
 import com.sidha.api.repository.OrderDb;
 import com.sidha.api.repository.UserDb;

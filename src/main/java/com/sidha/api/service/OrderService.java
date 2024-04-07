@@ -1,7 +1,8 @@
 package com.sidha.api.service;
 
-import com.sidha.api.model.Order;
 import com.sidha.api.DTO.request.CreateOrderRequestDTO;
+import com.sidha.api.model.order.Order;
+
 import java.util.List;
 
 public interface OrderService {

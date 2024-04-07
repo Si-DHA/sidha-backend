@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.sidha.api.model.UserModel;
+import com.sidha.api.model.user.UserModel;
 
 import java.security.Key;
 import java.util.Date;

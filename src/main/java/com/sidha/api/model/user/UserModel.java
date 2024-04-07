@@ -1,4 +1,4 @@
-package com.sidha.api.model;
+package com.sidha.api.model.user;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sidha.api.model.Kontrak;
 import com.sidha.api.model.enumerator.Role;
 import java.time.LocalDateTime;
 

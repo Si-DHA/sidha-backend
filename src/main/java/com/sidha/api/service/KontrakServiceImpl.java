@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sidha.api.model.Kontrak;
-import com.sidha.api.model.UserModel;
+import com.sidha.api.model.user.UserModel;
 import com.sidha.api.repository.KontrakDb;
 
 @Service

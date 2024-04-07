@@ -1,4 +1,4 @@
-package com.sidha.api.model;
+package com.sidha.api.model.order;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -11,7 +11,7 @@ import com.sidha.api.model.user.Admin;
 import com.sidha.api.model.user.Karyawan;
 import com.sidha.api.model.user.Klien;
 import com.sidha.api.model.user.Sopir;
-import com.sidha.api.model.UserModel;
+import com.sidha.api.model.user.UserModel;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {

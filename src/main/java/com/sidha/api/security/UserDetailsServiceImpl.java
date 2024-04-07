@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.sidha.api.model.UserModel;
+import com.sidha.api.model.user.UserModel;
 import com.sidha.api.repository.UserDb;
 
 import java.util.HashSet;
