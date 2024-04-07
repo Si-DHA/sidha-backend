@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.sidha.api.model.enumerator.StatusOrder;
 import com.sidha.api.model.enumerator.TipeBarang;
 import com.sidha.api.model.enumerator.TipeTruk;
 import com.sidha.api.model.user.Sopir;
@@ -28,8 +27,8 @@ public class OrderItem { // 1 order item = 1 truk
   @Column(name = "price")
   private double price;
 
-  @Enumerated(EnumType.STRING)
-  private StatusOrder status = StatusOrder.DIBUAT;
+  @Column(name = "status_order")
+  private int statusOrder;
 
   @Column(name = "alasan_penolakan")
   private String alasanPenolakan;
@@ -43,22 +42,6 @@ public class OrderItem { // 1 order item = 1 truk
   @Column(name = "tipe_truk")
   private TipeTruk tipeTruk;
 
-  @Column(name = "source")
-  private String source;
-
-  @Column(name = "alamat_penjemputan")
-  private String alamatPenjemputan;
-
-  @Column(name = "destination")
-  private String destination;
-
-  @Column(name = "alamat_pengiriman")
-  private String alamatPengiriman;
-
-  @ElementCollection
-  @Column(name = "multidrop")
-  private List<String> multidrop;
-
   @Column(name = "keterangan")
   private String keterangan;
 
@@ -71,4 +54,7 @@ public class OrderItem { // 1 order item = 1 truk
   @JoinColumn(name = "sopir_id")
   @JsonBackReference
   private Sopir sopir;
+
+  @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL)
+  private List<Rute> rute;
 }

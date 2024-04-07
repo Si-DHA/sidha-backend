@@ -35,13 +35,8 @@ public class OrderItemServiceImpl implements OrderItemService {
     orderItem.setPecahBelah(request.isPecahBelah());
     orderItem.setTipeBarang(TipeBarang.valueOf(request.getTipeBarang()));
     orderItem.setTipeTruk(TipeTruk.valueOf(request.getTipeTruk()));
-    orderItem.setSource(request.getSource());
-    orderItem.setAlamatPenjemputan(request.getAlamatPenjemputan());
-    orderItem.setDestination(request.getDestination());
-    orderItem.setAlamatPengiriman(request.getAlamatPengiriman());
-    orderItem.setMultidrop(request.getMultidrop());
     orderItem.setKeterangan(request.getKeterangan());
-    orderItem.setPrice(getPrice(orderItem.getTipeTruk(), klien.getPenawaranHarga(), orderItem.getSource(), orderItem.getDestination()));
+    orderItem.setPrice(getPrice(orderItem.getTipeTruk(), klien.getPenawaranHarga(), "", ""));
 
     orderItem.setOrder(order);
     return orderItem;
