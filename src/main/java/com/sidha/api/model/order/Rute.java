@@ -32,6 +32,6 @@ public class Rute {
     private double price;
 
     @ManyToOne
-    @Column(name = "order_item_id")
+    @JoinColumn(name = "order_item_id")
     private OrderItem orderItem;
 }
