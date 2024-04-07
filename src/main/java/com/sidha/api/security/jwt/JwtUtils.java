@@ -38,6 +38,7 @@ public class JwtUtils {
         claims.put("username", user.getUsername());
         claims.put("email", user.getEmail());
         claims.put("address", user.getAddress());
+        claims.put("role", user.getRole().getName());
 
         claims.setIssuedAt(new Date());
         claims.setExpiration(new Date(new Date().getTime() + TimeUnit.MILLISECONDS.toMillis(jwtExpirationMs)));

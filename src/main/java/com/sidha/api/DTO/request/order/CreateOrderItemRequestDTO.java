@@ -1,4 +1,4 @@
-package com.sidha.api.DTO.request;
+package com.sidha.api.DTO.request.order;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

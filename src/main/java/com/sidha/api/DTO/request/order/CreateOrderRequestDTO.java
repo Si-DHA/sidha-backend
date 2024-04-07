@@ -1,4 +1,4 @@
-package com.sidha.api.DTO.request;
+package com.sidha.api.DTO.request.order;
 
 import lombok.Data;
 import lombok.AllArgsConstructor;
@@ -11,6 +11,5 @@ import java.util.*;
 @NoArgsConstructor
 public class CreateOrderRequestDTO {
   private List<CreateOrderItemRequestDTO> orderItems = new ArrayList<>();
-  private UUID userId;
   private Date tanggalPengiriman;
 }
