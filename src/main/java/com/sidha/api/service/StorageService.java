@@ -8,16 +8,16 @@ import com.sidha.api.model.image.ImageData;
 import com.sidha.api.model.UserModel;
 
 public interface StorageService {
-  public String uploadImageToFileSystem(MultipartFile file, UserModel user) throws IOException;
+  String uploadImageToFileSystem(MultipartFile file, UserModel user) throws IOException;
 
-  public ImageData uploadImageAndSaveToDB(MultipartFile file, String filename) throws IOException;
+  ImageData uploadImageAndSaveToDB(MultipartFile file, String filename) throws IOException;
 
-  public ImageData uploadProfile(MultipartFile file, UserModel user) throws IOException;
+  ImageData uploadProfile(MultipartFile file, UserModel user) throws IOException;
 
-  public byte[] getImageFromFileSystem(String filename) throws IOException;
+  byte[] getImageFromFileSystem(String filename) throws IOException;
 
-  public ImageData updateProfileImage(MultipartFile file, UserModel user) throws IOException;
-  public ImageData updateImageInDB(MultipartFile file, ImageData imageData, String filename) throws IOException;
+  ImageData updateProfileImage(MultipartFile file, UserModel user) throws IOException;
+  ImageData updateImageInDB(MultipartFile file, ImageData imageData, String filename) throws IOException;
 
   void deleteImageFile(ImageData imageData);
 }
