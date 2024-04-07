@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.sidha.api.DTO.UserMapper;
 import com.sidha.api.DTO.request.ForgotPassUserRequestDTO;
 import com.sidha.api.DTO.request.LoginUserRequestDTO;
 import com.sidha.api.DTO.request.SignUpUserRequestDTO;
@@ -36,9 +35,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private JwtUtils jwtUtils;
-
-    @Autowired
-    private UserMapper userMapper;
 
     @Autowired
     private UserDb userDb;
