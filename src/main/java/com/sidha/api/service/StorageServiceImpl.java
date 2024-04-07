@@ -22,7 +22,6 @@ public class StorageServiceImpl implements StorageService {
 
   private final String FOLDER_PATH = "/home/nur_fajar11/imagedata/";
 
-
   @Autowired
   private ImageDataDb imageDataDb;
 
@@ -117,8 +116,10 @@ public class StorageServiceImpl implements StorageService {
 
   @Override
   public void deleteImageFile(ImageData imageData) {
-    File fileToDelete = new File(imageData.getFilePath());
-    fileToDelete.delete();
+    if (imageData != null) {
+      File fileToDelete = new File(imageData.getFilePath());
+      fileToDelete.delete();
+    }
   }
 
 }
