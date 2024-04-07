@@ -138,7 +138,7 @@ public class InvoiceServiceImpl implements InvoiceService {
             if (alasanPenolakan == null) {
                 throw new RuntimeException("Alasan penolakan tidak boleh kosong");
             }
-            invoiceImage.setStatus(2);
+            invoiceImage.setStatus(-1);
             invoiceImage.setAlasanPenolakan(alasanPenolakan);
         }
         imageDataDb.save(invoiceImage);

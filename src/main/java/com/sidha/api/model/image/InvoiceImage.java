@@ -28,6 +28,6 @@ public class InvoiceImage extends ImageData {
 
     // 0: belum dikonfirmasi
     // 1: dikonfirmasi
-    // 2: ditolak
+    // -1: ditolak
     private int status;
 }
