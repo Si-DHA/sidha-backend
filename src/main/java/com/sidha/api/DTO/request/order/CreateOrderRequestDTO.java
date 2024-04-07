@@ -10,6 +10,6 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateOrderRequestDTO {
-  private List<CreateOrderItemRequestDTO> orderItems = new ArrayList<>();
+  private List<OrderItemRequestDTO> orderItems = new ArrayList<>();
   private Date tanggalPengiriman;
 }
