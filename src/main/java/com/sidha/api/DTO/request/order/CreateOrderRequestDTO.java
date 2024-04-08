@@ -12,4 +12,5 @@ import java.util.*;
 public class CreateOrderRequestDTO {
   private List<OrderItemRequestDTO> orderItems = new ArrayList<>();
   private Date tanggalPengiriman;
+  private UUID klienId;
 }

@@ -7,8 +7,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.sidha.api.DTO.request.order.CreateOrderRequestDTO;
+import com.sidha.api.DTO.request.order.OrderConfirmRequestDTO;
 import com.sidha.api.DTO.request.order.OrderItemRequestDTO;
 import com.sidha.api.DTO.request.order.RuteRequestDTO;
+import com.sidha.api.DTO.request.order.UpdateOrderRequestDTO;
 import com.sidha.api.model.PenawaranHargaItem;
 import com.sidha.api.model.enumerator.TipeBarang;
 import com.sidha.api.model.enumerator.TipeTruk;
@@ -32,8 +34,8 @@ public class OrderServiceImpl implements OrderService {
     private UserService userService;
 
     @Override
-    public Order createOrder(CreateOrderRequestDTO request, UUID userId) {
-        var user = userService.findById(userId);
+    public Order createOrder(CreateOrderRequestDTO request) {
+        var user = userService.findById(request.getKlienId());
         var klien = (Klien) user;
 
         var order = new Order();
@@ -103,6 +105,28 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         throw new IllegalArgumentException("Penawaran Harga not found");
+    }
+
+    @Override
+    public List<Order> getOrdersByKlienId(UUID klienId) {
+        return orderDb.findByKlienId(klienId);
+    }
+
+    @Override
+    public Order updateOrder(UpdateOrderRequestDTO request) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateOrder'");
+    }
+
+    @Override
+    public Order confirmOrder(OrderConfirmRequestDTO request) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'confirmOrder'");
+    }
+
+    @Override
+    public List<Order> getAllOrders() {
+        return orderDb.findAll();
     }
 
 }

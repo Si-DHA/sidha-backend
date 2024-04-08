@@ -5,9 +5,12 @@ import org.springframework.stereotype.Repository;
 
 import com.sidha.api.model.order.Order;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface  OrderDb extends JpaRepository<Order, UUID>{  
-  
+public interface  OrderDb extends JpaRepository<Order, UUID>{
+
+    List<Order> findByKlienId(UUID klienId);  
+
 }
