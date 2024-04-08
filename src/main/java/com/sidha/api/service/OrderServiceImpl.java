@@ -119,8 +119,18 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order confirmOrder(OrderConfirmRequestDTO request) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'confirmOrder'");
+        for (var confirmOrderItem : request.getOrderItems()) {
+            var orderItem = orderItemDb.findById(confirmOrderItem.getOrderItemId())
+                    .orElseThrow(() -> new IllegalArgumentException("Order Item not found"));
+            
+            if (confirmOrderItem.isAccepted()) {
+                orderItem.setStatusOrder(1);
+            } else {
+                orderItem.setStatusOrder(-1);
+                orderItem.setAlasanPenolakan(confirmOrderItem.getRejectionReason());
+            }
+        }
+        return orderDb.findById(request.getOrderId()).orElseThrow(() -> new IllegalArgumentException("Order not found"));
     }
 
     @Override
