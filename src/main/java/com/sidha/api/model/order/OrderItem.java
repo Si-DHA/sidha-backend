@@ -2,11 +2,13 @@ package com.sidha.api.model.order;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sidha.api.model.enumerator.TipeBarang;
 import com.sidha.api.model.enumerator.TipeTruk;
 import com.sidha.api.model.user.Sopir;
@@ -16,6 +18,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(exclude = "order")
 @Entity
 @Table(name = "order_item")
 public class OrderItem { // 1 order item = 1 truk
@@ -36,10 +39,10 @@ public class OrderItem { // 1 order item = 1 truk
   @Column(name = "is_pecah_belah")
   private boolean isPecahBelah;
 
-  @Column(name = "tipe_barang")
+  @Enumerated(EnumType.STRING)
   private TipeBarang tipeBarang;
 
-  @Column(name = "tipe_truk")
+  @Enumerated(EnumType.STRING)
   private TipeTruk tipeTruk;
 
   @Column(name = "keterangan")
@@ -56,5 +59,6 @@ public class OrderItem { // 1 order item = 1 truk
   private Sopir sopir;
 
   @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL)
+  @JsonManagedReference
   private List<Rute> rute;
 }

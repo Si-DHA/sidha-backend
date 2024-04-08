@@ -41,16 +41,16 @@ public class OrderServiceImpl implements OrderService {
         var order = new Order();
         order.setKlien(klien);
         order.setTanggalPengiriman(request.getTanggalPengiriman());
-
-        var orderSaved = orderDb.save(order);
+        orderDb.save(order);
 
         var orderItems = new ArrayList<OrderItem>();
         request.getOrderItems().forEach(item -> {
-            var orderItemSaved = saveOrderItem(item, orderSaved, klien);
+            var orderItemSaved = saveOrderItem(item, order, klien);
             orderItems.add(orderItemSaved);
         });
 
-        orderSaved.setOrderItems(orderItems);
+        order.setOrderItems(orderItems);
+        order.setTotalPrice(orderItems.stream().mapToDouble(OrderItem::getPrice).sum());
         return orderDb.save(order);
     }
 
@@ -61,17 +61,16 @@ public class OrderServiceImpl implements OrderService {
         orderItem.setStatusOrder(0);
         orderItem.setTipeBarang(TipeBarang.valueOf(request.getTipeBarang()));
         orderItem.setTipeTruk(TipeTruk.valueOf(request.getTipeTruk()));
-
-        var orderItemSaved = orderItemDb.save(orderItem);
+        orderItemDb.save(orderItem);
 
         var rute = new ArrayList<Rute>();
         request.getRute().forEach(r -> {
-            var ruteSaved = saveRute(r, orderItemSaved, klien);
+            var ruteSaved = saveRute(r, orderItem, klien);
             rute.add(ruteSaved);
         });
-
-        orderItemSaved.setRute(rute);
-        return orderItemDb.save(orderItemSaved);
+        orderItem.setRute(rute);
+        orderItem.setPrice(rute.stream().mapToDouble(Rute::getPrice).sum());
+        return orderItemDb.save(orderItem);
     }
 
     private Rute saveRute(RuteRequestDTO request, OrderItem orderItem, Klien klien) {

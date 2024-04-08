@@ -22,7 +22,6 @@ import com.sidha.api.model.user.Klien;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Date;
 
 import jakarta.persistence.CascadeType;
@@ -47,13 +46,14 @@ public class Order {
 
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonManagedReference
-  private List<OrderItem> orderItems = new ArrayList<>();
+  private List<OrderItem> orderItems;
 
   @Column(name = "total_price")
   @JsonFormat(shape = JsonFormat.Shape.STRING)
   private double totalPrice;
 
   @Column(name = "tanggal_pengiriman")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
   private Date tanggalPengiriman;
 
   @ManyToOne

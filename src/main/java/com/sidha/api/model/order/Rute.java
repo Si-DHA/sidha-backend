@@ -1,13 +1,17 @@
 package com.sidha.api.model.order;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(exclude = "orderItem")
 @Entity
 @Table(name = "rute")
 public class Rute {
@@ -33,5 +37,6 @@ public class Rute {
 
     @ManyToOne
     @JoinColumn(name = "order_item_id")
+    @JsonBackReference
     private OrderItem orderItem;
 }

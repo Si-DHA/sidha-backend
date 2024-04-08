@@ -36,8 +36,6 @@ public class OrderController {
     public ResponseEntity<?> createOrder(@RequestBody CreateOrderRequestDTO request, @RequestHeader("Authorization") String token) {
         token = token.substring(7); // remove "Bearer " from token
 
-        
-
         if (authUtils.isKlien(token) && authUtils.isMatch(token, request.getKlienId())) {
             try {
                 var response = orderService.createOrder(request);
