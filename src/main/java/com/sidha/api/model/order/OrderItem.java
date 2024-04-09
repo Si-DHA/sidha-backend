@@ -37,7 +37,7 @@ public class OrderItem { // 1 order item = 1 truk
   private String alasanPenolakan;
 
   @Column(name = "is_pecah_belah")
-  private boolean isPecahBelah;
+  private Boolean isPecahBelah;
 
   @Enumerated(EnumType.STRING)
   private TipeBarang tipeBarang;

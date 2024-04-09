@@ -14,7 +14,7 @@ public class UpdateOrderItemRequestDTO {
 
   private UUID orderItemId;
 
-  private boolean isPecahBelah;
+  private Boolean isPecahBelah;
 
   private String tipeBarang;
 

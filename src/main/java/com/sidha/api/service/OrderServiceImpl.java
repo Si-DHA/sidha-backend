@@ -57,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderItem saveOrderItem(CreateOrderItemRequestDTO request, Order order, Klien klien) {
         var orderItem = new OrderItem();
         orderItem.setOrder(order);
-        orderItem.setPecahBelah(request.isPecahBelah());
+        orderItem.setIsPecahBelah(request.getIsPecahBelah());
         orderItem.setStatusOrder(0);
         orderItem.setTipeBarang(TipeBarang.valueOf(request.getTipeBarang()));
         orderItem.setTipeTruk(TipeTruk.valueOf(request.getTipeTruk()));
@@ -123,7 +123,7 @@ public class OrderServiceImpl implements OrderService {
             if (item.getOrderItemId() != null) {    // Jika order item sudah ada
                 var orderItem = orderItemDb.findById(item.getOrderItemId())
                         .orElseThrow(() -> new IllegalArgumentException("Order Item not found"));
-                orderItem.setPecahBelah(item.isPecahBelah());
+                orderItem.setIsPecahBelah(item.getIsPecahBelah());
                 orderItem.setTipeBarang(TipeBarang.valueOf(item.getTipeBarang()));
                 orderItem.setTipeTruk(TipeTruk.valueOf(item.getTipeTruk()));
                 orderItem.setKeterangan(item.getKeterangan());
@@ -157,7 +157,7 @@ public class OrderServiceImpl implements OrderService {
 
             } else {    // Jika menambahkan order item baru
                 CreateOrderItemRequestDTO newItem = new CreateOrderItemRequestDTO();
-                newItem.setPecahBelah(item.isPecahBelah());
+                newItem.setIsPecahBelah(item.getIsPecahBelah());
                 newItem.setTipeBarang(item.getTipeBarang());
                 newItem.setTipeTruk(item.getTipeTruk());
                 newItem.setKeterangan(item.getKeterangan());

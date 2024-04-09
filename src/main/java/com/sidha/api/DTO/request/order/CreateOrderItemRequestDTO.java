@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateOrderItemRequestDTO {
 
-  private boolean isPecahBelah;
+  private Boolean isPecahBelah;
 
   private String tipeBarang;
 
