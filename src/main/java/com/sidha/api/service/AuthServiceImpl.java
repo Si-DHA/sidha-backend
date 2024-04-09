@@ -1,12 +1,12 @@
 package com.sidha.api.service;
 
-import com.sidha.api.model.*;
 import com.sidha.api.model.image.ImageData;
 import com.sidha.api.model.image.ProfileImage;
 import com.sidha.api.model.user.Admin;
 import com.sidha.api.model.user.Karyawan;
 import com.sidha.api.model.user.Klien;
 import com.sidha.api.model.user.Sopir;
+import com.sidha.api.model.user.UserModel;
 import com.sidha.api.repository.ImageDataDb;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -20,8 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sidha.api.DTO.UserMapper;
 import com.sidha.api.DTO.request.EditUserDetailRequestDTO;
 import com.sidha.api.DTO.response.BaseResponse;
-import com.sidha.api.model.UserModel;
 import com.sidha.api.model.enumerator.Role;
+import com.sidha.api.model.user.UserModel;
 import com.sidha.api.service.UserService;
 
 @RequestMapping("/api/user")

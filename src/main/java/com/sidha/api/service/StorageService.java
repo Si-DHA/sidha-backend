@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sidha.api.model.image.ImageData;
-import com.sidha.api.model.UserModel;
+import com.sidha.api.model.user.UserModel;
 
 public interface StorageService {
   String uploadImageToFileSystem(MultipartFile file, UserModel user) throws IOException;

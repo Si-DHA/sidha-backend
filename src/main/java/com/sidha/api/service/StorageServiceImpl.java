@@ -1,12 +1,13 @@
 package com.sidha.api.service;
 
 import com.sidha.api.model.image.ProfileImage;
+import com.sidha.api.model.user.UserModel;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sidha.api.model.image.ImageData;
-import com.sidha.api.model.UserModel;
 import com.sidha.api.repository.ImageDataDb;
 
 import org.slf4j.Logger;

@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sidha.api.model.Kontrak;
-import com.sidha.api.model.UserModel;
+import com.sidha.api.model.user.UserModel;
 
 public interface KontrakService {
   public String uploadDocumentToFilesystem(MultipartFile file, UserModel user) throws IOException;

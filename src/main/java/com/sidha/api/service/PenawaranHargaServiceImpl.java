@@ -1,6 +1,5 @@
 package com.sidha.api.service;
 
-import com.sidha.api.model.UserModel;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.util.*;
@@ -8,6 +7,7 @@ import java.util.*;
 import com.sidha.api.DTO.PenawaranHargaMapper;
 import com.sidha.api.DTO.request.CreatePenawaranHargaRequestDTO;
 import com.sidha.api.model.user.Klien;
+import com.sidha.api.model.user.UserModel;
 import com.sidha.api.model.PenawaranHarga;
 import com.sidha.api.repository.PenawaranHargaDb;
 import com.sidha.api.repository.UserDb;

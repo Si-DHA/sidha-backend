@@ -5,10 +5,10 @@ import java.util.UUID;
 import com.sidha.api.model.user.Admin;
 import com.sidha.api.model.user.Karyawan;
 import com.sidha.api.model.user.Sopir;
+import com.sidha.api.model.user.UserModel;
 
 import java.util.ArrayList;
 
-import com.sidha.api.model.*;
 import com.sidha.api.repository.TrukDb;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

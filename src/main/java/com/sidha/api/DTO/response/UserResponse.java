@@ -1,7 +1,7 @@
 package com.sidha.api.DTO.response;
 
 
-import com.sidha.api.model.UserModel;
+import com.sidha.api.model.user.UserModel;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

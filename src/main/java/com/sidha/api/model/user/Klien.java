@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import com.sidha.api.model.PenawaranHarga;
 import com.sidha.api.model.PenawaranHargaItem;
-import com.sidha.api.model.UserModel;
+import com.sidha.api.model.order.Order;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,4 +31,8 @@ public class Klien extends UserModel {
   @OneToOne(mappedBy = "klien", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JsonManagedReference
   private PenawaranHarga penawaranHarga;
+
+  @OneToMany(mappedBy = "klien", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
+  private List<Order> orders = new ArrayList<>();
 }

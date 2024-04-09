@@ -1,4 +1,4 @@
-package com.sidha.api.model;
+package com.sidha.api.model.user;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,7 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.sidha.api.model.Kontrak;
 import com.sidha.api.model.enumerator.Role;
 import java.time.LocalDateTime;
 
@@ -20,7 +20,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.ArrayList;
 import java.util.Date;
 
 @Getter
@@ -109,9 +108,5 @@ public class UserModel implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private Kontrak kontrak;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Order> orders = new ArrayList<>();
 
 }

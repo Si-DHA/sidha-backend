@@ -4,8 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.sidha.api.model.UserModel;
 import com.sidha.api.model.enumerator.Role;
+import com.sidha.api.model.user.UserModel;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,24 +1,22 @@
 package com.sidha.api.service;
 
-import com.sidha.api.model.Order;
-import com.sidha.api.model.enumerator.StatusOrder;
-import com.sidha.api.DTO.request.CreateOrderRequestDTO;
+import java.util.UUID;
 import java.util.List;
 
+import com.sidha.api.DTO.request.order.CreateOrderRequestDTO;
+import com.sidha.api.DTO.request.order.OrderConfirmRequestDTO;
+import com.sidha.api.DTO.request.order.UpdateOrderRequestDTO;
+import com.sidha.api.model.order.Order;
+
 public interface OrderService {
-  Order save(Order order);
 
-  Order saveOrder(CreateOrderRequestDTO request);
+    Order createOrder(CreateOrderRequestDTO request);
 
-  Order updateOrder(CreateOrderRequestDTO request);
+    List<Order> getOrdersByKlienId(UUID klienId);
 
-  Order setStatusOrder(String idOrder, String status);
+    Order updateOrder(UpdateOrderRequestDTO request);
 
-  Order getOrderById(String idOrder);
+    Order confirmOrder(OrderConfirmRequestDTO request);
 
-  Order deleteOrder(String idOrder);
-
-  List<Order> getAllOrder();
-
-  List<Order> getOrderByStatus(StatusOrder status);
+    List<Order> getAllOrders();
 }
