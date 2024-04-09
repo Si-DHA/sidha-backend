@@ -11,6 +11,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrderItemConfirmRequestDTO {
     private UUID orderItemId;
-    private boolean isAccepted;
+    private Boolean isAccepted;
     private String rejectionReason;
+
+    public void setIsAccepted(Object isAccepted) {
+        if (isAccepted instanceof Boolean) {
+            this.isAccepted = (Boolean) isAccepted;
+        } else if (isAccepted instanceof String) {
+            this.isAccepted = Boolean.parseBoolean((String) isAccepted);
+        }
+    }
 }

@@ -123,12 +123,17 @@ public class OrderServiceImpl implements OrderService {
             var orderItem = orderItemDb.findById(confirmOrderItem.getOrderItemId())
                     .orElseThrow(() -> new IllegalArgumentException("Order Item not found"));
             
-            if (confirmOrderItem.isAccepted()) {
+            if (orderItem.getStatusOrder() != 0) {
+                throw new IllegalArgumentException("Order Item already confirmed");
+            }
+
+            if (confirmOrderItem.getIsAccepted()) {
                 orderItem.setStatusOrder(1);
             } else {
                 orderItem.setStatusOrder(-1);
                 orderItem.setAlasanPenolakan(confirmOrderItem.getRejectionReason());
             }
+            orderItemDb.save(orderItem);
         }
         return orderDb.findById(request.getOrderId()).orElseThrow(() -> new IllegalArgumentException("Order not found"));
     }
