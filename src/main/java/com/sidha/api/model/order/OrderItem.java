@@ -28,7 +28,7 @@ public class OrderItem { // 1 order item = 1 truk
   private UUID id = UUID.randomUUID();
 
   @Column(name = "price")
-  private double price;
+  private Long price;
 
   @Column(name = "status_order")
   private int statusOrder;

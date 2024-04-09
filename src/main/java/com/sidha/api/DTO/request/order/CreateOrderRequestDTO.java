@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @NoArgsConstructor
 public class CreateOrderRequestDTO {
   
-  private List<OrderItemRequestDTO> orderItems;
+  private List<CreateOrderItemRequestDTO> orderItems;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
   private Date tanggalPengiriman;

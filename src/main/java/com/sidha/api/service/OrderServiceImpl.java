@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.sidha.api.DTO.request.order.CreateOrderRequestDTO;
 import com.sidha.api.DTO.request.order.OrderConfirmRequestDTO;
-import com.sidha.api.DTO.request.order.OrderItemRequestDTO;
-import com.sidha.api.DTO.request.order.RuteRequestDTO;
+import com.sidha.api.DTO.request.order.CreateOrderItemRequestDTO;
+import com.sidha.api.DTO.request.order.CreateRuteRequestDTO;
 import com.sidha.api.DTO.request.order.UpdateOrderRequestDTO;
 import com.sidha.api.model.PenawaranHargaItem;
 import com.sidha.api.model.enumerator.TipeBarang;
@@ -50,11 +50,11 @@ public class OrderServiceImpl implements OrderService {
         });
 
         order.setOrderItems(orderItems);
-        order.setTotalPrice(orderItems.stream().mapToDouble(OrderItem::getPrice).sum());
+        order.setTotalPrice(orderItems.stream().mapToLong(OrderItem::getPrice).sum());
         return orderDb.save(order);
     }
 
-    private OrderItem saveOrderItem(OrderItemRequestDTO request, Order order, Klien klien) {
+    private OrderItem saveOrderItem(CreateOrderItemRequestDTO request, Order order, Klien klien) {
         var orderItem = new OrderItem();
         orderItem.setOrder(order);
         orderItem.setPecahBelah(request.isPecahBelah());
@@ -69,11 +69,11 @@ public class OrderServiceImpl implements OrderService {
             rute.add(ruteSaved);
         });
         orderItem.setRute(rute);
-        orderItem.setPrice(rute.stream().mapToDouble(Rute::getPrice).sum());
+        orderItem.setPrice(rute.stream().mapToLong(Rute::getPrice).sum());
         return orderItemDb.save(orderItem);
     }
 
-    private Rute saveRute(RuteRequestDTO request, OrderItem orderItem, Klien klien) {
+    private Rute saveRute(CreateRuteRequestDTO request, OrderItem orderItem, Klien klien) {
         var rute = new Rute();
         rute.setOrderItem(orderItem);
         rute.setAlamatPengiriman(request.getAlamatPengiriman());
@@ -85,7 +85,8 @@ public class OrderServiceImpl implements OrderService {
         return ruteDb.save(rute);
     }
 
-    private double getPriceRute(TipeTruk tipeTruk, RuteRequestDTO r, List<PenawaranHargaItem> listPenawaranHargaItem) {
+    private Integer getPriceRute(TipeTruk tipeTruk, CreateRuteRequestDTO r,
+            List<PenawaranHargaItem> listPenawaranHargaItem) {
         for (PenawaranHargaItem penawaranHargaItem : listPenawaranHargaItem) {
             if (penawaranHargaItem.getDestination().equals(r.getDestination())
                     && penawaranHargaItem.getSource().equals(r.getSource())) {
@@ -113,8 +114,28 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order updateOrder(UpdateOrderRequestDTO request) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateOrder'");
+        var order = orderDb.findById(request.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        order.setTanggalPengiriman(request.getTanggalPengiriman());
+
+        // request.getOrderItems().forEach(item -> {
+        // var orderItem = orderItemDb.findById(item.getId())
+        // .orElseThrow(() -> new IllegalArgumentException("Order Item not found"));
+        // orderItem.setPecahBelah(item.isPecahBelah());
+        // orderItem.setTipeBarang(TipeBarang.valueOf(item.getTipeBarang()));
+        // orderItem.setTipeTruk(TipeTruk.valueOf(item.getTipeTruk()));
+        // orderItemDb.save(orderItem);
+
+        // var rute = new ArrayList<Rute>();
+        // item.getRute().forEach(r -> {
+        // var ruteSaved = saveRute(r, orderItem, order.getKlien());
+        // rute.add(ruteSaved);
+        // });
+        // orderItem.setRute(rute);
+        // orderItem.setPrice(rute.stream().mapToDouble(Rute::getPrice).sum());
+        // orderItemDb.save(orderItem);
+        // });
+        return null;
     }
 
     @Override
@@ -122,7 +143,7 @@ public class OrderServiceImpl implements OrderService {
         for (var confirmOrderItem : request.getOrderItems()) {
             var orderItem = orderItemDb.findById(confirmOrderItem.getOrderItemId())
                     .orElseThrow(() -> new IllegalArgumentException("Order Item not found"));
-            
+
             if (orderItem.getStatusOrder() != 0) {
                 throw new IllegalArgumentException("Order Item already confirmed");
             }
@@ -135,7 +156,8 @@ public class OrderServiceImpl implements OrderService {
             }
             orderItemDb.save(orderItem);
         }
-        return orderDb.findById(request.getOrderId()).orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        return orderDb.findById(request.getOrderId())
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
     }
 
     @Override

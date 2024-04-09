@@ -50,7 +50,7 @@ public class Order {
 
   @Column(name = "total_price")
   @JsonFormat(shape = JsonFormat.Shape.STRING)
-  private double totalPrice;
+  private Long totalPrice;
 
   @Column(name = "tanggal_pengiriman")
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")

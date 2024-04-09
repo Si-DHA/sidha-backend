@@ -33,7 +33,7 @@ public class Rute {
     private String alamatPenjemputan;
 
     @Column(name = "price")
-    private double price;
+    private Integer price;
 
     @ManyToOne
     @JoinColumn(name = "order_item_id")
