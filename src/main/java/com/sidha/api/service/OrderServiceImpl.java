@@ -80,16 +80,17 @@ public class OrderServiceImpl implements OrderService {
         rute.setAlamatPenjemputan(request.getAlamatPenjemputan());
         rute.setDestination(request.getDestination());
         rute.setSource(request.getSource());
-        rute.setPrice(getPriceRute(orderItem.getTipeTruk(), request, klien.getListPenawaranHargaItem()));
+        rute.setPrice(getPriceRute(orderItem.getTipeTruk(), request.getSource(), request.getDestination(),
+                klien.getListPenawaranHargaItem()));
 
         return ruteDb.save(rute);
     }
 
-    private Integer getPriceRute(TipeTruk tipeTruk, CreateRuteRequestDTO r,
+    private Integer getPriceRute(TipeTruk tipeTruk, String source, String destination,
             List<PenawaranHargaItem> listPenawaranHargaItem) {
         for (PenawaranHargaItem penawaranHargaItem : listPenawaranHargaItem) {
-            if (penawaranHargaItem.getDestination().equals(r.getDestination())
-                    && penawaranHargaItem.getSource().equals(r.getSource())) {
+            if (penawaranHargaItem.getDestination().equals(destination)
+                    && penawaranHargaItem.getSource().equals(source)) {
                 switch (tipeTruk) {
                     case CDD:
                         return penawaranHargaItem.getCddPrice();
@@ -118,24 +119,71 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
         order.setTanggalPengiriman(request.getTanggalPengiriman());
 
-        // request.getOrderItems().forEach(item -> {
-        // var orderItem = orderItemDb.findById(item.getId())
-        // .orElseThrow(() -> new IllegalArgumentException("Order Item not found"));
-        // orderItem.setPecahBelah(item.isPecahBelah());
-        // orderItem.setTipeBarang(TipeBarang.valueOf(item.getTipeBarang()));
-        // orderItem.setTipeTruk(TipeTruk.valueOf(item.getTipeTruk()));
-        // orderItemDb.save(orderItem);
+        request.getOrderItems().forEach(item -> {
+            if (item.getOrderItemId() != null) {    // Jika order item sudah ada
+                var orderItem = orderItemDb.findById(item.getOrderItemId())
+                        .orElseThrow(() -> new IllegalArgumentException("Order Item not found"));
+                orderItem.setPecahBelah(item.isPecahBelah());
+                orderItem.setTipeBarang(TipeBarang.valueOf(item.getTipeBarang()));
+                orderItem.setTipeTruk(TipeTruk.valueOf(item.getTipeTruk()));
+                orderItem.setKeterangan(item.getKeterangan());
 
-        // var rute = new ArrayList<Rute>();
-        // item.getRute().forEach(r -> {
-        // var ruteSaved = saveRute(r, orderItem, order.getKlien());
-        // rute.add(ruteSaved);
-        // });
-        // orderItem.setRute(rute);
-        // orderItem.setPrice(rute.stream().mapToDouble(Rute::getPrice).sum());
-        // orderItemDb.save(orderItem);
-        // });
-        return null;
+                item.getRute().forEach(r -> {
+                    if (r.getRuteId() != null) {    // Jika rute sudah ada
+                        var rute = ruteDb.findById(r.getRuteId())
+                                .orElseThrow(() -> new IllegalArgumentException("Rute not found"));
+                        rute.setSource(r.getSource());
+                        rute.setDestination(r.getDestination());
+                        rute.setAlamatPengiriman(r.getAlamatPengiriman());
+                        rute.setAlamatPenjemputan(r.getAlamatPenjemputan());
+
+                        rute.setPrice(getPriceRute(orderItem.getTipeTruk(), r.getSource(), r.getDestination(),
+                                order.getKlien().getListPenawaranHargaItem()));
+                        ruteDb.save(rute);
+
+                    } else {    // Jika menambahkan rute baru
+                        CreateRuteRequestDTO newRute = new CreateRuteRequestDTO();
+                        newRute.setSource(r.getSource());
+                        newRute.setDestination(r.getDestination());
+                        newRute.setAlamatPengiriman(r.getAlamatPengiriman());
+                        newRute.setAlamatPenjemputan(r.getAlamatPenjemputan());
+                        var ruteSaved = saveRute(newRute, orderItem, order.getKlien());
+                        orderItem.getRute().add(ruteSaved);
+                    }
+                });
+
+                orderItem.setPrice(orderItem.getRute().stream().mapToLong(Rute::getPrice).sum());
+                orderItemDb.save(orderItem);
+
+            } else {    // Jika menambahkan order item baru
+                CreateOrderItemRequestDTO newItem = new CreateOrderItemRequestDTO();
+                newItem.setPecahBelah(item.isPecahBelah());
+                newItem.setTipeBarang(item.getTipeBarang());
+                newItem.setTipeTruk(item.getTipeTruk());
+                newItem.setKeterangan(item.getKeterangan());
+                newItem.setRute(new ArrayList<>());
+
+                var orderItemSaved = saveOrderItem(newItem, order, order.getKlien());
+                newItem.getRute().forEach(r -> {
+                    CreateRuteRequestDTO newRute = new CreateRuteRequestDTO();
+                    newRute.setAlamatPengiriman(r.getAlamatPengiriman());
+                    newRute.setAlamatPenjemputan(r.getAlamatPenjemputan());
+                    newRute.setDestination(r.getDestination());
+                    newRute.setSource(r.getSource());
+
+                    var ruteSaved = saveRute(newRute, orderItemSaved, order.getKlien());
+                    orderItemSaved.getRute().add(ruteSaved);
+                });
+
+                orderItemSaved.setPrice(orderItemSaved.getRute().stream().mapToLong(Rute::getPrice).sum());
+                orderItemDb.save(orderItemSaved);
+                order.getOrderItems().add(orderItemSaved);
+            }
+
+        });
+
+        order.setTotalPrice(order.getOrderItems().stream().mapToLong(OrderItem::getPrice).sum());
+        return orderDb.save(order);
     }
 
     @Override
