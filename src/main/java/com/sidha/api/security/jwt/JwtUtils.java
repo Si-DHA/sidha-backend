@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.sidha.api.model.UserModel;
+import com.sidha.api.model.user.UserModel;
 
 import java.security.Key;
 import java.util.Date;
@@ -38,6 +38,7 @@ public class JwtUtils {
         claims.put("username", user.getUsername());
         claims.put("email", user.getEmail());
         claims.put("address", user.getAddress());
+        claims.put("role", user.getRole().getName());
 
         claims.setIssuedAt(new Date());
         claims.setExpiration(new Date(new Date().getTime() + TimeUnit.MILLISECONDS.toMillis(jwtExpirationMs)));

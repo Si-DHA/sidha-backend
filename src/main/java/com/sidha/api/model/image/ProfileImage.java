@@ -1,7 +1,8 @@
 package com.sidha.api.model.image;
 
 
-import com.sidha.api.model.UserModel;
+import com.sidha.api.model.user.UserModel;
+
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
