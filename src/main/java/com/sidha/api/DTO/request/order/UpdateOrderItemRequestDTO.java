@@ -24,4 +24,12 @@ public class UpdateOrderItemRequestDTO {
 
   private List<UpdateRuteRequestDTO> rute;
 
+  public void setIsPecahBelah(Object isPecahBelah) {
+    if (isPecahBelah instanceof Boolean) {
+      this.isPecahBelah = (Boolean) isPecahBelah;
+    } else if (isPecahBelah instanceof String) {
+      this.isPecahBelah = Boolean.parseBoolean((String) isPecahBelah);
+    }
+  }
+
 }
