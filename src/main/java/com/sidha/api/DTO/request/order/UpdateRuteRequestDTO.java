@@ -19,5 +19,4 @@ public class UpdateRuteRequestDTO {
     
     private String alamatPenjemputan;
     
-    private double price;
 }

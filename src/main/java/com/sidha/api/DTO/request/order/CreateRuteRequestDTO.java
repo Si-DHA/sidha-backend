@@ -17,5 +17,4 @@ public class CreateRuteRequestDTO {
     
     private String alamatPenjemputan;
     
-    private double price;
 }
