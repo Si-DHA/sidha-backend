@@ -1,8 +1,12 @@
 package com.sidha.api.controller;
 
+import com.sidha.api.DTO.response.BaseResponse;
 import com.sidha.api.model.Insiden;
 import com.sidha.api.model.Insiden.InsidenStatus;
+import com.sidha.api.model.image.ImageData;
 import com.sidha.api.service.InsidenService;
+import com.sidha.api.service.StorageService;
+import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +23,9 @@ public class InsidenController {
 
     @Autowired
     private InsidenService insidenService;
+
+    @Autowired
+    private StorageService storageService;
 
     @PostMapping("/create")
     public ResponseEntity<?> createInsiden(
@@ -62,12 +69,13 @@ public class InsidenController {
         }
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteInsiden(@PathVariable UUID id) {
         try {
             insidenService.deleteInsiden(id);
             return ResponseEntity
-            .ok("Insiden is deleted!");
+                    .ok("Insiden is deleted!");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -90,4 +98,45 @@ public class InsidenController {
         List<Insiden> insidens = insidenService.getAllInsidens();
         return ResponseEntity.ok(insidens);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getInsidenById(@PathVariable UUID id) {
+        try {
+            Insiden insiden = insidenService.getInsidenById(id);
+            return ResponseEntity.ok(insiden);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new BaseResponse<>(false, 404, e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/sopir/{sopirId}")
+    public ResponseEntity<?> getInsidensBySopirId(@PathVariable UUID sopirId) {
+        try {
+            List<Insiden> insidens = insidenService.getInsidensBySopirId(sopirId);
+            return ResponseEntity.ok(insidens);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new BaseResponse<>(false, 404, e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/bukti/{id}")
+    public ResponseEntity<?> getBuktiFoto(@PathVariable UUID id) {
+        try {
+            ImageData imageData = insidenService.getBuktiFotoById(id);
+            if (imageData != null) {
+                byte[] image = storageService.getImageFromFileSystem(imageData.getName());
+                return ResponseEntity
+                        .ok()
+                        .contentType(MediaType.valueOf(imageData.getType()))
+                        .body(image);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body("Failed to fetch image");
+        }
+    }
+
 }
