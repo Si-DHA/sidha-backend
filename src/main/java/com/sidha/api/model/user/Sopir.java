@@ -1,16 +1,10 @@
 package com.sidha.api.model.user;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.sidha.api.model.Insiden;
 import com.sidha.api.model.Truk;
-import com.sidha.api.model.UserModel;
+import com.sidha.api.model.order.OrderItem;
+
 import jakarta.persistence.*;
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,9 +23,5 @@ public class Sopir extends UserModel {
   @OneToOne(mappedBy = "sopir", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JsonBackReference
   private Truk truk;
-
-  @OneToMany(mappedBy = "sopir", cascade = CascadeType.ALL, orphanRemoval = true)
-  @JsonManagedReference
-  private List<Insiden> insidens;
 
 }
