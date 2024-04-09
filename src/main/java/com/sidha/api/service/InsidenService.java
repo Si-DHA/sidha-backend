@@ -2,6 +2,8 @@ package com.sidha.api.service;
 
 import com.sidha.api.model.Insiden;
 import com.sidha.api.model.Insiden.InsidenStatus;
+import com.sidha.api.model.image.ImageData;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -15,4 +17,6 @@ public interface InsidenService {
     Insiden updateInsidenStatus(UUID id, InsidenStatus status);
     Insiden getInsidenById(UUID id);
     List<Insiden> getAllInsidens();
+    List<Insiden> getInsidensBySopirId(UUID sopirId);
+    ImageData getBuktiFotoById(UUID insidenId);
 }

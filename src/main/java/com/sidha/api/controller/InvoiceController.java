@@ -78,11 +78,15 @@ public class InvoiceController {
                     UUID.fromString(idInvoice),
                     isPelunasan);
 
-            byte[] image = storageService.getImageFromFileSystem(imageData.getName());
+            if (imageData != null) {
+                byte[] image = storageService.getImageFromFileSystem(imageData.getName());
 
-            return ResponseEntity.status(HttpStatus.OK)
-                    .contentType(MediaType.valueOf(imageData.getType()))
-                    .body(image);
+                return ResponseEntity.status(HttpStatus.OK)
+                        .contentType(MediaType.valueOf(imageData.getType()))
+                        .body(image);
+            } else {
+                return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Bukti pembayaran belum diunggah", null));
+            }
 
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse<>(false, 404, e.getMessage(), null));
@@ -114,10 +118,10 @@ public class InvoiceController {
 
     @GetMapping("/{idInvoice}")
     public ResponseEntity<?> getInvoiceById(
-            @PathVariable UUID idInvoice
+            @PathVariable String idInvoice
     ) {
         try {
-            Invoice invoice = invoiceService.findInvoiceById(idInvoice);
+            Invoice invoice = invoiceService.findInvoiceById(UUID.fromString(idInvoice));
             return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Invoice is succesfully found", invoice));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse<>(false, 404, e.getMessage(), null));

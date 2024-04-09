@@ -3,7 +3,6 @@ package com.sidha.api.model.user;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import com.sidha.api.model.PenawaranHarga;

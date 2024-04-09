@@ -3,11 +3,9 @@ package com.sidha.api.model.image;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sidha.api.model.Invoice;
-import com.sidha.api.model.image.ImageData;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +26,6 @@ public class InvoiceImage extends ImageData {
 
     // 0: belum dikonfirmasi
     // 1: dikonfirmasi
-    // 2: ditolak
+    // -1: ditolak
     private int status;
 }

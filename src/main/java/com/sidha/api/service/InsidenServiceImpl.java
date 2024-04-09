@@ -92,13 +92,25 @@ public class InsidenServiceImpl implements InsidenService {
     }
 
     @Override
+    public List<Insiden> getAllInsidens() {
+        return insidenRepository.findAllByIsDeletedFalse();
+    }
+
+    public List<Insiden> getInsidensBySopirId(UUID sopirId) {
+        Sopir sopir = (Sopir) userDb.findById(sopirId).orElseThrow(() -> new RuntimeException("Driver not found"));
+        return insidenRepository.findBySopir(sopir);
+    }
+
+    public ImageData getBuktiFotoById(UUID insidenId) {
+        Insiden insiden = insidenRepository.findById(insidenId)
+            .orElseThrow(() -> new RuntimeException("Insiden not found"));
+        return insiden.getBuktiFoto();
+    }
+    
+    @Override
     public Insiden getInsidenById(UUID id) {
         return insidenRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Insiden not found"));
     }
-
-    @Override
-    public List<Insiden> getAllInsidens() {
-        return insidenRepository.findAllByIsDeletedFalse(); // Ensure this method exists to filter out soft-deleted records
-    }
+    
 }
