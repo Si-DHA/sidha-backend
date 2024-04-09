@@ -1,6 +1,8 @@
 package com.sidha.api.repository;
 
 import com.sidha.api.model.Insiden;
+import com.sidha.api.model.user.Sopir;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +15,6 @@ public interface InsidenRepository extends JpaRepository<Insiden, UUID> {
     List<Insiden> findByStatus(Insiden.InsidenStatus status);
 
     List<Insiden> findAllByIsDeletedFalse();
+
+    List<Insiden> findBySopir(Sopir sopir);
 }
