@@ -61,4 +61,8 @@ public class OrderItem { // 1 order item = 1 truk
   @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL)
   @JsonManagedReference
   private List<Rute> rute;
+
+  @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL)
+  @JsonManagedReference
+  private List<OrderItemHistory> orderItemHistories;
 }

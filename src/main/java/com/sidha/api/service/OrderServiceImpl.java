@@ -16,10 +16,12 @@ import com.sidha.api.model.enumerator.TipeBarang;
 import com.sidha.api.model.enumerator.TipeTruk;
 import com.sidha.api.model.order.Order;
 import com.sidha.api.model.order.OrderItem;
+import com.sidha.api.model.order.OrderItemHistory;
 import com.sidha.api.model.order.Rute;
 import com.sidha.api.model.user.Klien;
 import com.sidha.api.repository.OrderDb;
 import com.sidha.api.repository.OrderItemDb;
+import com.sidha.api.repository.OrderItemHistoryDb;
 import com.sidha.api.repository.RuteDb;
 
 import lombok.AllArgsConstructor;
@@ -32,6 +34,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderItemDb orderItemDb;
     private RuteDb ruteDb;
     private UserService userService;
+    private OrderItemHistoryDb orderItemHistoryDb;
 
     @Override
     public Order createOrder(CreateOrderRequestDTO request) {
@@ -69,6 +72,11 @@ public class OrderServiceImpl implements OrderService {
             rute.add(ruteSaved);
         });
         orderItem.setRute(rute);
+
+        var orderItemHistories = new ArrayList<OrderItemHistory>();
+        orderItemHistories.add(addOrderItemHistory(orderItem, 0, "Order berhasil dibuat", klien.getUsername()));
+        orderItem.setOrderItemHistories(orderItemHistories);
+
         orderItem.setPrice(rute.stream().mapToLong(Rute::getPrice).sum());
         return orderItemDb.save(orderItem);
     }
@@ -120,7 +128,7 @@ public class OrderServiceImpl implements OrderService {
         order.setTanggalPengiriman(request.getTanggalPengiriman());
 
         request.getOrderItems().forEach(item -> {
-            if (item.getOrderItemId() != null) {    // Jika order item sudah ada
+            if (item.getOrderItemId() != null) { // Jika order item sudah ada
                 var orderItem = orderItemDb.findById(item.getOrderItemId())
                         .orElseThrow(() -> new IllegalArgumentException("Order Item not found"));
                 orderItem.setIsPecahBelah(item.getIsPecahBelah());
@@ -129,7 +137,7 @@ public class OrderServiceImpl implements OrderService {
                 orderItem.setKeterangan(item.getKeterangan());
 
                 item.getRute().forEach(r -> {
-                    if (r.getRuteId() != null) {    // Jika rute sudah ada
+                    if (r.getRuteId() != null) { // Jika rute sudah ada
                         var rute = ruteDb.findById(r.getRuteId())
                                 .orElseThrow(() -> new IllegalArgumentException("Rute not found"));
                         rute.setSource(r.getSource());
@@ -141,7 +149,7 @@ public class OrderServiceImpl implements OrderService {
                                 order.getKlien().getListPenawaranHargaItem()));
                         ruteDb.save(rute);
 
-                    } else {    // Jika menambahkan rute baru
+                    } else { // Jika menambahkan rute baru
                         CreateRuteRequestDTO newRute = new CreateRuteRequestDTO();
                         newRute.setSource(r.getSource());
                         newRute.setDestination(r.getDestination());
@@ -155,7 +163,7 @@ public class OrderServiceImpl implements OrderService {
                 orderItem.setPrice(orderItem.getRute().stream().mapToLong(Rute::getPrice).sum());
                 orderItemDb.save(orderItem);
 
-            } else {    // Jika menambahkan order item baru
+            } else { // Jika menambahkan order item baru
                 CreateOrderItemRequestDTO newItem = new CreateOrderItemRequestDTO();
                 newItem.setIsPecahBelah(item.getIsPecahBelah());
                 newItem.setTipeBarang(item.getTipeBarang());
@@ -202,6 +210,14 @@ public class OrderServiceImpl implements OrderService {
                 orderItem.setStatusOrder(-1);
                 orderItem.setAlasanPenolakan(confirmOrderItem.getRejectionReason());
             }
+
+            var createdBy = userService.findById(request.getKaryawanId()).getUsername();
+            var orderItemHistory = addOrderItemHistory(orderItem, orderItem.getStatusOrder(),
+                    confirmOrderItem.getIsAccepted() ? "Order diterima"
+                            : "Order ditolak: " + confirmOrderItem.getRejectionReason(),
+                    createdBy);
+
+            orderItem.getOrderItemHistories().add(orderItemHistory);
             orderItemDb.save(orderItem);
         }
         return orderDb.findById(request.getOrderId())
@@ -211,6 +227,16 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> getAllOrders() {
         return orderDb.findAll();
+    }
+
+    private OrderItemHistory addOrderItemHistory(OrderItem orderItem, Integer status, String description,
+            String createdBy) {
+        var orderItemHistory = new OrderItemHistory();
+        orderItemHistory.setOrderItemId(orderItem);
+        orderItemHistory.setStatus(status);
+        orderItemHistory.setDescription(description);
+        orderItemHistory.setCreatedBy(createdBy);
+        return orderItemHistoryDb.save(orderItemHistory);
     }
 
 }
