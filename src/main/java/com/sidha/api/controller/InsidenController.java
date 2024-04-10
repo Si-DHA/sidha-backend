@@ -1,5 +1,6 @@
 package com.sidha.api.controller;
 
+import com.sidha.api.DTO.request.InsidenDTO;
 import com.sidha.api.DTO.response.BaseResponse;
 import com.sidha.api.model.Insiden;
 import com.sidha.api.model.Insiden.InsidenStatus;
@@ -94,8 +95,8 @@ public class InsidenController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Insiden>> getAllInsidens() {
-        List<Insiden> insidens = insidenService.getAllInsidens();
+    public ResponseEntity<List<InsidenDTO>> getAllInsidens() {
+        List<InsidenDTO> insidens = insidenService.getAllInsidensWithSopirInfo();
         return ResponseEntity.ok(insidens);
     }
 
