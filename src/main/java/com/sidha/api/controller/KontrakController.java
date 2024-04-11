@@ -19,8 +19,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.http.MediaType;
+
+
 
 @RestController
 @RequestMapping("/api/kontrak")
@@ -31,6 +34,19 @@ public class KontrakController {
 
   @Autowired
   private UserService userService;
+
+  @GetMapping("/detail/{userId}")
+  public ResponseEntity<?> getMethodName(@PathVariable String userId) {
+    try {
+      UUID userUUID = UUID.fromString(userId);
+      var kontrak = service.getDetailKontrak(userUUID);
+      return new ResponseEntity<>(new BaseResponse<>(true, 200, "Detail kontrak", kontrak), HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<>(new BaseResponse<>(false, 500, e.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  
+  }
+  
 
   @GetMapping("/doc/{userId}")
   public ResponseEntity<?> getDocumentByUserId(@PathVariable String userId) {
@@ -71,4 +87,15 @@ public class KontrakController {
       return new ResponseEntity<>(new BaseResponse<>(false, 500, e.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @GetMapping("/all")
+  public ResponseEntity<?> getMethodName() {
+    var listKontrak = service.getAllClientContract();
+    if(listKontrak.size() > 0) {
+      return new ResponseEntity<>(new BaseResponse<>(true, 200, "List kontrak", listKontrak), HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(new BaseResponse<>(true, 200, "No Kontrak Found", null), HttpStatus.NOT_FOUND);
+    }
+  }
+  
 }
