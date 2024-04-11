@@ -13,6 +13,8 @@ import com.sidha.api.repository.ImageDataDb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,9 +23,8 @@ import java.util.Optional;
 @Service
 public class StorageServiceImpl implements StorageService {
 
-//  private final String FOLDER_PATH = "/home/nur_fajar11/imagedata/";
-  // private final String FOLDER_PATH = "/Users/devina.hana/Documents/College/term 6/propensi/imagedata/";
-  private final String FOLDER_PATH = "C:\\Users\\USER\\PROPENSI\\imagedata\\";
+  @Value("${image.folder.path}")
+  private  String FOLDER_PATH;
 
   @Autowired
   private ImageDataDb imageDataDb;
