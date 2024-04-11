@@ -17,12 +17,15 @@ import com.sidha.api.DTO.request.order.UpdateOrderRequestDTO;
 import com.sidha.api.DTO.response.BaseResponse;
 import com.sidha.api.model.order.OrderItem;
 import com.sidha.api.service.OrderService;
+import com.sidha.api.service.StorageService;
 import com.sidha.api.utils.AuthUtils;
 import org.springframework.web.multipart.MultipartFile;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import java.util.NoSuchElementException;
 import java.io.IOException;
+import com.sidha.api.model.image.ImageData;
+import org.springframework.http.MediaType;
 
 @RestController
 @AllArgsConstructor
@@ -32,6 +35,8 @@ public class OrderController {
     private OrderService orderService;
 
     private AuthUtils authUtils;
+
+    StorageService storageService;
 
     //#region Klien
 
@@ -146,6 +151,54 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, e.getMessage(), null));
         }
     }
-    
+
+    @GetMapping("/get-bukti")
+    public ResponseEntity<?> getImageBuktiBongkarMuat(
+            @RequestParam String idOrderItem,
+            @RequestParam boolean isBongkar
+    ) {
+        try {
+            ImageData imageData = orderService.getImageBongkarMuat(
+                    UUID.fromString(idOrderItem),
+                    isBongkar);
+
+            if (imageData != null) {
+                byte[] image = storageService.getImageFromFileSystem(imageData.getName());
+
+                return ResponseEntity.status(HttpStatus.OK)
+                        .contentType(MediaType.valueOf(imageData.getType()))
+                        .body(image);
+            } else {
+                return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Bukti belum diunggah", null));
+            }
+
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse<>(false, 404, e.getMessage(), null));
+        } catch (IOException e) {
+            String errorMessage = "Error fetching image: " + e.getMessage();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, errorMessage, null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, e.getMessage(), null));
+        }
+    }
+
+    @DeleteMapping("/delete-bukti")
+    public ResponseEntity<?> deleteImageBuktiBongkarMuat(
+            @RequestParam String idOrderItem,
+            @RequestParam boolean isBongkar
+    ) {
+        try {
+            orderService.deleteImageBongkarMuat(
+                    UUID.fromString(idOrderItem),
+                    isBongkar);
+
+            return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Bukti berhasil dihapus", null));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse<>(false, 404, e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, e.getMessage(), null));
+        }
+    }
+
     //#endregion
 }
