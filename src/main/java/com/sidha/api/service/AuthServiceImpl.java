@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private ObjectMapper objectMapper;
-
+    
     @Autowired
     private ImageDataDb imageDataDb;
 
@@ -65,7 +65,13 @@ public class AuthServiceImpl implements AuthService {
 
         MultipartFile imageFile = request.getImageFile();
         var randomPassword = PasswordGenerator.generatePassword(8);
-        request.setPassword(passwordEncoder.encode(randomPassword));
+
+        if (request.getPassword() == null || request.getPassword() == "") {
+            request.setPassword(passwordEncoder.encode(randomPassword));
+        } else {
+            var oldPassword = request.getPassword();
+            request.setPassword(passwordEncoder.encode(oldPassword));
+        }
         var user = objectMapper.convertValue(request, UserModel.class);
         var jwt = jwtUtils.generateJwtToken(user);
         var userResponse = new UserResponse();
@@ -81,8 +87,14 @@ public class AuthServiceImpl implements AuthService {
                 imageDataDb.save(profileImg);
             }
             userResponse.setUser(savedUser);
-            mailSenderUtils.sendMail(request.getEmail(), "Welcome to SIDHA",
-                    generateMessageForNewClient(request.getName(), request.getEmail(), randomPassword));
+
+            if (request.getPassword() == null || request.getPassword() == "") {
+                mailSenderUtils.sendMail(request.getEmail(), "Welcome to SIDHA",
+                        generateMessageForNewClient(request.getName(), request.getEmail(), randomPassword));
+            } else {
+                mailSenderUtils.sendMail(request.getEmail(), "Welcome to SIDHA",
+                        generateMessageForNewClient(request.getName(), request.getEmail(), request.getPassword()));
+            }
             return userResponse;
 
         } catch (IOException e) {
