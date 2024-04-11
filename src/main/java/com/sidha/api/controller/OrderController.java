@@ -10,16 +10,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import com.sidha.api.DTO.request.order.CreateOrderRequestDTO;
 import com.sidha.api.DTO.request.order.OrderConfirmRequestDTO;
 import com.sidha.api.DTO.request.order.UpdateOrderRequestDTO;
 import com.sidha.api.DTO.response.BaseResponse;
+import com.sidha.api.model.order.OrderItem;
 import com.sidha.api.service.OrderService;
 import com.sidha.api.utils.AuthUtils;
-
+import org.springframework.web.multipart.MultipartFile;
 import lombok.AllArgsConstructor;
-
+import org.springframework.http.HttpStatus;
+import java.util.NoSuchElementException;
+import java.io.IOException;
 
 @RestController
 @AllArgsConstructor
@@ -118,4 +121,31 @@ public class OrderController {
 
     //#endregion
     
+    //#region Sopir
+    @PostMapping("/upload-bukti")
+    public ResponseEntity<?> uploadBuktiBongkarMuat(
+            @RequestParam String idOrderItem,
+            @RequestParam boolean isBongkar,
+            @RequestPart MultipartFile imageFile
+    ) {
+        if (imageFile.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, "Tidak ada bukti yang diunggah", null));
+        }
+
+        try {
+            OrderItem orderItem = orderService.uploadImageBongkarMuat(UUID.fromString(idOrderItem),
+                    isBongkar,
+                    imageFile);
+            return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Bukti berhasil diunggah", orderItem));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse<>(false, 404, e.getMessage(), null));
+        } catch (IOException e) {
+            String errorMessage = "Error uploading image: " + e.getMessage();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, errorMessage, null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, e.getMessage(), null));
+        }
+    }
+    
+    //#endregion
 }

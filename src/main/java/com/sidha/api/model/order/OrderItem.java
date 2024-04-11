@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sidha.api.model.enumerator.TipeBarang;
 import com.sidha.api.model.enumerator.TipeTruk;
+import com.sidha.api.model.image.BongkarMuatImage;
 import com.sidha.api.model.user.Sopir;
 
 import java.util.List;
@@ -61,4 +62,12 @@ public class OrderItem { // 1 order item = 1 truk
   @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL)
   @JsonManagedReference
   private List<Rute> rute;
+
+  @JsonManagedReference
+  @OneToOne(cascade = CascadeType.ALL)
+  private BongkarMuatImage buktiBongkar;
+
+  @JsonManagedReference
+  @OneToOne(cascade = CascadeType.ALL)
+  private BongkarMuatImage buktiMuat;
 }

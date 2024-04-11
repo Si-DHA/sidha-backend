@@ -21,6 +21,13 @@ import com.sidha.api.model.user.Klien;
 import com.sidha.api.repository.OrderDb;
 import com.sidha.api.repository.OrderItemDb;
 import com.sidha.api.repository.RuteDb;
+import java.util.NoSuchElementException;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import org.modelmapper.ModelMapper;
+import com.sidha.api.model.image.BongkarMuatImage;
+import com.sidha.api.model.image.ImageData;
+import com.sidha.api.repository.ImageDataDb;
 
 import lombok.AllArgsConstructor;
 
@@ -32,6 +39,9 @@ public class OrderServiceImpl implements OrderService {
     private OrderItemDb orderItemDb;
     private RuteDb ruteDb;
     private UserService userService;
+    private StorageService storageService;
+    private ImageDataDb imageDataDb;
+    private ModelMapper modelMapper;
 
     @Override
     public Order createOrder(CreateOrderRequestDTO request) {
@@ -213,4 +223,84 @@ public class OrderServiceImpl implements OrderService {
         return orderDb.findAll();
     }
 
+    @Override
+    public OrderItem findOrderItemById(UUID idOrderItem) {
+        OrderItem orderItem = orderItemDb.findById(idOrderItem).orElse(null);
+
+        if (orderItem == null) {
+            throw new NoSuchElementException("Id invoice tidak valid");
+        }
+
+        return orderItem;
+    }
+
+    @Override
+    public OrderItem saveImageBongkarMuat(OrderItem orderItem) {
+        return orderItemDb.save(orderItem);
+    }
+
+    @Override
+    public OrderItem uploadImageBongkarMuat(UUID idOrderItem, boolean isBongkar, MultipartFile imageFile) throws IOException {
+
+        OrderItem orderItem = this.findOrderItemById(idOrderItem);
+
+        ImageData imageData = storageService.uploadImageAndSaveToDB(
+                imageFile,
+                imageFile.getOriginalFilename());
+        BongkarMuatImage bongkarMuatImage = modelMapper.map(imageData, BongkarMuatImage.class);
+
+        ImageData currentImage;
+        if (!isBongkar) {
+            currentImage = orderItem.getBuktiMuat();
+            orderItem.setBuktiMuat(bongkarMuatImage);
+        } else {
+            currentImage = orderItem.getBuktiBongkar();
+            orderItem.setBuktiBongkar(bongkarMuatImage);
+        }
+        this.saveImageBongkarMuat(orderItem);
+
+        if (currentImage != null) {
+            storageService.deleteImageFile(currentImage);
+            imageDataDb.delete(currentImage);
+        }
+
+        bongkarMuatImage.setOrderItem(orderItem);
+        imageDataDb.save(bongkarMuatImage);
+
+        return orderItem;
+    }
+
+    @Override
+    public ImageData getImageBongkarMuat(UUID idOrderItem, boolean isBongkar) {
+        OrderItem orderItem = this.findOrderItemById(idOrderItem);
+
+        ImageData imageData;
+        if (!isBongkar) {
+            imageData = orderItem.getBuktiMuat();
+        } else {
+            imageData = orderItem.getBuktiBongkar();
+        }
+
+        return imageData;
+    }
+
+    @Override
+    public void deleteImageBongkarMuat(UUID idOrderItem, boolean isBongkar) {
+        ImageData imageData = this.getImageBongkarMuat(idOrderItem, isBongkar);
+        if (imageData != null) {
+            OrderItem orderItem = this.findOrderItemById(idOrderItem);
+
+            if (!isBongkar) {
+                orderItem.setBuktiMuat(null);
+            } else {
+                orderItem.setBuktiBongkar(null);
+            }
+            this.saveImageBongkarMuat(orderItem);
+
+            storageService.deleteImageFile(imageData);
+            imageDataDb.delete(imageData);
+        } else {
+            throw new NoSuchElementException("Belum ada bukti yang diunggah");
+        }
+    }
 }
