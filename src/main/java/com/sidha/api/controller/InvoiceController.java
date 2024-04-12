@@ -130,6 +130,12 @@ public class InvoiceController {
         }
     }
 
+    @GetMapping("/view-all")
+    public ResponseEntity<?> getInvoiceById() {
+        List<Invoice> listInvoice = invoiceService.findAllInvoice();
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Invoice is succesfully found", listInvoice));
+    }
+
     @PutMapping("/konfirmasi-bukti")
     public ResponseEntity<?> konfirmasiBuktiPembayaran(
             @Valid @RequestBody KonfirmasiBuktiPembayaranDTO konfirmasiBuktiPembayaranDTO,

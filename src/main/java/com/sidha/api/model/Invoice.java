@@ -3,6 +3,7 @@ package com.sidha.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sidha.api.model.image.InvoiceImage;
+import com.sidha.api.model.order.Order;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +28,8 @@ public class Invoice {
     private final UUID idInvoice = UUID.randomUUID();
 
     // TODO: one-to-one Order
+    @OneToOne(cascade = CascadeType.ALL)
+    private Order order;
 
     @JsonManagedReference
     @OneToOne(cascade = CascadeType.ALL)
