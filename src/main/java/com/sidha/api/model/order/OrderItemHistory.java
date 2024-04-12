@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = "orderItemId")
+@EqualsAndHashCode(exclude = "orderItem")
 @Entity
 @Table(name = "order_item_history")
 public class OrderItemHistory {
@@ -33,7 +33,7 @@ public class OrderItemHistory {
     @ManyToOne
     @JoinColumn(name = "order_item_id")
     @JsonBackReference
-    private OrderItem orderItemId;
+    private OrderItem orderItem;
 
     @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate = LocalDateTime.now();

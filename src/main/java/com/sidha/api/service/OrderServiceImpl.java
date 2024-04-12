@@ -232,7 +232,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderItemHistory addOrderItemHistory(OrderItem orderItem, Integer status, String description,
             String createdBy) {
         var orderItemHistory = new OrderItemHistory();
-        orderItemHistory.setOrderItemId(orderItem);
+        orderItemHistory.setOrderItem(orderItem);
         orderItemHistory.setStatus(status);
         orderItemHistory.setDescription(description);
         orderItemHistory.setCreatedBy(createdBy);
