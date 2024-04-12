@@ -26,6 +26,7 @@ import java.util.NoSuchElementException;
 import java.io.IOException;
 import com.sidha.api.model.image.ImageData;
 import org.springframework.http.MediaType;
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -127,10 +128,9 @@ public class OrderController {
     //#endregion
     
     //#region Sopir
-    @PostMapping("/upload-bukti")
-    public ResponseEntity<?> uploadBuktiBongkarMuat(
+    @PostMapping("/upload-bukti-muat")
+    public ResponseEntity<?> uploadBuktiMuat(
             @RequestParam String idOrderItem,
-            @RequestParam boolean isBongkar,
             @RequestPart MultipartFile imageFile
     ) {
         if (imageFile.isEmpty()) {
@@ -138,8 +138,7 @@ public class OrderController {
         }
 
         try {
-            OrderItem orderItem = orderService.uploadImageBongkarMuat(UUID.fromString(idOrderItem),
-                    isBongkar,
+            OrderItem orderItem = orderService.uploadImageMuat(UUID.fromString(idOrderItem),
                     imageFile);
             return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Bukti berhasil diunggah", orderItem));
         } catch (NoSuchElementException e) {
@@ -152,15 +151,36 @@ public class OrderController {
         }
     }
 
-    @GetMapping("/get-bukti")
-    public ResponseEntity<?> getImageBuktiBongkarMuat(
+    @PostMapping("/upload-bukti-bongkar")
+    public ResponseEntity<?> uploadBuktiBongkar(
             @RequestParam String idOrderItem,
-            @RequestParam boolean isBongkar
+            @RequestPart MultipartFile imageFile
+    ) {
+        if (imageFile.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, "Tidak ada bukti yang diunggah", null));
+        }
+
+        try {
+            OrderItem orderItem = orderService.uploadImageBongkar(UUID.fromString(idOrderItem),
+                    imageFile);
+            return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Bukti berhasil diunggah", orderItem));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse<>(false, 404, e.getMessage(), null));
+        } catch (IOException e) {
+            String errorMessage = "Error uploading image: " + e.getMessage();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, errorMessage, null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/get-bukti-muat")
+    public ResponseEntity<?> getImageBuktiMuat(
+            @RequestParam String idOrderItem
     ) {
         try {
-            ImageData imageData = orderService.getImageBongkarMuat(
-                    UUID.fromString(idOrderItem),
-                    isBongkar);
+            ImageData imageData = orderService.getImageMuat(
+                    UUID.fromString(idOrderItem));
 
             if (imageData != null) {
                 byte[] image = storageService.getImageFromFileSystem(imageData.getName());
@@ -182,17 +202,79 @@ public class OrderController {
         }
     }
 
-    @DeleteMapping("/delete-bukti")
-    public ResponseEntity<?> deleteImageBuktiBongkarMuat(
-            @RequestParam String idOrderItem,
-            @RequestParam boolean isBongkar
+    @GetMapping("/get-bukti-bongkar")
+    public ResponseEntity<?> getImageBuktiBongkar(
+            @RequestParam String idOrderItem
     ) {
         try {
-            orderService.deleteImageBongkarMuat(
-                    UUID.fromString(idOrderItem),
-                    isBongkar);
+            ImageData imageData = orderService.getImageBongkar(
+                    UUID.fromString(idOrderItem));
+
+            if (imageData != null) {
+                byte[] image = storageService.getImageFromFileSystem(imageData.getName());
+
+                return ResponseEntity.status(HttpStatus.OK)
+                        .contentType(MediaType.valueOf(imageData.getType()))
+                        .body(image);
+            } else {
+                return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Bukti belum diunggah", null));
+            }
+
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse<>(false, 404, e.getMessage(), null));
+        } catch (IOException e) {
+            String errorMessage = "Error fetching image: " + e.getMessage();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, errorMessage, null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, e.getMessage(), null));
+        }
+    }
+
+    @DeleteMapping("/delete-bukti-muat")
+    public ResponseEntity<?> deleteImageBuktiMuat(
+            @RequestParam String idOrderItem
+    ) {
+        try {
+            orderService.deleteImageMuat(
+                    UUID.fromString(idOrderItem));
 
             return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Bukti berhasil dihapus", null));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse<>(false, 404, e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, e.getMessage(), null));
+        }
+    }
+
+    @DeleteMapping("/delete-bukti-bongkar")
+    public ResponseEntity<?> deleteImageBuktiBongkar(
+            @RequestParam String idOrderItem
+    ) {
+        try {
+            orderService.deleteImageBongkar(
+                    UUID.fromString(idOrderItem));
+
+            return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Bukti berhasil dihapus", null));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse<>(false, 404, e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, e.getMessage(), null));
+        }
+    }
+
+    @GetMapping(value = "/sopir/{sopir}/view-all")
+    public List<OrderItem> getAllOrderItemByIdSopir(@PathVariable("sopir") String sopir) {
+        List<OrderItem> listOrderItem = orderService.getAllOrderItemByIdSopir(UUID.fromString(sopir));
+        return listOrderItem;
+    }
+
+    @GetMapping("/order-item/{idOrderItem}")
+    public ResponseEntity<?> getOrderItemById(
+            @PathVariable String idOrderItem
+    ) {
+        try {
+            OrderItem orderItem = orderService.getOrderItemById(UUID.fromString(idOrderItem));
+            return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Order item is succesfully found", orderItem));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse<>(false, 404, e.getMessage(), null));
         } catch (Exception e) {

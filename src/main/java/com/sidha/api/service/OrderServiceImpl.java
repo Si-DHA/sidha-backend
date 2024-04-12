@@ -240,61 +240,69 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderItem uploadImageBongkarMuat(UUID idOrderItem, boolean isBongkar, MultipartFile imageFile) throws IOException {
-
+    public OrderItem uploadImageMuat(UUID idOrderItem, MultipartFile imageFile) throws IOException {
         OrderItem orderItem = this.findOrderItemById(idOrderItem);
-
         ImageData imageData = storageService.uploadImageAndSaveToDB(
                 imageFile,
                 imageFile.getOriginalFilename());
-        BongkarMuatImage bongkarMuatImage = modelMapper.map(imageData, BongkarMuatImage.class);
+        BongkarMuatImage muatImage = modelMapper.map(imageData, BongkarMuatImage.class);
 
         ImageData currentImage;
-        if (!isBongkar) {
-            currentImage = orderItem.getBuktiMuat();
-            orderItem.setBuktiMuat(bongkarMuatImage);
-        } else {
-            currentImage = orderItem.getBuktiBongkar();
-            orderItem.setBuktiBongkar(bongkarMuatImage);
-        }
+        currentImage = orderItem.getBuktiMuat();
+        orderItem.setBuktiMuat(muatImage);
         this.saveImageBongkarMuat(orderItem);
 
         if (currentImage != null) {
             storageService.deleteImageFile(currentImage);
             imageDataDb.delete(currentImage);
         }
-
-        bongkarMuatImage.setOrderItem(orderItem);
-        imageDataDb.save(bongkarMuatImage);
-
+        muatImage.setOrderItem(orderItem);
+        imageDataDb.save(muatImage);
         return orderItem;
     }
 
     @Override
-    public ImageData getImageBongkarMuat(UUID idOrderItem, boolean isBongkar) {
+    public OrderItem uploadImageBongkar(UUID idOrderItem, MultipartFile imageFile) throws IOException {
         OrderItem orderItem = this.findOrderItemById(idOrderItem);
+        ImageData imageData = storageService.uploadImageAndSaveToDB(
+                imageFile,
+                imageFile.getOriginalFilename());
+        BongkarMuatImage bongkarImage = modelMapper.map(imageData, BongkarMuatImage.class);
 
-        ImageData imageData;
-        if (!isBongkar) {
-            imageData = orderItem.getBuktiMuat();
-        } else {
-            imageData = orderItem.getBuktiBongkar();
+        ImageData currentImage;
+        currentImage = orderItem.getBuktiBongkar();
+        orderItem.setBuktiBongkar(bongkarImage);
+        this.saveImageBongkarMuat(orderItem);
+
+        if (currentImage != null) {
+            storageService.deleteImageFile(currentImage);
+            imageDataDb.delete(currentImage);
         }
+        bongkarImage.setOrderItem(orderItem);
+        imageDataDb.save(bongkarImage);
+        return orderItem;
+    }
 
+    @Override
+    public ImageData getImageMuat(UUID idOrderItem) {
+        OrderItem orderItem = this.findOrderItemById(idOrderItem);
+        ImageData imageData = orderItem.getBuktiMuat();
         return imageData;
     }
 
     @Override
-    public void deleteImageBongkarMuat(UUID idOrderItem, boolean isBongkar) {
-        ImageData imageData = this.getImageBongkarMuat(idOrderItem, isBongkar);
+    public ImageData getImageBongkar(UUID idOrderItem) {
+        OrderItem orderItem = this.findOrderItemById(idOrderItem);
+        ImageData imageData = orderItem.getBuktiBongkar();
+        return imageData;
+    }
+
+    @Override
+    public void deleteImageMuat(UUID idOrderItem) {
+        ImageData imageData = this.getImageMuat(idOrderItem);
         if (imageData != null) {
             OrderItem orderItem = this.findOrderItemById(idOrderItem);
-
-            if (!isBongkar) {
-                orderItem.setBuktiMuat(null);
-            } else {
-                orderItem.setBuktiBongkar(null);
-            }
+            orderItem.setBuktiMuat(null);
             this.saveImageBongkarMuat(orderItem);
 
             storageService.deleteImageFile(imageData);
@@ -302,5 +310,34 @@ public class OrderServiceImpl implements OrderService {
         } else {
             throw new NoSuchElementException("Belum ada bukti yang diunggah");
         }
+    }
+
+    @Override
+    public void deleteImageBongkar(UUID idOrderItem) {
+        ImageData imageData = this.getImageBongkar(idOrderItem);
+        if (imageData != null) {
+            OrderItem orderItem = this.findOrderItemById(idOrderItem);
+            orderItem.setBuktiBongkar(null);
+            this.saveImageBongkarMuat(orderItem);
+
+            storageService.deleteImageFile(imageData);
+            imageDataDb.delete(imageData);
+        } else {
+            throw new NoSuchElementException("Belum ada bukti yang diunggah");
+        }
+    }
+
+    @Override
+    public List<OrderItem> getAllOrderItemByIdSopir(UUID sopir){
+        return orderItemDb.findByIdSopir(sopir);
+    }
+
+    @Override
+    public OrderItem getOrderItemById(UUID idOrderItem) {
+        OrderItem orderItem = orderItemDb.findById(idOrderItem).orElse(null);
+        if (orderItem == null) {
+            throw new NoSuchElementException("Id order tidak valid");
+        }
+        return orderItem;
     }
 }

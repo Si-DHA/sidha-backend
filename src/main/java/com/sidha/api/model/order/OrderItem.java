@@ -54,8 +54,8 @@ public class OrderItem { // 1 order item = 1 truk
   @JsonBackReference
   private Order order;
 
-  @ManyToOne
-  @JoinColumn(name = "sopir_id")
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "id_sopir", referencedColumnName = "id")
   @JsonBackReference
   private Sopir sopir;
 

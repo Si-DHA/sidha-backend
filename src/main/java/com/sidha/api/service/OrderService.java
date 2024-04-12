@@ -26,11 +26,21 @@ public interface OrderService {
 
     OrderItem findOrderItemById(UUID idOrderItem);
 
-    OrderItem uploadImageBongkarMuat(UUID idOrderItem, boolean isBongkar, MultipartFile imageFile) throws IOException;
+    OrderItem uploadImageMuat(UUID idOrderItem, MultipartFile imageFile) throws IOException;
 
-    ImageData getImageBongkarMuat(UUID idOrderItem, boolean isBongkar);
+    OrderItem uploadImageBongkar(UUID idOrderItem, MultipartFile imageFile) throws IOException;
 
-    void deleteImageBongkarMuat(UUID idInvoice, boolean isBongkar);
+    ImageData getImageMuat(UUID idOrderItem);
+
+    ImageData getImageBongkar(UUID idOrderItem);
+
+    void deleteImageMuat(UUID idOrderItem);
+
+    void deleteImageBongkar(UUID idOrderItem);
 
     OrderItem saveImageBongkarMuat(OrderItem orderItem);
+
+    List<OrderItem> getAllOrderItemByIdSopir(UUID sopir);
+
+    OrderItem getOrderItemById(UUID idOrderItem);
 }
