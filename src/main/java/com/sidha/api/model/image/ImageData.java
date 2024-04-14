@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "IMAGE_DATA")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "image_type", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue(value = "image")
+@Table(name = "image_data")
 public class ImageData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
