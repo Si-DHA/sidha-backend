@@ -130,6 +130,26 @@ public class InvoiceController {
         }
     }
 
+    @GetMapping("/view-all")
+    public ResponseEntity<?> getAllInvoice() {
+        List<Invoice> listInvoice = invoiceService.findAllInvoice();
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Invoice is succesfully found", listInvoice));
+    }
+
+    @GetMapping("/view-klien/{idKlien}")
+    public ResponseEntity<?> getInvoiceByIdKlien(
+            @PathVariable String idKlien
+    ) {
+        try {
+            List<Invoice> listInvoice = invoiceService.findInvoiceByIdKlien(UUID.fromString(idKlien));
+            return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 200, "Invoices are succesfully found", listInvoice));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(true, 404, e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, e.getMessage(), null));
+        }
+    }
+
     @PutMapping("/konfirmasi-bukti")
     public ResponseEntity<?> konfirmasiBuktiPembayaran(
             @Valid @RequestBody KonfirmasiBuktiPembayaranDTO konfirmasiBuktiPembayaranDTO,
