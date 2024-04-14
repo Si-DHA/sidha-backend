@@ -100,7 +100,8 @@ public class AuthServiceImpl implements AuthService {
             return userResponse;
 
         } catch (IOException e) {
-            throw new RuntimeException("Failed to save image");
+            throw new RuntimeException("Gagal mendaftarkan user!");
+            
         }
 
     }
