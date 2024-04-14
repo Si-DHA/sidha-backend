@@ -51,7 +51,7 @@ public class StorageServiceImpl implements StorageService {
     file.transferTo(new File(filePath));
 
     if (imageData != null) {
-      return "image uploaded successfully : " + filePath;
+      return "Gambar berhasil disimpan : " + filePath;
     }
     return null;
   }
@@ -100,7 +100,7 @@ public class StorageServiceImpl implements StorageService {
       logger.info("image ada");
       return this.updateImageInDB(file, imageData, updatedFilename);
     } else {
-      throw new RuntimeException("Image not found");
+      throw new RuntimeException("Gambar tidak ditemukan");
     }
 
   }

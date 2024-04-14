@@ -48,7 +48,7 @@ public class KontrakController {
 
   }
 
-  @GetMapping("/docc/{userId}")
+  @GetMapping("/doc/{userId}")
   public ResponseEntity<?> getDocumentByUserId(@PathVariable String userId) {
     try {
       UUID userUUID = UUID.fromString(userId);
@@ -106,7 +106,7 @@ public class KontrakController {
     try {
       UUID userUUID = UUID.fromString(userId);
       service.uploadDocumentAndSaveToDB(file, userUUID);
-      return new ResponseEntity<>(new BaseResponse<>(true, 200, "Document uploaded successfully", null), HttpStatus.OK);
+      return new ResponseEntity<>(new BaseResponse<>(true, 200, "Dokumen kontrak berhasil diunggah", null), HttpStatus.OK);
     } catch (Exception e) {
       return new ResponseEntity<>(new BaseResponse<>(false, 500, e.getMessage(), null),
           HttpStatus.INTERNAL_SERVER_ERROR);
@@ -117,9 +117,9 @@ public class KontrakController {
   public ResponseEntity<?> getMethodName() {
     var listKontrak = service.getAllClientContract();
     if (listKontrak.size() > 0) {
-      return new ResponseEntity<>(new BaseResponse<>(true, 200, "List kontrak", listKontrak), HttpStatus.OK);
+      return new ResponseEntity<>(new BaseResponse<>(true, 200, "Daftar kontrak", listKontrak), HttpStatus.OK);
     } else {
-      return new ResponseEntity<>(new BaseResponse<>(true, 200, "No Kontrak Found", null), HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(new BaseResponse<>(true, 200, "Tidak ada data kontrak", null), HttpStatus.NOT_FOUND);
     }
   }
 
