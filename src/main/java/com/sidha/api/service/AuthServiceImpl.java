@@ -64,13 +64,15 @@ public class AuthServiceImpl implements AuthService {
         objectMapper.registerModule(new JavaTimeModule());
 
         MultipartFile imageFile = request.getImageFile();
+        String rawPassword ;
         var randomPassword = PasswordGenerator.generatePassword(8);
 
         if (request.getPassword() == null || request.getPassword() == "") {
+            rawPassword = randomPassword;
             request.setPassword(passwordEncoder.encode(randomPassword));
         } else {
-            var oldPassword = request.getPassword();
-            request.setPassword(passwordEncoder.encode(oldPassword));
+            rawPassword  = request.getPassword();
+            request.setPassword(passwordEncoder.encode(rawPassword));
         }
         var user = objectMapper.convertValue(request, UserModel.class);
         var jwt = jwtUtils.generateJwtToken(user);
@@ -93,7 +95,7 @@ public class AuthServiceImpl implements AuthService {
                         generateMessageForNewClient(request.getName(), request.getEmail(), randomPassword));
             } else {
                 mailSenderUtils.sendMail(request.getEmail(), "Welcome to SIDHA",
-                        generateMessageForNewClient(request.getName(), request.getEmail(), request.getPassword()));
+                        generateMessageForNewClient(request.getName(), request.getEmail(), rawPassword));
             }
             return userResponse;
 
