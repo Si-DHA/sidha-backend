@@ -21,8 +21,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.http.MediaType;
+
+
 
 @RestController
 // @CrossOrigin(origins = "*")
@@ -42,11 +45,11 @@ public class KontrakController {
       var kontrak = service.getDetailKontrak(userUUID);
       return new ResponseEntity<>(new BaseResponse<>(true, 200, "Detail kontrak", kontrak), HttpStatus.OK);
     } catch (Exception e) {
-      return new ResponseEntity<>(new BaseResponse<>(false, 500, e.getMessage(), null),
-          HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new BaseResponse<>(false, 500, e.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
+  
   }
+  
 
   @GetMapping("/doc/{userId}")
   public ResponseEntity<?> getDocumentByUserId(@PathVariable String userId) {
