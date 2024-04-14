@@ -54,7 +54,11 @@ public class OrderServiceImpl implements OrderService {
 
         order.setOrderItems(orderItems);
         order.setTotalPrice(orderItems.stream().mapToLong(OrderItem::getPrice).sum());
-        order.setInvoice(invoiceService.createInvoice());
+        var invoice = invoiceService.createInvoice();
+        order.setInvoice(invoice);
+        invoice.setOrder(order);
+        invoiceService.saveInvoice(invoice);
+
         return orderDb.save(order);
     }
 

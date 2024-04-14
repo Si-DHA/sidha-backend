@@ -53,5 +53,6 @@ public class Order {
   private Klien klien;
 
   @OneToOne(cascade = CascadeType.ALL)
+  @JsonManagedReference
   private Invoice invoice;
 }

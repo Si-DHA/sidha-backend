@@ -1,5 +1,6 @@
 package com.sidha.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sidha.api.model.image.InvoiceImage;
@@ -28,7 +29,8 @@ public class Invoice {
     private final UUID idInvoice = UUID.randomUUID();
 
     // TODO: one-to-one Order
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
+    @JsonBackReference
     private Order order;
 
     @JsonManagedReference

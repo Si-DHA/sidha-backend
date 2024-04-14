@@ -14,6 +14,8 @@ public interface InvoiceService {
 
     Invoice findInvoiceById(UUID idInvoice);
 
+    List<Invoice> findInvoiceByIdKlien(UUID idKlien);
+
     List<Invoice> findAllInvoice();
 
     void deleteInvoiceById(UUID idInvoice);
