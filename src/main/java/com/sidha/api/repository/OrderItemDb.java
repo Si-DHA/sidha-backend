@@ -13,4 +13,6 @@ public interface  OrderItemDb extends JpaRepository<OrderItem, UUID>{
     @Query("SELECT phi FROM OrderItem phi WHERE phi.sopir.id = :sopir")
     List<OrderItem> findByIdSopir(@Param("sopir") UUID sopir);
   
+    @Query("SELECT phi FROM OrderItem phi WHERE phi.order.id = :idOrder")
+    List<OrderItem> findByIdOrder(@Param("idOrder") UUID idOrder);
 }

@@ -340,4 +340,9 @@ public class OrderServiceImpl implements OrderService {
         }
         return orderItem;
     }
+
+    @Override
+    public List<OrderItem> getAllOrderItemByIdOrder(UUID idOrder){
+        return orderItemDb.findByIdOrder(idOrder);
+    }
 }

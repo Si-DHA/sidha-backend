@@ -43,4 +43,6 @@ public interface OrderService {
     List<OrderItem> getAllOrderItemByIdSopir(UUID sopir);
 
     OrderItem getOrderItemById(UUID idOrderItem);
+
+    List<OrderItem> getAllOrderItemByIdOrder(UUID idOrder);
 }
