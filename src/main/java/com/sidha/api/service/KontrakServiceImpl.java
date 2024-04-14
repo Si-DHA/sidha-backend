@@ -119,11 +119,11 @@ public class KontrakServiceImpl implements KontrakService {
   public KontrakResponse getDetailKontrak(UUID userId) {
     var user = userService.findById(userId);
     if (user == null) {
-      throw new RuntimeException("User not found");
+      throw new RuntimeException("Akun tidak ditemukan");
     }
     if (user.getRole() != Role.KLIEN) {
       var userRole = user.getRole();
-      throw new RuntimeException(userRole + " doesn't have a contract document");
+      throw new RuntimeException(userRole + " tidak memiliiki dokumen kontrak");
 
     }
     var response = new KontrakResponse();
@@ -144,7 +144,7 @@ public class KontrakServiceImpl implements KontrakService {
   public List<KontrakKlienResponse> getAllClientContract() {
     var listKontrak = kontrakDb.findAllClientContract();
     if (listKontrak.size() == 0 || listKontrak == null) {
-      throw new RuntimeException("No contract found");
+      throw new RuntimeException("Tidak ada data kontrak ditemukan");
     }
     List<KontrakKlienResponse> listKontrakResponse = new ArrayList<KontrakKlienResponse>();
     try {
@@ -168,7 +168,7 @@ public class KontrakServiceImpl implements KontrakService {
       return listKontrakResponse;
 
     } catch (Exception e) {
-      throw new RuntimeException("Error while getting contract data", e);
+      throw new RuntimeException("Terjadi error : ", e);
     }
 
   }
