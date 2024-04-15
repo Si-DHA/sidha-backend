@@ -239,4 +239,47 @@ public class OrderServiceImpl implements OrderService {
         return orderItemHistoryDb.save(orderItemHistory);
     }
 
+    @Override
+    public Order getOrderById(UUID orderId) {
+        return orderDb.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+    }
+
+    @Override
+    public Order getPrice(CreateOrderRequestDTO request) {
+        var user = userService.findById(request.getKlienId());
+        var klien = (Klien) user;
+
+        var order = new Order();
+        order.setKlien(klien);
+
+        var orderItems = new ArrayList<OrderItem>();
+        request.getOrderItems().forEach(item -> {
+            var orderItem = new OrderItem();
+            orderItem.setIsPecahBelah(item.getIsPecahBelah());
+            orderItem.setTipeBarang(TipeBarang.valueOf(item.getTipeBarang()));
+            orderItem.setTipeTruk(TipeTruk.valueOf(item.getTipeTruk()));
+
+            var rute = new ArrayList<Rute>();
+            item.getRute().forEach(r -> {
+                var ruteItem = new Rute();
+                ruteItem.setSource(r.getSource());
+                ruteItem.setDestination(r.getDestination());
+                ruteItem.setAlamatPengiriman(r.getAlamatPengiriman());
+                ruteItem.setAlamatPenjemputan(r.getAlamatPenjemputan());
+                ruteItem.setPrice(getPriceRute(orderItem.getTipeTruk(), r.getSource(), r.getDestination(),
+                        klien.getListPenawaranHargaItem()));
+                rute.add(ruteItem);
+            });
+
+            orderItem.setRute(rute);
+            orderItem.setPrice(rute.stream().mapToLong(Rute::getPrice).sum());
+            orderItems.add(orderItem);
+        });
+
+        order.setOrderItems(orderItems);
+        order.setTotalPrice(orderItems.stream().mapToLong(OrderItem::getPrice).sum());
+        return order;
+    }
+
 }
