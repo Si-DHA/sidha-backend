@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserModel findById(UUID id) {
-        return userDb.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        return userDb.findById(id).orElseThrow(() -> new RuntimeException("Akun tidak ditemukan"));
     }
 
     @Override
@@ -71,13 +71,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserModel  getUserDetail(UUID id) {
-        return userDb.getDetailUserById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        return userDb.getDetailUserById(id).orElseThrow(() -> new RuntimeException("Akun tidak ditemukan"));
 
     }
 
     @Override
     public UserModel editUserDetail(EditUserDetailRequestDTO requestDTO, UUID id) {
-        UserModel user = userDb.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        UserModel user = userDb.findById(id).orElseThrow(() -> new RuntimeException("Akun tidak ditemukan"));
         user.setName(null != requestDTO.getName() ? requestDTO.getName() : user.getName());
         user.setAddress(null != requestDTO.getAddress() ? requestDTO.getAddress() : user.getAddress());
         user.setPhone(null != requestDTO.getPhone() ? requestDTO.getPhone() : user.getPhone());
@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
             try {
                 storageService.updateProfileImage(requestDTO.getImageFile(), user);
             } catch (Exception e) {
-                throw new RuntimeException("Failed to upload image");
+                throw new RuntimeException("Gagal mengunggah gambar");
             }
         }
 
@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changePassword(String currentPassword, String newPassword, UUID id) {
-        UserModel user = userDb.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        UserModel user = userDb.findById(id).orElseThrow(() -> new RuntimeException("Akun tidak ditemukan"));
         String userPasswordDb = user.getPassword();
 
         // Memeriksa apakah password yang diinput saat ini cocok dengan password yang
@@ -119,10 +119,10 @@ public class UserServiceImpl implements UserService {
                 user.setPassword(passwordEncoder.encode(newPassword));
                 userDb.save(user);
             } else {
-                throw new RuntimeException("New password cannot be the same as the current password");
+                throw new RuntimeException("Password baru tidak boleh sama dengan password lama !");
             }
         } else {
-            throw new RuntimeException("Current password does not match");
+            throw new RuntimeException("Tolong masukkan password Anda saat ini dengan benar !");
         }
     }
 
@@ -153,7 +153,7 @@ public class UserServiceImpl implements UserService {
             user.setIsDeleted(true);
             userDb.save(user);
         } catch (Exception e) {
-            throw new RuntimeException("User not found");
+            throw new RuntimeException("Akun tidak ditemukan");
 
         }
     }

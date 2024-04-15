@@ -34,8 +34,8 @@ public class OrderServiceImpl implements OrderService {
     private OrderItemDb orderItemDb;
     private RuteDb ruteDb;
     private UserService userService;
+    private InvoiceService invoiceService;
     private OrderItemHistoryDb orderItemHistoryDb;
-
     @Override
     public Order createOrder(CreateOrderRequestDTO request) {
         var user = userService.findById(request.getKlienId());
@@ -54,6 +54,11 @@ public class OrderServiceImpl implements OrderService {
 
         order.setOrderItems(orderItems);
         order.setTotalPrice(orderItems.stream().mapToLong(OrderItem::getPrice).sum());
+        var invoice = invoiceService.createInvoice();
+        order.setInvoice(invoice);
+        invoice.setOrder(order);
+        invoiceService.saveInvoice(invoice);
+
         return orderDb.save(order);
     }
 
