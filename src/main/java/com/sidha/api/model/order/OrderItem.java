@@ -67,7 +67,7 @@ public class OrderItem { // 1 order item = 1 truk
   @JsonManagedReference
   private List<OrderItemHistory> orderItemHistories;
 
-  @ManyToOne
+  @ManyToOne(fetch=FetchType.LAZY)
   @JoinColumn(name = "tawaran_kerja")
   @JsonBackReference
   private TawaranKerja tawaranKerja;

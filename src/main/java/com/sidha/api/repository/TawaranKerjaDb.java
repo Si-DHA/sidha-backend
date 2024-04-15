@@ -14,5 +14,10 @@ public interface TawaranKerjaDb extends JpaRepository<TawaranKerja, UUID> {
     List<TawaranKerja> findByOrderItem(OrderItem orderItem);
 
     List<TawaranKerja> findByIsDikonfirmasiKaryawanFalse();
+
+    List<TawaranKerja> findBySopirId(UUID sopirId);
+
+    List<TawaranKerja> findByOrderItemId(UUID orderItemId);
+
 }
 

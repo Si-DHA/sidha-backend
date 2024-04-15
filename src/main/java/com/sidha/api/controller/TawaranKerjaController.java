@@ -45,10 +45,12 @@ public class TawaranKerjaController {
     public ResponseEntity<BaseResponse<TawaranKerja>> acceptJobOffer(
             @RequestBody AcceptTawaranKerjaDTO dto) {
         // if (!authUtils.isSopir(dto.getSopirId().toString())) {
-        //     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(false, 401, "Unauthorized", null));
+        // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new
+        // BaseResponse<>(false, 401, "Unauthorized", null));
         // }
-        
-        TawaranKerja tawaranKerja = tawaranKerjaService.acceptJobOffer(dto.getSopirId(), dto.getOrderItemId(), dto.getLokasi());
+
+        TawaranKerja tawaranKerja = tawaranKerjaService.acceptJobOffer(dto.getSopirId(), dto.getOrderItemId(),
+                dto.getLokasi());
         return ResponseEntity.ok(new BaseResponse<>(true, 200, "Job offer accepted successfully", tawaranKerja));
     }
 
@@ -56,11 +58,39 @@ public class TawaranKerjaController {
     public ResponseEntity<BaseResponse<Void>> confirmJobOffer(
             @PathVariable UUID tawaranKerjaId, @RequestBody ConfirmTawaranKerjaDTO dto) {
         // if (!authUtils.isKaryawan(token)) {
-        //     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(false, 401, "Unauthorized", null));
+        // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new
+        // BaseResponse<>(false, 401, "Unauthorized", null));
         // }
 
         // UUID karyawanId = authUtils.getUserId(token);
         tawaranKerjaService.confirmJobOffer(dto.getKaryawanId(), tawaranKerjaId);
         return ResponseEntity.ok(new BaseResponse<>(true, 200, "Job offer confirmed successfully", null));
     }
+
+    @GetMapping("")
+    public ResponseEntity<BaseResponse<List<TawaranKerja>>> getAllJobOffers() {
+        List<TawaranKerja> offers = tawaranKerjaService.getAllJobOffers();
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "All job offers fetched successfully", offers));
+    }
+
+    @GetMapping("/accepted-by-sopir/{sopirId}")
+    public ResponseEntity<BaseResponse<List<TawaranKerja>>> getJobOffersAcceptedBySopir(@PathVariable UUID sopirId) {
+        List<TawaranKerja> offers = tawaranKerjaService.getJobOffersAcceptedBySopir(sopirId);
+        return ResponseEntity
+                .ok(new BaseResponse<>(true, 200, "Job offers accepted by driver fetched successfully", offers));
+    }
+
+    @GetMapping("/{orderItemId}")
+    public ResponseEntity<?> getTawaranKerjaByOrderItemId(@PathVariable UUID orderItemId) {
+        try {
+            List<TawaranKerja> tawaranKerja = tawaranKerjaService.getTawaranKerjaByOrderItemId(orderItemId);
+            if (tawaranKerja.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(tawaranKerja);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while fetching data");
+        }
+    }
+
 }
