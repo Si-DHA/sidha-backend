@@ -36,6 +36,7 @@ public class OrderServiceImpl implements OrderService {
     private UserService userService;
     private InvoiceService invoiceService;
     private OrderItemHistoryDb orderItemHistoryDb;
+
     @Override
     public Order createOrder(CreateOrderRequestDTO request) {
         var user = userService.findById(request.getKlienId());
@@ -285,6 +286,17 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderItems(orderItems);
         order.setTotalPrice(orderItems.stream().mapToLong(OrderItem::getPrice).sum());
         return order;
+    }
+
+    @Override
+    public List<String> getAllPossibleRute(UUID userId) {
+        // list["source - destinantion"]
+        List<String> listRute = new ArrayList<>();
+        var listPenawaranHargaItem = ((Klien) userService.findById(userId)).getListPenawaranHargaItem();
+        for (PenawaranHargaItem penawaranHargaItem : listPenawaranHargaItem) {
+            listRute.add(penawaranHargaItem.getSource() + " - " + penawaranHargaItem.getDestination());
+        }
+        return listRute;
     }
 
 }
