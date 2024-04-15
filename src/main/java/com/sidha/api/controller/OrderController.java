@@ -30,7 +30,40 @@ public class OrderController {
 
     private AuthUtils authUtils;
 
+    @GetMapping("/{orderId}")
+    public ResponseEntity<?> getOrderById(@PathVariable UUID orderId, @RequestHeader("Authorization") String token){
+        token = token.substring(7); // remove "Bearer " from token
+        
+        if (authUtils.isKaryawan(token) || authUtils.isKlien(token)) {
+            try {
+                var response = orderService.getOrderById(orderId);
+                return ResponseEntity.ok(new BaseResponse<>(true, 200, "Order fetched successfully", response));
+            } catch (Exception e) {
+                return ResponseEntity.badRequest().body(new BaseResponse<>(false, 400, e.getMessage(), null));
+            }
+        }
+
+        return ResponseEntity.badRequest().body(new BaseResponse<>(false, 400, "Unauthorized", null));
+    }
+
+
     //#region Klien
+
+    @GetMapping("/price")
+    public ResponseEntity<?> getPrice(@RequestBody CreateOrderRequestDTO request, @RequestHeader("Authorization") String token){
+        token = token.substring(7); // remove "Bearer " from token
+
+        if (authUtils.isKlien(token)  && authUtils.isMatch(token, request.getKlienId())) {
+            try {
+                var response = orderService.getPrice(request);
+                return ResponseEntity.ok(new BaseResponse<>(true, 200, "Price fetched successfully", response));
+            } catch (Exception e) {
+                return ResponseEntity.badRequest().body(new BaseResponse<>(false, 400, e.getMessage(), null));
+            }
+        }
+
+        return ResponseEntity.badRequest().body(new BaseResponse<>(false, 400, "Unauthorized", null));
+    }
 
     @PostMapping("/create")
     public ResponseEntity<?> createOrder(@RequestBody CreateOrderRequestDTO request, @RequestHeader("Authorization") String token) {

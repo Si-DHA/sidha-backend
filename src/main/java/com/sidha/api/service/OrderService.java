@@ -19,4 +19,8 @@ public interface OrderService {
     Order confirmOrder(OrderConfirmRequestDTO request);
 
     List<Order> getAllOrders();
+
+    Order getOrderById(UUID orderId);
+
+    Order getPrice(CreateOrderRequestDTO request);
 }
