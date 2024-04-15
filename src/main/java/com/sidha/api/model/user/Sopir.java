@@ -1,6 +1,9 @@
 package com.sidha.api.model.user;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.sidha.api.model.TawaranKerja;
 import com.sidha.api.model.Truk;
 import com.sidha.api.model.order.OrderItem;
 
@@ -23,5 +26,10 @@ public class Sopir extends UserModel {
   @OneToOne(mappedBy = "sopir", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JsonBackReference
   private Truk truk;
+
+  @ManyToOne
+  @JoinColumn(name = "tawaran_kerja")
+  @JsonBackReference
+  private TawaranKerja tawaranKerja;
 
 }

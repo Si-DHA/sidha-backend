@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.sidha.api.model.TawaranKerja;
 import com.sidha.api.model.enumerator.TipeBarang;
 import com.sidha.api.model.enumerator.TipeTruk;
 import com.sidha.api.model.user.Sopir;
@@ -65,4 +66,9 @@ public class OrderItem { // 1 order item = 1 truk
   @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL)
   @JsonManagedReference
   private List<OrderItemHistory> orderItemHistories;
+
+  @ManyToOne
+  @JoinColumn(name = "tawaran_kerja")
+  @JsonBackReference
+  private TawaranKerja tawaranKerja;
 }
