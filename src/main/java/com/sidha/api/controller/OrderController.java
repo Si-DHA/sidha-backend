@@ -59,7 +59,7 @@ public class OrderController {
         }
     }
 
-    @GetMapping("/price")
+    @PostMapping("/price")
     public ResponseEntity<?> getPrice(@RequestBody CreateOrderRequestDTO request,
             @RequestHeader("Authorization") String token) {
         token = token.substring(7); // remove "Bearer " from token
