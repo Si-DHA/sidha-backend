@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.swing.text.html.Option;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -105,13 +107,20 @@ public class KontrakServiceImpl implements KontrakService {
     String updatedFilename = user.getId() + "_" + replaceWhitespaceWithUnderscore(file.getOriginalFilename());
     String filePath = FOLDER_PATH + updatedFilename;
 
-    Kontrak kontrak = kontrakDb.findByUser(user).orElse(null);
-    kontrak.setName(updatedFilename);
-    kontrak.setFilePath(filePath);
+    Optional<Kontrak> kontrak = kontrakDb.findByUser(user);
+    if (kontrak.isPresent()){
+      Kontrak kontrakUser = kontrak.get();
+      this.deleteKontrak(kontrakUser);
+      kontrakUser.setName(updatedFilename);
+      kontrakUser.setFilePath(filePath);
+      file.transferTo(new File(filePath));
+      kontrakDb.save(kontrakUser);
+      return kontrakUser;
+    } else{
+      Kontrak newKontrak = this.uploadDocumentAndSaveToDB(file, uuid);
+      return newKontrak;
+    }
 
-    file.transferTo(new File(filePath));
-
-    return kontrak;
 
   }
 
@@ -172,6 +181,12 @@ public class KontrakServiceImpl implements KontrakService {
     }
 
   }
+public void deleteKontrak(Kontrak kontrak){
+  if (kontrak != null) {
+    File fileToDelete = new File(kontrak.getFilePath());
+    fileToDelete.delete();
+  }
+}
 
   public String getUrlPath() {
     if (FOLDER_PATH.contains("nur_fajar11")) {

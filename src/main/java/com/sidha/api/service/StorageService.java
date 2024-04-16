@@ -16,7 +16,7 @@ public interface StorageService {
 
   byte[] getImageFromFileSystem(String filename) throws IOException;
 
-  ImageData updateProfileImage(MultipartFile file, UserModel user) throws IOException;
+ImageData updateProfileImage(MultipartFile file, UserModel user) throws IOException;
 
   ImageData updateImageInDB(MultipartFile file, ImageData imageData, String filename) throws IOException;
 
