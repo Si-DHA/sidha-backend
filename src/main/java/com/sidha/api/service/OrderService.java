@@ -48,4 +48,6 @@ public interface OrderService {
     Order getOrderById(UUID orderId);
 
     Order getPrice(CreateOrderRequestDTO request);
+
+    List<String> getAllPossibleRute(UUID userId);
 }
