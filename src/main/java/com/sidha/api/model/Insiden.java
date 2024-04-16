@@ -1,5 +1,6 @@
 package com.sidha.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sidha.api.model.user.Sopir;
 import com.sidha.api.model.image.ImageData;
@@ -31,6 +32,7 @@ public class Insiden {
 
     @ManyToOne
     @JoinColumn(name="sopir_id", nullable=false)
+    @JsonBackReference
     private Sopir sopir;
 
     @Enumerated(EnumType.STRING)

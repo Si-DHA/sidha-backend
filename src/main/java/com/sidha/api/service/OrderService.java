@@ -45,4 +45,7 @@ public interface OrderService {
     OrderItem getOrderItemById(UUID idOrderItem);
 
     List<OrderItem> getAllOrderItemByIdOrder(UUID idOrder);
+    Order getOrderById(UUID orderId);
+
+    Order getPrice(CreateOrderRequestDTO request);
 }

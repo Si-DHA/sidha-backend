@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.sidha.api.model.TawaranKerja;
 import com.sidha.api.model.Truk;
 import com.sidha.api.model.order.OrderItem;
 
@@ -28,8 +29,13 @@ public class Sopir extends UserModel {
   @JsonBackReference
   private Truk truk;
 
-  @OneToMany(mappedBy = "sopir", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "sopir", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonManagedReference
-  private List<OrderItem> orderItems = new ArrayList<>();
+  private List<OrderItem> orderItems;
+
+  @ManyToOne
+  @JoinColumn(name = "tawaran_kerja")
+  @JsonBackReference
+  private TawaranKerja tawaranKerja;
 
 }

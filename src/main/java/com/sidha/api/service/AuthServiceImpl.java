@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private ObjectMapper objectMapper;
-
+    
     @Autowired
     private ImageDataDb imageDataDb;
 
@@ -64,8 +64,16 @@ public class AuthServiceImpl implements AuthService {
         objectMapper.registerModule(new JavaTimeModule());
 
         MultipartFile imageFile = request.getImageFile();
+        String rawPassword ;
         var randomPassword = PasswordGenerator.generatePassword(8);
-        request.setPassword(passwordEncoder.encode(randomPassword));
+
+        if (request.getPassword() == null || request.getPassword() == "") {
+            rawPassword = randomPassword;
+            request.setPassword(passwordEncoder.encode(randomPassword));
+        } else {
+            rawPassword  = request.getPassword();
+            request.setPassword(passwordEncoder.encode(rawPassword));
+        }
         var user = objectMapper.convertValue(request, UserModel.class);
         var jwt = jwtUtils.generateJwtToken(user);
         var userResponse = new UserResponse();
@@ -81,12 +89,19 @@ public class AuthServiceImpl implements AuthService {
                 imageDataDb.save(profileImg);
             }
             userResponse.setUser(savedUser);
-            mailSenderUtils.sendMail(request.getEmail(), "Welcome to SIDHA",
-                    generateMessageForNewClient(request.getName(), request.getEmail(), randomPassword));
+
+            if (request.getPassword() == null || request.getPassword() == "") {
+                mailSenderUtils.sendMail(request.getEmail(), "Welcome to SIDHA",
+                        generateMessageForNewClient(request.getName(), request.getEmail(), randomPassword));
+            } else {
+                mailSenderUtils.sendMail(request.getEmail(), "Welcome to SIDHA",
+                        generateMessageForNewClient(request.getName(), request.getEmail(), rawPassword));
+            }
             return userResponse;
 
         } catch (IOException e) {
-            throw new RuntimeException("Failed to save image");
+            throw new RuntimeException("Gagal mendaftarkan user!");
+            
         }
 
     }

@@ -1,5 +1,6 @@
 package com.sidha.api.service;
 
+import com.sidha.api.DTO.request.InsidenDTO;
 import com.sidha.api.model.Insiden;
 import com.sidha.api.model.Insiden.InsidenStatus;
 import com.sidha.api.model.image.ImageData;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -91,14 +93,39 @@ public class InsidenServiceImpl implements InsidenService {
         return insidenRepository.save(insiden);
     }
 
+    public List<InsidenDTO> getAllInsidensWithSopirInfo() {
+        List<Insiden> allInsidens = insidenRepository.findAll();
+        return allInsidens.stream().map(insiden -> {
+            InsidenDTO dto = new InsidenDTO();
+            dto.setId(insiden.getId());
+            dto.setKategori(insiden.getKategori());
+            dto.setLokasi(insiden.getLokasi());
+            dto.setKeterangan(insiden.getKeterangan());
+            dto.setSopirId(insiden.getSopir().getId());
+            dto.setSopirName(insiden.getSopir().getName());
+            dto.setBuktiFoto(insiden.getBuktiFoto());
+            dto.setCreatedAt(insiden.getCreatedAt());
+            dto.setUpdatedAt(insiden.getUpdatedAt());
+            dto.setStatus(insiden.getStatus());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    public List<Insiden> getInsidensBySopirId(UUID sopirId) {
+        Sopir sopir = (Sopir) userDb.findById(sopirId).orElseThrow(() -> new RuntimeException("Driver not found"));
+        return insidenRepository.findBySopir(sopir);
+    }
+
+    public ImageData getBuktiFotoById(UUID insidenId) {
+        Insiden insiden = insidenRepository.findById(insidenId)
+            .orElseThrow(() -> new RuntimeException("Insiden not found"));
+        return insiden.getBuktiFoto();
+    }
+    
     @Override
     public Insiden getInsidenById(UUID id) {
         return insidenRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Insiden not found"));
     }
-
-    @Override
-    public List<Insiden> getAllInsidens() {
-        return insidenRepository.findAllByIsDeletedFalse(); // Ensure this method exists to filter out soft-deleted records
-    }
+    
 }
