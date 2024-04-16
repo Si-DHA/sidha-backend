@@ -29,11 +29,11 @@ public class Sopir extends UserModel {
   @JsonBackReference
   private Truk truk;
 
-  @OneToMany(mappedBy = "sopir", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "sopir", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JsonManagedReference
   private List<OrderItem> orderItems;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "tawaran_kerja")
   @JsonBackReference
   private TawaranKerja tawaranKerja;

@@ -50,12 +50,12 @@ public class OrderItem { // 1 order item = 1 truk
   @Column(name = "keterangan")
   private String keterangan;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "order_id")
   @JsonBackReference
   private Order order;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_sopir", referencedColumnName = "id")
   @JsonBackReference
   private Sopir sopir;
