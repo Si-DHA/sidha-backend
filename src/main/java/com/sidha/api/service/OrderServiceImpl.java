@@ -23,6 +23,13 @@ import com.sidha.api.repository.OrderDb;
 import com.sidha.api.repository.OrderItemDb;
 import com.sidha.api.repository.OrderItemHistoryDb;
 import com.sidha.api.repository.RuteDb;
+import java.util.NoSuchElementException;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import org.modelmapper.ModelMapper;
+import com.sidha.api.model.image.BongkarMuatImage;
+import com.sidha.api.model.image.ImageData;
+import com.sidha.api.repository.ImageDataDb;
 
 import lombok.AllArgsConstructor;
 
@@ -34,6 +41,11 @@ public class OrderServiceImpl implements OrderService {
     private OrderItemDb orderItemDb;
     private RuteDb ruteDb;
     private UserService userService;
+    private StorageService storageService;
+    private ImageDataDb imageDataDb;
+    private ModelMapper modelMapper;
+
+    private InvoiceService invoiceService;
     private OrderItemHistoryDb orderItemHistoryDb;
 
     @Override
@@ -54,6 +66,11 @@ public class OrderServiceImpl implements OrderService {
 
         order.setOrderItems(orderItems);
         order.setTotalPrice(orderItems.stream().mapToLong(OrderItem::getPrice).sum());
+        var invoice = invoiceService.createInvoice();
+        order.setInvoice(invoice);
+        invoice.setOrder(order);
+        invoiceService.saveInvoice(invoice);
+
         return orderDb.save(order);
     }
 
@@ -229,6 +246,128 @@ public class OrderServiceImpl implements OrderService {
         return orderDb.findAll();
     }
 
+    @Override
+    public OrderItem findOrderItemById(UUID idOrderItem) {
+        OrderItem orderItem = orderItemDb.findById(idOrderItem).orElse(null);
+
+        if (orderItem == null) {
+            throw new NoSuchElementException("Id invoice tidak valid");
+        }
+
+        return orderItem;
+    }
+
+    @Override
+    public OrderItem saveImageBongkarMuat(OrderItem orderItem) {
+        return orderItemDb.save(orderItem);
+    }
+
+    @Override
+    public OrderItem uploadImageMuat(UUID idOrderItem, MultipartFile imageFile) throws IOException {
+        OrderItem orderItem = this.findOrderItemById(idOrderItem);
+        ImageData imageData = storageService.uploadImageAndSaveToDB(
+                imageFile,
+                imageFile.getOriginalFilename());
+        BongkarMuatImage muatImage = modelMapper.map(imageData, BongkarMuatImage.class);
+
+        ImageData currentImage;
+        currentImage = orderItem.getBuktiMuat();
+        orderItem.setBuktiMuat(muatImage);
+        this.saveImageBongkarMuat(orderItem);
+
+        if (currentImage != null) {
+            storageService.deleteImageFile(currentImage);
+            imageDataDb.delete(currentImage);
+        }
+        muatImage.setOrderItem(orderItem);
+        imageDataDb.save(muatImage);
+        return orderItem;
+    }
+
+    @Override
+    public OrderItem uploadImageBongkar(UUID idOrderItem, MultipartFile imageFile) throws IOException {
+        OrderItem orderItem = this.findOrderItemById(idOrderItem);
+        ImageData imageData = storageService.uploadImageAndSaveToDB(
+                imageFile,
+                imageFile.getOriginalFilename());
+        BongkarMuatImage bongkarImage = modelMapper.map(imageData, BongkarMuatImage.class);
+
+        ImageData currentImage;
+        currentImage = orderItem.getBuktiBongkar();
+        orderItem.setBuktiBongkar(bongkarImage);
+        this.saveImageBongkarMuat(orderItem);
+
+        if (currentImage != null) {
+            storageService.deleteImageFile(currentImage);
+            imageDataDb.delete(currentImage);
+        }
+        bongkarImage.setOrderItem(orderItem);
+        imageDataDb.save(bongkarImage);
+        return orderItem;
+    }
+
+    @Override
+    public ImageData getImageMuat(UUID idOrderItem) {
+        OrderItem orderItem = this.findOrderItemById(idOrderItem);
+        ImageData imageData = orderItem.getBuktiMuat();
+        return imageData;
+    }
+
+    @Override
+    public ImageData getImageBongkar(UUID idOrderItem) {
+        OrderItem orderItem = this.findOrderItemById(idOrderItem);
+        ImageData imageData = orderItem.getBuktiBongkar();
+        return imageData;
+    }
+
+    @Override
+    public void deleteImageMuat(UUID idOrderItem) {
+        ImageData imageData = this.getImageMuat(idOrderItem);
+        if (imageData != null) {
+            OrderItem orderItem = this.findOrderItemById(idOrderItem);
+            orderItem.setBuktiMuat(null);
+            this.saveImageBongkarMuat(orderItem);
+
+            storageService.deleteImageFile(imageData);
+            imageDataDb.delete(imageData);
+        } else {
+            throw new NoSuchElementException("Belum ada bukti yang diunggah");
+        }
+    }
+
+    @Override
+    public void deleteImageBongkar(UUID idOrderItem) {
+        ImageData imageData = this.getImageBongkar(idOrderItem);
+        if (imageData != null) {
+            OrderItem orderItem = this.findOrderItemById(idOrderItem);
+            orderItem.setBuktiBongkar(null);
+            this.saveImageBongkarMuat(orderItem);
+
+            storageService.deleteImageFile(imageData);
+            imageDataDb.delete(imageData);
+        } else {
+            throw new NoSuchElementException("Belum ada bukti yang diunggah");
+        }
+    }
+
+    @Override
+    public List<OrderItem> getAllOrderItemByIdSopir(UUID sopir){
+        return orderItemDb.findByIdSopir(sopir);
+    }
+
+    @Override
+    public OrderItem getOrderItemById(UUID idOrderItem) {
+        OrderItem orderItem = orderItemDb.findById(idOrderItem).orElse(null);
+        if (orderItem == null) {
+            throw new NoSuchElementException("Id order tidak valid");
+        }
+        return orderItem;
+    }
+
+    @Override
+    public List<OrderItem> getAllOrderItemByIdOrder(UUID idOrder){
+        return orderItemDb.findByIdOrder(idOrder);
+    }
     private OrderItemHistory addOrderItemHistory(OrderItem orderItem, Integer status, String description,
             String createdBy) {
         var orderItemHistory = new OrderItemHistory();
@@ -237,6 +376,60 @@ public class OrderServiceImpl implements OrderService {
         orderItemHistory.setDescription(description);
         orderItemHistory.setCreatedBy(createdBy);
         return orderItemHistoryDb.save(orderItemHistory);
+    }
+
+    @Override
+    public Order getOrderById(UUID orderId) {
+        return orderDb.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+    }
+
+    @Override
+    public Order getPrice(CreateOrderRequestDTO request) {
+        var user = userService.findById(request.getKlienId());
+        var klien = (Klien) user;
+
+        var order = new Order();
+        order.setKlien(klien);
+
+        var orderItems = new ArrayList<OrderItem>();
+        request.getOrderItems().forEach(item -> {
+            var orderItem = new OrderItem();
+            orderItem.setIsPecahBelah(item.getIsPecahBelah());
+            orderItem.setTipeBarang(TipeBarang.valueOf(item.getTipeBarang()));
+            orderItem.setTipeTruk(TipeTruk.valueOf(item.getTipeTruk()));
+
+            var rute = new ArrayList<Rute>();
+            item.getRute().forEach(r -> {
+                var ruteItem = new Rute();
+                ruteItem.setSource(r.getSource());
+                ruteItem.setDestination(r.getDestination());
+                ruteItem.setAlamatPengiriman(r.getAlamatPengiriman());
+                ruteItem.setAlamatPenjemputan(r.getAlamatPenjemputan());
+                ruteItem.setPrice(getPriceRute(orderItem.getTipeTruk(), r.getSource(), r.getDestination(),
+                        klien.getListPenawaranHargaItem()));
+                rute.add(ruteItem);
+            });
+
+            orderItem.setRute(rute);
+            orderItem.setPrice(rute.stream().mapToLong(Rute::getPrice).sum());
+            orderItems.add(orderItem);
+        });
+
+        order.setOrderItems(orderItems);
+        order.setTotalPrice(orderItems.stream().mapToLong(OrderItem::getPrice).sum());
+        return order;
+    }
+
+    @Override
+    public List<String> getAllPossibleRute(UUID userId) {
+        // list["source - destinantion"]
+        List<String> listRute = new ArrayList<>();
+        var listPenawaranHargaItem = ((Klien) userService.findById(userId)).getListPenawaranHargaItem();
+        for (PenawaranHargaItem penawaranHargaItem : listPenawaranHargaItem) {
+            listRute.add(penawaranHargaItem.getSource() + " - " + penawaranHargaItem.getDestination());
+        }
+        return listRute;
     }
 
 }

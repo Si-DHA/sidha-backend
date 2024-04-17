@@ -12,5 +12,12 @@ public interface TawaranKerjaService {
 
     TawaranKerja acceptJobOffer(UUID sopirId, UUID orderItemId, String lokasi);
     
-    void confirmJobOffer(UUID karyawanId, UUID tawaranKerjaId);  
+    void confirmJobOffer(UUID karyawanId, UUID tawaranKerjaId); 
+    
+    List<TawaranKerja> getAllJobOffers();
+
+    List<TawaranKerja> getJobOffersAcceptedBySopir(UUID sopirId);
+
+    List<TawaranKerja> getTawaranKerjaByOrderItemId(UUID orderItemId);
+
 }

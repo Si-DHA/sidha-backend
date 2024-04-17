@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sidha.api.model.order.OrderItem;
 import com.sidha.api.model.user.Sopir;
 
@@ -44,7 +45,7 @@ public class TawaranKerja {
 
     @ManyToOne
     @JoinColumn(name = "sopir_id", referencedColumnName = "id")
-    @JsonBackReference
+    @JsonManagedReference
     private Sopir sopir;
 
     @Column(name = "lokasi")
@@ -55,45 +56,5 @@ public class TawaranKerja {
 
     @Column(name = "timestamp")
     private LocalDateTime timestamp;
-
-    // public UUID getId() {
-    // return id;
-    // }
-
-    // public void setId(UUID id) {
-    // this.id = id;
-    // }
-
-    // public OrderItem getOrderItem() {
-    // return orderItem;
-    // }
-
-    // public void setOrderItem(OrderItem orderItem) {
-    // this.orderItem = orderItem;
-    // }
-
-    // public Sopir getSopir() {
-    // return sopir;
-    // }
-
-    // public void setSopir(Sopir sopir) {
-    // this.sopir = sopir;
-    // }
-
-    // public String getLokasi() {
-    // return lokasi;
-    // }
-
-    // public void setLokasi(String lokasi) {
-    // this.lokasi = lokasi;
-    // }
-
-    // public Boolean getIsDikonfirmasiKaryawan() {
-    // return isDikonfirmasiKaryawan;
-    // }
-
-    // public void setIsDikonfirmasiKaryawan(Boolean isDikonfirmasiKaryawan) {
-    // this.isDikonfirmasiKaryawan = isDikonfirmasiKaryawan;
-    // }
 
 }

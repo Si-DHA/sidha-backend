@@ -50,7 +50,7 @@ public class StorageServiceImpl implements StorageService {
     file.transferTo(new File(filePath));
 
     if (imageData != null) {
-      return "image uploaded successfully : " + filePath;
+      return "Gambar berhasil disimpan : " + filePath;
     }
     return null;
   }
@@ -92,14 +92,24 @@ public class StorageServiceImpl implements StorageService {
   public ImageData updateProfileImage(MultipartFile file, UserModel user) throws IOException {
     Logger logger = LoggerFactory.getLogger(StorageServiceImpl.class);
     String updatedFilename = user.getId() + "_" + replaceWhitespaceWithUnderscore(file.getOriginalFilename());
-
+    String filePath = FOLDER_PATH + updatedFilename;
     ImageData imageData = imageDataDb.findProfileByUserId(user.getId()).get();
+  
     logger.info("image data : " + imageData);
     if (imageData != null) {
       logger.info("image ada");
       return this.updateImageInDB(file, imageData, updatedFilename);
     } else {
-      throw new RuntimeException("Image not found");
+    
+      ImageData imageData2 = ImageData.builder()
+          .name(updatedFilename)
+          .type(file.getContentType())
+          .filePath(filePath).build();
+  
+      modelMapper.map(imageData2, ProfileImage.class).setUser(user);
+      file.transferTo(new File(filePath));
+      return imageDataDb.save(imageData2);
+  
     }
 
   }

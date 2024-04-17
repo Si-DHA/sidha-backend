@@ -66,4 +66,19 @@ public class TawaranKerjaServiceImpl implements TawaranKerjaService {
         orderItem.setStatusOrder(1); // Status indicating that the job offer has been confirmed
         orderItemDb.save(orderItem);
     }
+
+    @Override
+    public List<TawaranKerja> getAllJobOffers() {
+        return tawaranKerjaDb.findAll();
+    }
+
+    @Override
+    public List<TawaranKerja> getJobOffersAcceptedBySopir(UUID sopirId) {
+        return tawaranKerjaDb.findBySopirId(sopirId);
+    }
+
+    @Override
+    public List<TawaranKerja> getTawaranKerjaByOrderItemId(UUID orderItemId) {
+        return tawaranKerjaDb.findByOrderItemId(orderItemId);
+    }
 }

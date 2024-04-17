@@ -4,6 +4,7 @@ import com.sidha.api.DTO.request.KonfirmasiBuktiPembayaranDTO;
 import com.sidha.api.model.Invoice;
 import com.sidha.api.model.image.ImageData;
 import com.sidha.api.model.image.InvoiceImage;
+import com.sidha.api.model.order.OrderItem;
 import com.sidha.api.repository.ImageDataDb;
 import com.sidha.api.repository.InvoiceDb;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -42,6 +45,31 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
 
         return invoice;
+    }
+
+    @Override
+    public List<Invoice> findInvoiceByIdKlien(UUID idKlien) {
+        List<Invoice> listInvoiceKlien = new ArrayList<>();
+        for (Invoice invoice : this.findAllInvoice()) {
+            try {
+                if (invoice.getOrder().getKlien().getId().equals(idKlien)) {
+                    listInvoiceKlien.add(invoice);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage());
+            }
+        }
+
+        if (!listInvoiceKlien.isEmpty()) {
+            return listInvoiceKlien;
+        } else {
+            throw new NoSuchElementException("Klien belum memiliki invoice");
+        }
+    }
+
+    @Override
+    public List<Invoice> findAllInvoice() {
+        return invoiceDb.findAll();
     }
 
     @Override
@@ -124,15 +152,29 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     public Invoice konfirmasiBuktiPembayaran(KonfirmasiBuktiPembayaranDTO konfirmasiBuktiPembayaranDTO) {
         UUID idInvoice = konfirmasiBuktiPembayaranDTO.getIdInvoice();
+        Invoice invoice = this.findInvoiceById(idInvoice);
+        boolean isPelunasan = konfirmasiBuktiPembayaranDTO.getIsPelunasan();
+
         ImageData imageData = this.getImageBuktiPembayaran(
                 idInvoice,
-                konfirmasiBuktiPembayaranDTO.getIsPelunasan()
+                isPelunasan
         );
 
         InvoiceImage invoiceImage = modelMapper.map(imageData, InvoiceImage.class);
 
         if (konfirmasiBuktiPembayaranDTO.getIsConfirmed()) {
             invoiceImage.setStatus(1);
+            List<OrderItem> orderItems = invoice.getOrder().getOrderItems();
+
+            for (OrderItem orderItem : orderItems) {
+                if (orderItem.getStatusOrder() >= 0) {
+                    if (isPelunasan) {
+                        orderItem.setStatusOrder(5);
+                    } else {
+                        orderItem.setStatusOrder(3);
+                    }
+                }
+            }
         } else {
             String alasanPenolakan = konfirmasiBuktiPembayaranDTO.getAlasanPenolakan();
             if (alasanPenolakan == null) {
@@ -143,7 +185,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
         imageDataDb.save(invoiceImage);
 
-        return this.findInvoiceById(idInvoice);
+        return invoice;
     }
 
 

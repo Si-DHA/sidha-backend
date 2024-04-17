@@ -57,11 +57,11 @@ public class AuthController {
 
       request.setUsername(request.getEmail().split("@")[0]);
       if (userService.findByUsername(request.getUsername()) != null) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(false, 400, "Username already exists", null));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(false, 400, "Username telah digunakan", null));
       }
 
       UserResponse response = authService.register(request);
-      return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(true, 201, "User registered successfully", response));
+      return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(true, 201, "Akun telah berhasil dibuat", response));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(false, 500, e.getMessage(), null));
     }
