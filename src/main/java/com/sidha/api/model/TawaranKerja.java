@@ -40,11 +40,11 @@ public class TawaranKerja {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "order_item_id", referencedColumnName = "id")
     private OrderItem orderItem;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "sopir_id", referencedColumnName = "id")
     @JsonManagedReference
     private Sopir sopir;
