@@ -10,10 +10,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.sidha.api.model.image.ImageData;
 import com.sidha.api.repository.ImageDataDb;
+import com.sidha.api.repository.UserDb;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,6 +35,9 @@ public class StorageServiceImpl implements StorageService {
 
   @Autowired
   private ModelMapper modelMapper;
+
+  @Autowired
+  private UserDb userDb;
 
   @Override
   public String uploadImageToFileSystem(MultipartFile file, UserModel user) throws IOException {
@@ -90,14 +97,12 @@ public class StorageServiceImpl implements StorageService {
 
   @Override
   public ImageData updateProfileImage(MultipartFile file, UserModel user) throws IOException {
-    Logger logger = LoggerFactory.getLogger(StorageServiceImpl.class);
     String updatedFilename = user.getId() + "_" + replaceWhitespaceWithUnderscore(file.getOriginalFilename());
     String filePath = FOLDER_PATH + updatedFilename;
-    ImageData imageData = imageDataDb.findProfileByUserId(user.getId()).get();
+    Optional<ProfileImage> profileImageObj = imageDataDb.findProfileByUserId(user.getId());
   
-    logger.info("image data : " + imageData);
-    if (imageData != null) {
-      logger.info("image ada");
+    if (profileImageObj.isPresent()) {
+      ImageData imageData = profileImageObj.get();
       return this.updateImageInDB(file, imageData, updatedFilename);
     } else {
     
@@ -105,11 +110,14 @@ public class StorageServiceImpl implements StorageService {
           .name(updatedFilename)
           .type(file.getContentType())
           .filePath(filePath).build();
-  
-      modelMapper.map(imageData2, ProfileImage.class).setUser(user);
+      ProfileImage updatedImage  = modelMapper.map(imageData2, ProfileImage.class);
+      updatedImage.setUser(user);
+      user.setImageData(updatedImage);
+      userDb.save(user);
+      
       file.transferTo(new File(filePath));
-      return imageDataDb.save(imageData2);
-  
+      return imageDataDb.save(updatedImage);
+
     }
 
   }

@@ -24,6 +24,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 
@@ -110,6 +113,18 @@ public class KontrakController {
       UUID userUUID = UUID.fromString(userId);
       service.uploadDocumentAndSaveToDB(file, userUUID);
       return new ResponseEntity<>(new BaseResponse<>(true, 200, "Dokumen kontrak berhasil diunggah", null), HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<>(new BaseResponse<>(false, 500, e.getMessage(), null),
+          HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @PutMapping("/{userId}")
+  public ResponseEntity<?>  updateKontrak(@PathVariable String userId, @RequestPart("file") MultipartFile file) {
+    try {
+      UUID userUUID = UUID.fromString(userId);
+      service.updateDocumentFile(file, userUUID);
+      return new ResponseEntity<>(new BaseResponse<>(true, 200, "Dokumen kontrak berhasil diupdate", null), HttpStatus.OK);
     } catch (Exception e) {
       return new ResponseEntity<>(new BaseResponse<>(false, 500, e.getMessage(), null),
           HttpStatus.INTERNAL_SERVER_ERROR);

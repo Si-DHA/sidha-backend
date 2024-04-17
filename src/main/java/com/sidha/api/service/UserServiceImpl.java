@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
             try {
                 storageService.updateProfileImage(requestDTO.getImageFile(), user);
             } catch (Exception e) {
-                throw new RuntimeException("Gagal mengunggah gambar");
+                throw new RuntimeException("Gagal mengunggah gambar : " + e.getMessage()) ;
             }
         }
 
