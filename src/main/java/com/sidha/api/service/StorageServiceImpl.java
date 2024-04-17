@@ -4,6 +4,7 @@ import com.sidha.api.model.image.ProfileImage;
 import com.sidha.api.model.user.UserModel;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,8 +26,9 @@ import java.util.Optional;
 @Service
 public class StorageServiceImpl implements StorageService {
 
+
   @Value("${image.folder.path}")
-  private  String FOLDER_PATH;
+  private String FOLDER_PATH;
 
   @Autowired
   private ImageDataDb imageDataDb;
@@ -44,7 +46,6 @@ public class StorageServiceImpl implements StorageService {
     ImageData imageData = ImageData.builder()
         .name(file.getOriginalFilename())
         .type(file.getContentType())
-//        .user(user)
         .filePath(filePath).build();
 
     modelMapper.map(imageData, ProfileImage.class).setUser(user);

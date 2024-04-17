@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sidha.api.model.user.Sopir;
 import com.sidha.api.model.image.ImageData;
+import com.sidha.api.model.order.OrderItem;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,7 +33,7 @@ public class Insiden {
     private ImageData buktiFoto;
 
     @ManyToOne
-    @JoinColumn(name="sopir_id", nullable=false)
+    @JoinColumn(name = "sopir_id", nullable = false)
     @JsonBackReference
     private Sopir sopir;
 
@@ -41,10 +43,10 @@ public class Insiden {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
     public enum InsidenStatus {
@@ -53,4 +55,9 @@ public class Insiden {
         COMPLETED,
         CANCELLED
     }
+
+    @ManyToOne
+    @JoinColumn(name = "order_item_id", nullable = true)
+    private OrderItem orderItem;
+
 }

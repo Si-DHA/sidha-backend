@@ -8,9 +8,12 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.sidha.api.model.TawaranKerja;
 import com.sidha.api.model.enumerator.TipeBarang;
 import com.sidha.api.model.enumerator.TipeTruk;
+import com.sidha.api.model.image.BongkarMuatImage;
 import com.sidha.api.model.user.Sopir;
 
 import java.util.List;
@@ -48,21 +51,36 @@ public class OrderItem { // 1 order item = 1 truk
   @Column(name = "keterangan")
   private String keterangan;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "order_id")
   @JsonBackReference
   private Order order;
 
-  @ManyToOne
-  @JoinColumn(name = "sopir_id")
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_sopir", referencedColumnName = "id")
   @JsonBackReference
   private Sopir sopir;
 
-  @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JsonManagedReference
+  @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
   private List<Rute> rute;
 
-  @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL)
   @JsonManagedReference
+  @OneToOne(cascade = CascadeType.ALL)
+  private BongkarMuatImage buktiBongkar;
+
+  @JsonManagedReference
+  @OneToOne(cascade = CascadeType.ALL)
+  private BongkarMuatImage buktiMuat;
+
+  @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @JsonManagedReference
+  @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
   private List<OrderItemHistory> orderItemHistories;
+
+  @ManyToOne(fetch=FetchType.LAZY)
+  @JoinColumn(name = "tawaran_kerja")
+  @JsonBackReference
+  private TawaranKerja tawaranKerja;
 }
