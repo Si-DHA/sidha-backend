@@ -12,12 +12,21 @@ import java.util.List;
 import java.util.UUID;
 
 public interface InsidenService {
-    Insiden createInsiden(Insiden insiden, UUID sopirId, MultipartFile buktiFoto) throws IOException;
-    Insiden updateInsiden(UUID id, Insiden insidenDetails, MultipartFile buktiFoto) throws IOException;
+    public Insiden createInsiden(Insiden insiden, UUID sopirId, UUID orderItemId, MultipartFile buktiFoto)
+            throws IOException;
+
+    public Insiden updateInsiden(UUID id, Insiden insidenDetails, UUID orderItemId, MultipartFile buktiFoto)
+            throws IOException;
+
     void deleteInsiden(UUID id);
+
     Insiden updateInsidenStatus(UUID id, InsidenStatus status);
+
     Insiden getInsidenById(UUID id);
+
     List<InsidenDTO> getAllInsidensWithSopirInfo();
+
     List<Insiden> getInsidensBySopirId(UUID sopirId);
+
     ImageData getBuktiFotoById(UUID insidenId);
 }
