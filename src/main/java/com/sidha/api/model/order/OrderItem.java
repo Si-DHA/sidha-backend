@@ -60,7 +60,7 @@ public class OrderItem { // 1 order item = 1 truk
   @JsonBackReference
   private Sopir sopir;
 
-  @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JsonManagedReference
   private List<Rute> rute;
 
@@ -72,7 +72,7 @@ public class OrderItem { // 1 order item = 1 truk
   @OneToOne(cascade = CascadeType.ALL)
   private BongkarMuatImage buktiMuat;
   
-  @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JsonManagedReference
   private List<OrderItemHistory> orderItemHistories;
 
