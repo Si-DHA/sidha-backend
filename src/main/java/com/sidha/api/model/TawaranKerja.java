@@ -11,7 +11,6 @@ import com.sidha.api.model.user.Sopir;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,11 +39,11 @@ public class TawaranKerja {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "order_item_id", referencedColumnName = "id")
     private OrderItem orderItem;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "sopir_id", referencedColumnName = "id")
     @JsonManagedReference
     private Sopir sopir;

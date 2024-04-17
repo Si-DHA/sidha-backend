@@ -34,6 +34,9 @@ public class TawaranKerjaServiceImpl implements TawaranKerjaService {
 
         Sopir sopir = (Sopir) userDb.findById(sopirId).orElseThrow(() -> new RuntimeException("Driver not found"));
 
+        orderItem.setSopir(sopir);
+        orderItemDb.save(orderItem);
+
         TawaranKerja tawaranKerja = new TawaranKerja();
         tawaranKerja.setOrderItem(orderItem);
         tawaranKerja.setSopir(sopir);
