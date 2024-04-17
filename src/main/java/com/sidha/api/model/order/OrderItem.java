@@ -73,7 +73,7 @@ public class OrderItem { // 1 order item = 1 truk
   @JsonManagedReference
   @OneToOne(cascade = CascadeType.ALL)
   private BongkarMuatImage buktiMuat;
-  
+
   @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JsonManagedReference
   @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})

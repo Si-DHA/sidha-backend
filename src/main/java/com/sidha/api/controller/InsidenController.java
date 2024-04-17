@@ -5,6 +5,8 @@ import com.sidha.api.DTO.response.BaseResponse;
 import com.sidha.api.model.Insiden;
 import com.sidha.api.model.Insiden.InsidenStatus;
 import com.sidha.api.model.image.ImageData;
+import com.sidha.api.model.order.OrderItem;
+import com.sidha.api.repository.OrderItemDb;
 import com.sidha.api.service.InsidenService;
 import com.sidha.api.service.StorageService;
 import org.springframework.http.MediaType;
@@ -28,19 +30,27 @@ public class InsidenController {
     @Autowired
     private StorageService storageService;
 
+    @Autowired
+    private OrderItemDb orderItemDb;
+
     @PostMapping("/create")
     public ResponseEntity<?> createInsiden(
             @RequestParam("sopirId") UUID sopirId,
             @RequestParam("kategori") String kategori,
             @RequestParam("lokasi") String lokasi,
-            @RequestParam("keterangan") String keterangan,
+            @RequestParam("keterangan") String keterangan, @RequestParam("orderItemId") UUID orderItemId,
             @RequestPart(value = "buktiFoto", required = false) MultipartFile buktiFoto) {
         try {
+
+            OrderItem orderItem = orderItemDb.findById(orderItemId)
+                    .orElseThrow(() -> new RuntimeException("Order Item not found"));
+
             Insiden insiden = new Insiden();
             insiden.setKategori(kategori);
             insiden.setLokasi(lokasi);
             insiden.setKeterangan(keterangan);
-            Insiden createdInsiden = insidenService.createInsiden(insiden, sopirId, buktiFoto);
+            insiden.setOrderItem(orderItem);
+            Insiden createdInsiden = insidenService.createInsiden(insiden, sopirId, orderItemId, buktiFoto);
             return new ResponseEntity<>(createdInsiden, HttpStatus.CREATED);
         } catch (IOException e) {
             return ResponseEntity.internalServerError().body("Failed to upload image: " + e.getMessage());
@@ -54,14 +64,14 @@ public class InsidenController {
             @PathVariable UUID id,
             @RequestParam("kategori") String kategori,
             @RequestParam("lokasi") String lokasi,
-            @RequestParam("keterangan") String keterangan,
+            @RequestParam("keterangan") String keterangan, @RequestParam("orderItemId") UUID orderItemId,
             @RequestPart(value = "buktiFoto", required = false) MultipartFile buktiFoto) {
         try {
             Insiden insidenDetails = new Insiden();
             insidenDetails.setKategori(kategori);
             insidenDetails.setLokasi(lokasi);
             insidenDetails.setKeterangan(keterangan);
-            Insiden updatedInsiden = insidenService.updateInsiden(id, insidenDetails, buktiFoto);
+            Insiden updatedInsiden = insidenService.updateInsiden(id, insidenDetails, orderItemId, buktiFoto);
             return ResponseEntity.ok(updatedInsiden);
         } catch (IOException e) {
             return ResponseEntity.internalServerError().body("Failed to update image: " + e.getMessage());
