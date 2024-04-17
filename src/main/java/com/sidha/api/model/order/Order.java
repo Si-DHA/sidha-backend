@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sidha.api.model.user.Klien;
 
@@ -37,6 +38,7 @@ public class Order {
 
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
   @JsonManagedReference
+  @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
   private List<OrderItem> orderItems;
 
   @Column(name = "total_price")
