@@ -4,6 +4,8 @@ import java.util.UUID;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.sidha.api.DTO.request.order.CreateOrderRequestDTO;
@@ -47,6 +49,8 @@ public class OrderServiceImpl implements OrderService {
 
     private InvoiceService invoiceService;
     private OrderItemHistoryDb orderItemHistoryDb;
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Override
     public Order createOrder(CreateOrderRequestDTO request) {
@@ -213,32 +217,40 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order confirmOrder(OrderConfirmRequestDTO request) {
-        for (var confirmOrderItem : request.getOrderItems()) {
-            var orderItem = orderItemDb.findById(confirmOrderItem.getOrderItemId())
-                    .orElseThrow(() -> new IllegalArgumentException("Order Item not found"));
+        try {
+            for (var confirmOrderItem : request.getOrderItems()) {
+                var orderItem = orderItemDb.findById(confirmOrderItem.getOrderItemId())
+                        .orElseThrow(() -> new IllegalArgumentException("Order Item not found"));
 
-            if (orderItem.getStatusOrder() != 0) {
-                throw new IllegalArgumentException("Order Item already confirmed");
+                if (orderItem.getStatusOrder() != 0) {
+                    throw new IllegalArgumentException("Order Item already confirmed");
+                }
+
+                if (confirmOrderItem.getIsAccepted()) {
+                    orderItem.setStatusOrder(1);
+                } else {
+                    orderItem.setStatusOrder(-1);
+                    orderItem.setAlasanPenolakan(confirmOrderItem.getRejectionReason());
+                }
+
+                var createdBy = userService.findById(request.getKaryawanId()).getUsername();
+                var orderItemHistory = addOrderItemHistory(orderItem, orderItem.getStatusOrder(),
+                        confirmOrderItem.getIsAccepted() ? "Order diterima"
+                                : "Order ditolak: " + confirmOrderItem.getRejectionReason(),
+                        createdBy);
+
+                orderItem.getOrderItemHistories().add(orderItemHistory);
+                orderItemDb.save(orderItem);
+
+                logger.info("Order item {} processed with status {}", orderItem.getId(), orderItem.getStatusOrder());
             }
-
-            if (confirmOrderItem.getIsAccepted()) {
-                orderItem.setStatusOrder(1);
-            } else {
-                orderItem.setStatusOrder(-1);
-                orderItem.setAlasanPenolakan(confirmOrderItem.getRejectionReason());
-            }
-
-            var createdBy = userService.findById(request.getKaryawanId()).getUsername();
-            var orderItemHistory = addOrderItemHistory(orderItem, orderItem.getStatusOrder(),
-                    confirmOrderItem.getIsAccepted() ? "Order diterima"
-                            : "Order ditolak: " + confirmOrderItem.getRejectionReason(),
-                    createdBy);
-
-            orderItem.getOrderItemHistories().add(orderItemHistory);
-            orderItemDb.save(orderItem);
+            return orderDb.findById(request.getOrderId())
+                    .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        } catch (Exception e) {
+            logger.error("Error confirming order: {}", e.getMessage(), e);
+            throw e;
         }
-        return orderDb.findById(request.getOrderId())
-                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
     }
 
     @Override

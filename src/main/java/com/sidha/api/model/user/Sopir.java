@@ -33,7 +33,7 @@ public class Sopir extends UserModel {
   @JsonManagedReference
   private List<OrderItem> orderItems;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "tawaran_kerja")
   @JsonBackReference
   private TawaranKerja tawaranKerja;
