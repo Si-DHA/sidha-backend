@@ -7,6 +7,7 @@ import com.sidha.api.model.user.Karyawan;
 import com.sidha.api.model.user.Sopir;
 import com.sidha.api.model.user.UserModel;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import com.sidha.api.repository.TrukDb;
@@ -21,6 +22,7 @@ import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.repository.UserDb;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.sidha.api.model.enumerator.Role.SOPIR;
 
@@ -157,4 +159,27 @@ public class UserServiceImpl implements UserService {
 
         }
     }
+
+    @Override
+    public Long countUsersWithRoleCreatedInMonthAndYear(Role role, Integer month, Integer year) {
+        LocalDateTime startDateTime = LocalDateTime.of(year, month, 1, 0, 0);
+        LocalDateTime endDateTime = startDateTime.plusMonths(1);
+        return userDb.countByRoleAndCreatedAtBetween(role, startDateTime, endDateTime);
+    }
+    public Map<Integer, Long> getUserCountByWeekInMonth(int year, int month, Role role) {
+        return userDb.getUserCountByWeekInMonth(year, month, role);
+    }
+
+    public Map<Integer, Long> getUserCountByDayInMonth(int year, int month, Role role) {
+        return userDb.getUserCountByDayInMonth(year, month, role);
+    }
+
+    public Map<Integer, Long> getUserCountByMonthInYear(int year, Role role) {
+        return userDb.getUserCountByMonthInYear(year, role);
+    }
+
+    public Map<Integer, Long> getUserCountByYearRange(int startYear, int endYear, Role role) {
+        return userDb.getUserCountByYearRange(startYear, endYear, role);
+    }
+
 }

@@ -14,7 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -126,6 +128,26 @@ public class InsidenServiceImpl implements InsidenService {
     public Insiden getInsidenById(UUID id) {
         return insidenRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Insiden not found"));
+    }
+
+    @Override
+public Map<String, Long> getInsidenCountByDay(Date startDate, Date endDate) {
+        return insidenRepository.getInsidenCountByDay(startDate, endDate);
+    }
+
+    @Override
+    public Map<String, Long> getInsidenCountByWeek(int year, int month) {
+        return insidenRepository.getInsidenCountByWeek(year, month);
+    }
+
+    @Override
+    public Map<String, Long> getInsidenCountByMonth(int year) {
+        return insidenRepository.getInsidenCountByMonth(year);
+    }
+
+    @Override
+    public Map<Integer, Long> getInsidenCountByYear(int startYear, int endYear) {
+        return insidenRepository.getInsidenCountByYear(startYear, endYear);
     }
     
 }

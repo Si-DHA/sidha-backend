@@ -7,6 +7,7 @@ import com.sidha.api.model.user.Sopir;
 import com.sidha.api.model.user.UserModel;
 import com.sidha.api.model.enumerator.Role;
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
 
@@ -27,8 +28,21 @@ public interface UserService {
     List<UserModel> getListRole(Role role);
 
     List<Sopir> getListSopirNoTruk();
-    
+
     List<UserModel> findAllList();
 
     void deleteUser(UUID id);
+
+    // dashboard perusahaan
+    Long countUsersWithRoleCreatedInMonthAndYear(Role role, Integer month, Integer year);
+
+    public Map<Integer, Long> getUserCountByWeekInMonth(int year, int month, Role role);
+
+    public Map<Integer, Long> getUserCountByDayInMonth(int year, int month, Role role);
+
+    public Map<Integer, Long> getUserCountByMonthInYear(int year, Role role);
+
+    public Map<Integer, Long> getUserCountByYearRange(int startYear, int endYear, Role role);
+    // end of dashboard perusahaan
+
 }

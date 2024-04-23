@@ -11,13 +11,16 @@ import com.sidha.api.service.InsidenService;
 import com.sidha.api.service.StorageService;
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -148,6 +151,33 @@ public class InsidenController {
         } catch (IOException e) {
             return ResponseEntity.internalServerError().body("Failed to fetch image");
         }
+    }
+
+    @GetMapping("/insiden/count/day")
+    public Map<String, Long> getInsidenCountByDay(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return insidenService.getInsidenCountByDay(startDate, endDate);
+    }
+
+    @GetMapping("/insiden/count/week")
+    public Map<String, Long> getInsidenCountByWeek(
+            @RequestParam int year,
+            @RequestParam int month) {
+        return insidenService.getInsidenCountByWeek(year, month);
+    }
+
+    @GetMapping("/insiden/count/month")
+    public Map<String, Long> getInsidenCountByMonth(
+            @RequestParam int year) {
+        return insidenService.getInsidenCountByMonth(year);
+    }
+
+    @GetMapping("/insiden/count/year")
+    public Map<Integer, Long> getInsidenCountByYear(
+            @RequestParam int startYear,
+            @RequestParam int endYear) {
+        return insidenService.getInsidenCountByYear(startYear, endYear);
     }
 
 }

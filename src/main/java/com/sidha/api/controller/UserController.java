@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,7 +37,7 @@ public class UserController {
 
   @GetMapping("/all")
   public ResponseEntity<?> getUserList() {
-    return ResponseEntity.ok(new BaseResponse<>(true, 200, "User list", userService.findAllList() ));
+    return ResponseEntity.ok(new BaseResponse<>(true, 200, "User list", userService.findAllList()));
   }
 
   @GetMapping("/admin")
@@ -71,7 +73,7 @@ public class UserController {
   private ResponseEntity<?> getUserDetail(@PathVariable UUID id) {
     try {
       var user = userService.getUserDetail(id);
-      
+
       return ResponseEntity.ok(new BaseResponse<>(true, 200, "User detail",
           user));
     } catch (Exception e) {
@@ -125,5 +127,50 @@ public class UserController {
     }
   }
 
+  @GetMapping("/klien/hitung")
+  public Long countKlienUsersCreatedInMonthAndYear(@RequestParam("month") int month, @RequestParam("year") int year) {
+    return userService.countUsersWithRoleCreatedInMonthAndYear(Role.KLIEN, month, year);
+  }
+
+  @GetMapping("/users/count")
+  public ResponseEntity<?> getUserCount(
+      @RequestParam(required = false) Integer month,
+      @RequestParam(required = false) Integer year,
+      @RequestParam(required = false) String range,
+      @RequestParam(required = false) Integer from,
+      @RequestParam(required = false) Integer to,
+      @RequestParam(required = false) Role role) {
+
+    try {
+      if (range != null && range.equalsIgnoreCase("week") && month != null && year != null) {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "User count by week in month",
+            userService.getUserCountByWeekInMonth(year, month, role)));
+      } else if (range != null && range.equalsIgnoreCase("day") && month != null && year != null) {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "User count by day in month",
+            userService.getUserCountByDayInMonth(year, month, role)));
+      } else if (range != null && range.equalsIgnoreCase("month") && year != null) {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "User count by month in year",
+            userService.getUserCountByMonthInYear(year, role)));
+      } else if (range != null && range.equalsIgnoreCase("year") && from != null && to != null) {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "User count by year range",
+            userService.getUserCountByYearRange(from, to, role)));
+      } else {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new BaseResponse<>(false, 400, "Masukkan rentang yang valid", null));
+
+      }
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(new BaseResponse<>(false, 500, e.getMessage(), null));
+    }
+    // how to use:
+    // /users/count?month=4&year=2024&range=week untuk mendapatkan jumlah pengguna
+    // baru per minggu di bulan April 2024.
+    // /users/count?month=4&year=2024&range=day untuk mendapatkan jumlah pengguna
+    // baru per hari di bulan April 2024.
+    // /users/count?year=2024&range=month untuk mendapatkan jumlah pengguna baru per
+    // bulan di tahun 2024.
+    // /users/count?from=2021&to=2024&range=year untuk mendapatkan jumlah
+  }
 
 }
