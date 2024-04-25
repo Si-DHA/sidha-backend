@@ -34,8 +34,8 @@ public class TawaranKerjaServiceImpl implements TawaranKerjaService {
 
         Sopir sopir = (Sopir) userDb.findById(sopirId).orElseThrow(() -> new RuntimeException("Driver not found"));
 
-        orderItem.setSopir(sopir);
-        orderItemDb.save(orderItem);
+        // orderItem.setSopir(sopir);
+        // orderItemDb.save(orderItem);
 
         TawaranKerja tawaranKerja = new TawaranKerja();
         tawaranKerja.setOrderItem(orderItem);
@@ -63,6 +63,7 @@ public class TawaranKerjaServiceImpl implements TawaranKerjaService {
         tawaranKerjaDb.save(confirmedTawaranKerja);
 
         // Update the status of the OrderItem
+        orderItem.setSopir(confirmedTawaranKerja.getSopir());
         orderItem.setStatusOrder(1); // Status indicating that the job offer has been confirmed
         orderItemDb.save(orderItem);
     }
