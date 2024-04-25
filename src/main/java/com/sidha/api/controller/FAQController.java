@@ -34,14 +34,14 @@ public class FAQController {
     }
 
     // Create a new FAQ
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<FAQ> createFAQ(@RequestBody FAQ faq) {
         FAQ createdFAQ = faqService.createFAQ(faq);
         return ResponseEntity.ok(createdFAQ);
     }
 
     // Update an existing FAQ
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<FAQ> updateFAQ(@PathVariable Long id, @RequestBody FAQ faqDetails) {
         FAQ updatedFAQ = faqService.updateFAQ(id, faqDetails);
         if (updatedFAQ == null) {
@@ -51,9 +51,10 @@ public class FAQController {
     }
 
     // Soft delete an FAQ (mark as deleted)
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteFAQ(@PathVariable Long id) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteFAQ(@PathVariable Long id) {
         faqService.deleteFAQ(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+                    .ok("FAQ is deleted!");
     }
 }
