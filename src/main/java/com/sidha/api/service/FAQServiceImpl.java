@@ -46,8 +46,17 @@ public class FAQServiceImpl implements FAQService {
         if (existingFAQ == null) {
             return null;
         }
-        existingFAQ.setQuestion(faqDetails.getQuestion());
-        existingFAQ.setAnswer(faqDetails.getAnswer());
+
+        // Check if the question is not empty, then update it
+        if (faqDetails.getQuestion() != null && !faqDetails.getQuestion().isEmpty()) {
+            existingFAQ.setQuestion(faqDetails.getQuestion());
+        }
+
+        // Check if the answer is not empty, then update it
+        if (faqDetails.getAnswer() != null && !faqDetails.getAnswer().isEmpty()) {
+            existingFAQ.setAnswer(faqDetails.getAnswer());
+        }
+
         return faqDb.save(existingFAQ);
     }
 

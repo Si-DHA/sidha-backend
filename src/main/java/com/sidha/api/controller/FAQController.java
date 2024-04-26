@@ -1,6 +1,7 @@
 package com.sidha.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,9 @@ public class FAQController {
     @GetMapping
     public ResponseEntity<List<FAQ>> getAllFAQs() {
         List<FAQ> faqs = faqService.getAllFAQs();
+        if (faqs.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+        }
         return ResponseEntity.ok(faqs);
     }
 
@@ -28,7 +32,7 @@ public class FAQController {
     public ResponseEntity<FAQ> getFAQById(@PathVariable Long id) {
         FAQ faq = faqService.getFAQById(id);
         if (faq == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
         return ResponseEntity.ok(faq);
     }
@@ -37,6 +41,9 @@ public class FAQController {
     @PostMapping("/create")
     public ResponseEntity<FAQ> createFAQ(@RequestBody FAQ faq) {
         FAQ createdFAQ = faqService.createFAQ(faq);
+        if (createdFAQ == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
         return ResponseEntity.ok(createdFAQ);
     }
 
@@ -45,7 +52,7 @@ public class FAQController {
     public ResponseEntity<FAQ> updateFAQ(@PathVariable Long id, @RequestBody FAQ faqDetails) {
         FAQ updatedFAQ = faqService.updateFAQ(id, faqDetails);
         if (updatedFAQ == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
         return ResponseEntity.ok(updatedFAQ);
     }
@@ -53,8 +60,11 @@ public class FAQController {
     // Soft delete an FAQ (mark as deleted)
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteFAQ(@PathVariable Long id) {
-        faqService.deleteFAQ(id);
-        return ResponseEntity
-                    .ok("FAQ is deleted!");
+        try {
+            faqService.deleteFAQ(id);
+            return ResponseEntity.ok("FAQ is deleted!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting FAQ: " + e.getMessage());
+        }
     }
 }
