@@ -32,16 +32,16 @@ public class WebSecurityConfig  {
         @Order(1)
         public SecurityFilterChain jwtFilterChain(HttpSecurity http) throws Exception {
                 http.securityMatcher("/api/**")
-                        .csrf(AbstractHttpConfigurer::disable)
-                        .headers(headers -> headers
-                                .frameOptions(frameOptions -> frameOptions.disable()))
-                        .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                                .requestMatchers("/api/**").permitAll()
-                                .anyRequest().permitAll())
-                        .sessionManagement(
-                                sessionManagement -> sessionManagement
-                                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                        .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+                                .csrf(AbstractHttpConfigurer::disable)
+                                .headers(headers -> headers
+                                                .frameOptions(frameOptions -> frameOptions.disable()))
+                                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                                                .requestMatchers("/api/**").permitAll()
+                                                .anyRequest().permitAll())
+                                .sessionManagement(
+                                                sessionManagement -> sessionManagement
+                                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
                 return http.build();
         }
 
@@ -49,18 +49,18 @@ public class WebSecurityConfig  {
         @Order(2)
         public SecurityFilterChain webFilterChain(HttpSecurity http) throws Exception {
                 http
-                        .csrf(Customizer.withDefaults())
-                        .authorizeHttpRequests(requests -> requests
-                                .requestMatchers(new AntPathRequestMatcher("/css/**")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
-                                .anyRequest().permitAll())
-                        .formLogin(form -> form
-                                .loginPage("/login")
-                                .permitAll()
-                                .defaultSuccessUrl("/"))
-                        .logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                                .logoutSuccessUrl("/login"));
-
+                                .csrf(Customizer.withDefaults())
+                                .authorizeHttpRequests(requests -> requests
+                                                .requestMatchers(new AntPathRequestMatcher("/css/**")).permitAll()
+                                                .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
+                                                .anyRequest().permitAll())
+                                .formLogin(form -> form
+                                                .loginPage("/login")
+                                                .permitAll()
+                                                .defaultSuccessUrl("/"))
+                                .logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                                                .logoutSuccessUrl("/login"));
+                             
                 return http.build();
         }
 
