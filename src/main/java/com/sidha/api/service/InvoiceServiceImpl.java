@@ -38,13 +38,8 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public Invoice findInvoiceById(UUID idInvoice) {
-        Invoice invoice = invoiceDb.findById(idInvoice).orElse(null);
-
-        if (invoice == null) {
-            throw new NoSuchElementException("Id invoice tidak valid");
-        }
-
-        return invoice;
+        return invoiceDb.findById(idInvoice)
+                .orElseThrow(() -> new NoSuchElementException("Id invoice tidak valid"));
     }
 
     @Override
