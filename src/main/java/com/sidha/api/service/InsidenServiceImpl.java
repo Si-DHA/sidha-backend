@@ -32,7 +32,7 @@ public class InsidenServiceImpl implements InsidenService {
     private StorageService storageService;
 
     @Override
-    public Insiden createInsiden(Insiden insiden, UUID sopirId, MultipartFile buktiFoto) throws IOException {
+    public Insiden createInsiden(Insiden insiden, UUID sopirId, UUID orderItemId, MultipartFile buktiFoto) throws IOException {
         Sopir sopir = (Sopir) userDb.findById(sopirId).orElseThrow(() -> new RuntimeException("Driver not found"));
 
         if (buktiFoto != null && !buktiFoto.isEmpty()) {
@@ -46,7 +46,7 @@ public class InsidenServiceImpl implements InsidenService {
     }
 
     @Override
-    public Insiden updateInsiden(UUID id, Insiden insidenDetails, MultipartFile buktiFoto) throws IOException {
+    public Insiden updateInsiden(UUID id, Insiden insidenDetails, UUID orderItemId, MultipartFile buktiFoto) throws IOException {
         Insiden existingInsiden = insidenRepository.findById(id)
                                     .orElseThrow(() -> new RuntimeException("Insiden not found"));
 
