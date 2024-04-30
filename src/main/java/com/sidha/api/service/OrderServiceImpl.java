@@ -1,5 +1,6 @@
 package com.sidha.api.service;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,10 +54,16 @@ public class OrderServiceImpl implements OrderService {
         });
 
         order.setOrderItems(orderItems);
-        order.setTotalPrice(orderItems.stream().mapToLong(OrderItem::getPrice).sum());
+        Long totalPrice = orderItems.stream().mapToLong(OrderItem::getPrice).sum();
+        order.setTotalPrice(totalPrice);
+
         var invoice = invoiceService.createInvoice();
         order.setInvoice(invoice);
         invoice.setOrder(order);
+        BigDecimal totalDp = BigDecimal.valueOf(0.6 * totalPrice);
+        BigDecimal totalPelunasan = BigDecimal.valueOf(0.4 * totalPrice);;
+        invoice.setTotalDp(totalDp);
+        invoice.setTotalPelunasan(totalPelunasan);
         invoiceService.saveInvoice(invoice);
 
         return orderDb.save(order);
@@ -195,7 +202,16 @@ public class OrderServiceImpl implements OrderService {
 
         });
 
-        order.setTotalPrice(order.getOrderItems().stream().mapToLong(OrderItem::getPrice).sum());
+        Long totalPrice = order.getOrderItems().stream().mapToLong(OrderItem::getPrice).sum();
+        order.setTotalPrice(totalPrice);
+
+        BigDecimal totalDp = BigDecimal.valueOf(0.6 * totalPrice);
+        BigDecimal totalPelunasan = BigDecimal.valueOf(0.4 * totalPrice);
+        var invoice = order.getInvoice();
+        invoice.setTotalDp(totalDp);
+        invoice.setTotalPelunasan(totalPelunasan);
+        invoiceService.saveInvoice(invoice);
+
         return orderDb.save(order);
     }
 
