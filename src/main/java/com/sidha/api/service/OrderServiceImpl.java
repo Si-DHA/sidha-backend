@@ -396,11 +396,10 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderItem> getAllOrderItemByIdOrder(UUID idOrder){
         return orderItemDb.findByIdOrder(idOrder);
     }
-    private OrderItemHistory addOrderItemHistory(OrderItem orderItem, Integer status, String description,
+    private OrderItemHistory addOrderItemHistory(OrderItem orderItem, String description,
             String createdBy) {
         var orderItemHistory = new OrderItemHistory();
         orderItemHistory.setOrderItem(orderItem);
-//        orderItemHistory.setStatus(status);
         orderItemHistory.setDescription(description);
         orderItemHistory.setCreatedBy(createdBy);
         return orderItemHistoryDb.save(orderItemHistory);
