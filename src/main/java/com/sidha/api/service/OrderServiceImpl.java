@@ -400,7 +400,7 @@ public class OrderServiceImpl implements OrderService {
             String createdBy) {
         var orderItemHistory = new OrderItemHistory();
         orderItemHistory.setOrderItem(orderItem);
-        orderItemHistory.setStatus(status);
+//        orderItemHistory.setStatus(status);
         orderItemHistory.setDescription(description);
         orderItemHistory.setCreatedBy(createdBy);
         return orderItemHistoryDb.save(orderItemHistory);
