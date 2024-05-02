@@ -11,6 +11,8 @@ import com.sidha.api.model.order.Order;
 import com.sidha.api.model.order.OrderItem;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.*;
 
 public interface OrderService {
 
@@ -50,4 +52,19 @@ public interface OrderService {
     Order getPrice(CreateOrderRequestDTO request);
 
     List<String> getAllPossibleRute(UUID userId);
+
+    BigDecimal getTotalExpenditureByKlienInRange(UUID klienId, LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+    BigDecimal getTotalExpenditureByKlienDaily(UUID klienId, LocalDate date);
+
+    BigDecimal getTotalExpenditureByKlienMonthly(UUID klienId, YearMonth yearMonth);
+
+    BigDecimal getTotalExpenditureByKlienYearly(UUID klienId, Year year);
+
+    BigDecimal calculateTotalExpenditure(List<Order> orders);
+
+    List<OrderItem> getAllOrderItemDiprosesByKlienId(UUID klienId);
+
+    int countCompletedOrderItemsByKlienId(UUID klienId);
+
 }
