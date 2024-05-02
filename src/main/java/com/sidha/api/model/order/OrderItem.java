@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sidha.api.model.TawaranKerja;
 import com.sidha.api.model.enumerator.TipeBarang;
@@ -60,8 +61,9 @@ public class OrderItem { // 1 order item = 1 truk
   @JsonBackReference
   private Sopir sopir;
 
-  @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JsonManagedReference
+  @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
   private List<Rute> rute;
 
   @JsonManagedReference
@@ -71,9 +73,10 @@ public class OrderItem { // 1 order item = 1 truk
   @JsonManagedReference
   @OneToOne(cascade = CascadeType.ALL)
   private BongkarMuatImage buktiMuat;
-  
-  @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL)
+
+  @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JsonManagedReference
+  @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
   private List<OrderItemHistory> orderItemHistories;
 
   @ManyToOne

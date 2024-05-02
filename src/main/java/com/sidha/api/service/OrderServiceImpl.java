@@ -1,9 +1,16 @@
 package com.sidha.api.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.YearMonth;
 import java.util.UUID;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.sidha.api.DTO.request.order.CreateOrderRequestDTO;
@@ -47,6 +54,9 @@ public class OrderServiceImpl implements OrderService {
 
     private InvoiceService invoiceService;
     private OrderItemHistoryDb orderItemHistoryDb;
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
+
     @Override
     public Order createOrder(CreateOrderRequestDTO request) {
         var user = userService.findById(request.getKlienId());
@@ -64,10 +74,16 @@ public class OrderServiceImpl implements OrderService {
         });
 
         order.setOrderItems(orderItems);
-        order.setTotalPrice(orderItems.stream().mapToLong(OrderItem::getPrice).sum());
+        Long totalPrice = orderItems.stream().mapToLong(OrderItem::getPrice).sum();
+        order.setTotalPrice(totalPrice);
+
         var invoice = invoiceService.createInvoice();
         order.setInvoice(invoice);
         invoice.setOrder(order);
+        BigDecimal totalDp = BigDecimal.valueOf(0.6 * totalPrice);
+        BigDecimal totalPelunasan = BigDecimal.valueOf(0.4 * totalPrice);;
+        invoice.setTotalDp(totalDp);
+        invoice.setTotalPelunasan(totalPelunasan);
         invoiceService.saveInvoice(invoice);
 
         return orderDb.save(order);
@@ -206,38 +222,55 @@ public class OrderServiceImpl implements OrderService {
 
         });
 
-        order.setTotalPrice(order.getOrderItems().stream().mapToLong(OrderItem::getPrice).sum());
+        Long totalPrice = order.getOrderItems().stream().mapToLong(OrderItem::getPrice).sum();
+        order.setTotalPrice(totalPrice);
+
+        BigDecimal totalDp = BigDecimal.valueOf(0.6 * totalPrice);
+        BigDecimal totalPelunasan = BigDecimal.valueOf(0.4 * totalPrice);
+        var invoice = order.getInvoice();
+        invoice.setTotalDp(totalDp);
+        invoice.setTotalPelunasan(totalPelunasan);
+        invoiceService.saveInvoice(invoice);
+
         return orderDb.save(order);
     }
 
     @Override
     public Order confirmOrder(OrderConfirmRequestDTO request) {
-        for (var confirmOrderItem : request.getOrderItems()) {
-            var orderItem = orderItemDb.findById(confirmOrderItem.getOrderItemId())
-                    .orElseThrow(() -> new IllegalArgumentException("Order Item not found"));
+        try {
+            for (var confirmOrderItem : request.getOrderItems()) {
+                var orderItem = orderItemDb.findById(confirmOrderItem.getOrderItemId())
+                        .orElseThrow(() -> new IllegalArgumentException("Order Item not found"));
 
-            if (orderItem.getStatusOrder() != 0) {
-                throw new IllegalArgumentException("Order Item already confirmed");
+                if (orderItem.getStatusOrder() != 0) {
+                    throw new IllegalArgumentException("Order Item already confirmed");
+                }
+
+                if (confirmOrderItem.getIsAccepted()) {
+                    orderItem.setStatusOrder(1);
+                } else {
+                    orderItem.setStatusOrder(-1);
+                    orderItem.setAlasanPenolakan(confirmOrderItem.getRejectionReason());
+                }
+
+                var createdBy = userService.findById(request.getKaryawanId()).getUsername();
+                var orderItemHistory = addOrderItemHistory(orderItem, orderItem.getStatusOrder(),
+                        confirmOrderItem.getIsAccepted() ? "Order diterima"
+                                : "Order ditolak: " + confirmOrderItem.getRejectionReason(),
+                        createdBy);
+
+                orderItem.getOrderItemHistories().add(orderItemHistory);
+                orderItemDb.save(orderItem);
+
+                logger.info("Order item {} processed with status {}", orderItem.getId(), orderItem.getStatusOrder());
             }
-
-            if (confirmOrderItem.getIsAccepted()) {
-                orderItem.setStatusOrder(1);
-            } else {
-                orderItem.setStatusOrder(-1);
-                orderItem.setAlasanPenolakan(confirmOrderItem.getRejectionReason());
-            }
-
-            var createdBy = userService.findById(request.getKaryawanId()).getUsername();
-            var orderItemHistory = addOrderItemHistory(orderItem, orderItem.getStatusOrder(),
-                    confirmOrderItem.getIsAccepted() ? "Order diterima"
-                            : "Order ditolak: " + confirmOrderItem.getRejectionReason(),
-                    createdBy);
-
-            orderItem.getOrderItemHistories().add(orderItemHistory);
-            orderItemDb.save(orderItem);
+            return orderDb.findById(request.getOrderId())
+                    .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        } catch (Exception e) {
+            logger.error("Error confirming order: {}", e.getMessage(), e);
+            throw e;
         }
-        return orderDb.findById(request.getOrderId())
-                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
     }
 
     @Override
@@ -420,4 +453,51 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
+    @Override
+    public List<String> getAllPossibleRute(UUID userId) {
+        // list["source - destinantion"]
+        List<String> listRute = new ArrayList<>();
+        var listPenawaranHargaItem = ((Klien) userService.findById(userId)).getListPenawaranHargaItem();
+        for (PenawaranHargaItem penawaranHargaItem : listPenawaranHargaItem) {
+            listRute.add(penawaranHargaItem.getSource() + " - " + penawaranHargaItem.getDestination());
+        }
+        return listRute;
+    }
+
+    @Override
+    public BigDecimal getTotalExpenditureByKlienInRange(UUID klienId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List<Order> orders = orderDb.findByKlienIdAndCreatedAtBetween(klienId, startDateTime, endDateTime);
+        return calculateTotalExpenditure(orders);
+    }
+
+    @Override
+    public BigDecimal getTotalExpenditureByKlienDaily(UUID klienId, LocalDate date) {
+        LocalDateTime startDateTime = date.atStartOfDay();
+        LocalDateTime endDateTime = date.atTime(23, 59, 59);
+        return getTotalExpenditureByKlienInRange(klienId, startDateTime, endDateTime);
+    }
+
+    @Override
+    public BigDecimal getTotalExpenditureByKlienMonthly(UUID klienId, YearMonth yearMonth) {
+        LocalDateTime startDateTime = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime endDateTime = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+        return getTotalExpenditureByKlienInRange(klienId, startDateTime, endDateTime);
+    }
+
+    @Override
+    public BigDecimal getTotalExpenditureByKlienYearly(UUID klienId, Year year) {
+        LocalDateTime startDateTime = year.atDay(1).atStartOfDay();
+        LocalDateTime endDateTime = year.atMonth(12).atEndOfMonth().atTime(23, 59, 59);
+        return getTotalExpenditureByKlienInRange(klienId, startDateTime, endDateTime);
+    }
+
+    @Override
+    public BigDecimal calculateTotalExpenditure(List<Order> orders) {
+        BigDecimal totalExpenditure = BigDecimal.ZERO;
+        for (Order order : orders) {
+            BigDecimal orderTotalPrice = BigDecimal.valueOf(order.getTotalPrice());
+            totalExpenditure = totalExpenditure.add(orderTotalPrice);
+        }
+        return totalExpenditure;
+    }
 }

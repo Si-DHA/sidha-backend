@@ -13,14 +13,32 @@ public class InsidenDTO {
     private UUID sopirId;
     private String sopirName;
     private ImageData buktiFoto;
-    private InsidenStatus status; // Added status field
+    private InsidenStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String source;
+    private String destination;
 
     // Getters and setters
 
     public UUID getId() {
         return id;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
     }
 
     public void setId(UUID id) {

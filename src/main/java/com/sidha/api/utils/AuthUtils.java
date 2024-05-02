@@ -29,7 +29,7 @@ public class AuthUtils {
         return false;
     }
     
-    public boolean isKlien(String token) {
+public boolean isKlien(String token) {
         if (jwtUtils.validateJwtToken(token)) {
             return jwtUtils.getClaimsFromJwtToken(token).get("role").equals(Role.KLIEN.toString());
         }
