@@ -73,7 +73,7 @@ public class TawaranKerjaServiceImpl implements TawaranKerjaService {
 
         var orderItemHistories = orderItem.getOrderItemHistories();
 
-        String descriptionHistoryConfirm = "mengonfirmasi order item " + orderItem.getId();
+        String descriptionHistoryConfirm = "Mengonfirmasi order item " + orderItem.getId();
         orderItemHistories.add(
                 orderService.addOrderItemHistory(orderItem, descriptionHistoryConfirm, "PT DHA")
         );
@@ -81,9 +81,9 @@ public class TawaranKerjaServiceImpl implements TawaranKerjaService {
         var trukSopir = trukService.findTrukByIdSopir(sopir.getId());
         String descriptionHistoryAssign;
         if (trukSopir != null) {
-            descriptionHistoryAssign = "menugaskan sopir " + sopir.getName() + " - " + trukSopir.getLicensePlate();
+            descriptionHistoryAssign = "Menugaskan sopir " + sopir.getName() + " - " + trukSopir.getLicensePlate();
         } else {
-            throw new RuntimeException("Sopir belum memiliki truk");
+            throw new RuntimeException("Sopir tidak memiliki truk");
         }
         orderItemHistories.add(
                 orderService.addOrderItemHistory(orderItem, descriptionHistoryAssign, "PT DHA")
