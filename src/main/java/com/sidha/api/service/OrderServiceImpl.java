@@ -305,7 +305,16 @@ public class OrderServiceImpl implements OrderService {
         ImageData currentImage;
         currentImage = orderItem.getBuktiMuat();
         orderItem.setBuktiMuat(muatImage);
+        orderItem.setStatusOrder(2);
         this.saveImageBongkarMuat(orderItem);
+
+        // order item history
+        var orderItemHistories = orderItem.getOrderItemHistories();
+        String sopir = "Sopir " + orderItem.getSopir().getName();
+        String descriptionHistory = "Mengunggah bukti muat";
+        orderItemHistories.add(
+                this.addOrderItemHistory(orderItem, descriptionHistory, sopir)
+        );
 
         if (currentImage != null) {
             storageService.deleteImageFile(currentImage);
@@ -327,7 +336,16 @@ public class OrderServiceImpl implements OrderService {
         ImageData currentImage;
         currentImage = orderItem.getBuktiBongkar();
         orderItem.setBuktiBongkar(bongkarImage);
+        orderItem.setStatusOrder(4);
         this.saveImageBongkarMuat(orderItem);
+
+        // order item history
+        var orderItemHistories = orderItem.getOrderItemHistories();
+        String sopir = "Sopir " + orderItem.getSopir().getName();
+        String descriptionHistory = "Mengunggah bukti bongkar";
+        orderItemHistories.add(
+                this.addOrderItemHistory(orderItem, descriptionHistory, sopir)
+        );
 
         if (currentImage != null) {
             storageService.deleteImageFile(currentImage);
