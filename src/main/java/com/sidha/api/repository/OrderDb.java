@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import com.sidha.api.model.order.Order;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,5 +18,7 @@ public interface  OrderDb extends JpaRepository<Order, UUID>{
 
     @Query("SELECT o FROM Order o JOIN o.orderItems oi WHERE oi.id = :orderItemId")
     Optional<Order> findByOrderItemId(@Param("orderItemId") UUID orderItemId);
+
+    List<Order> findByKlienIdAndCreatedAtBetween(UUID klienId, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
 }

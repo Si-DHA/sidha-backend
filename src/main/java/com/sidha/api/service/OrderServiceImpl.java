@@ -1,6 +1,10 @@
 package com.sidha.api.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.YearMonth;
 import java.util.UUID;
 import java.util.ArrayList;
 import java.util.List;
@@ -462,10 +466,55 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order getOrderByOrderitem(UUID idOrderItem) {
+    public Order getOrderByOrderItem(UUID idOrderItem) {
         return orderDb.findByOrderItemId(idOrderItem).orElseThrow(
                 () -> new NoSuchElementException("Order tidak ditemukan")
         );
     }
 
+    public BigDecimal getTotalExpenditureByKlienInRange(UUID klienId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List<Order> orders = orderDb.findByKlienIdAndCreatedAtBetween(klienId, startDateTime, endDateTime);
+        return calculateTotalExpenditure(orders);
+    }
+
+    @Override
+    public BigDecimal getTotalExpenditureByKlienDaily(UUID klienId, LocalDate date) {
+        LocalDateTime startDateTime = date.atStartOfDay();
+        LocalDateTime endDateTime = date.atTime(23, 59, 59);
+        return getTotalExpenditureByKlienInRange(klienId, startDateTime, endDateTime);
+    }
+
+    @Override
+    public BigDecimal getTotalExpenditureByKlienMonthly(UUID klienId, YearMonth yearMonth) {
+        LocalDateTime startDateTime = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime endDateTime = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+        return getTotalExpenditureByKlienInRange(klienId, startDateTime, endDateTime);
+    }
+
+    @Override
+    public BigDecimal getTotalExpenditureByKlienYearly(UUID klienId, Year year) {
+        LocalDateTime startDateTime = year.atDay(1).atStartOfDay();
+        LocalDateTime endDateTime = year.atMonth(12).atEndOfMonth().atTime(23, 59, 59);
+        return getTotalExpenditureByKlienInRange(klienId, startDateTime, endDateTime);
+    }
+
+    @Override
+    public BigDecimal calculateTotalExpenditure(List<Order> orders) {
+        BigDecimal totalExpenditure = BigDecimal.ZERO;
+        for (Order order : orders) {
+            BigDecimal orderTotalPrice = BigDecimal.valueOf(order.getTotalPrice());
+            totalExpenditure = totalExpenditure.add(orderTotalPrice);
+        }
+        return totalExpenditure;
+    }
+
+    @Override
+    public List<OrderItem> getAllOrderItemDiprosesByKlienId(UUID klienId) {
+        return orderItemDb.findByKlienIdAndStatusNotIn(klienId);
+    }
+
+    @Override
+    public int countCompletedOrderItemsByKlienId(UUID klienId) {
+        return orderItemDb.countCompletedOrderItemsByKlienId(klienId);
+    }
 }
