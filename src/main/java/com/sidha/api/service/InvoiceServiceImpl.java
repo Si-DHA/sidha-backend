@@ -4,6 +4,7 @@ import com.sidha.api.DTO.request.KonfirmasiBuktiPembayaranDTO;
 import com.sidha.api.model.Invoice;
 import com.sidha.api.model.image.ImageData;
 import com.sidha.api.model.image.InvoiceImage;
+import com.sidha.api.model.order.Order;
 import com.sidha.api.model.order.OrderItem;
 import com.sidha.api.repository.ImageDataDb;
 import com.sidha.api.repository.InvoiceDb;
@@ -47,8 +48,32 @@ public class InvoiceServiceImpl implements InvoiceService {
         List<Invoice> listInvoiceKlien = new ArrayList<>();
         for (Invoice invoice : this.findAllInvoice()) {
             try {
-                if (invoice.getOrder().getKlien().getId().equals(idKlien)) {
-                    listInvoiceKlien.add(invoice);
+                Order order = invoice.getOrder();
+                if (order.getKlien().getId().equals(idKlien)) {
+                    List<OrderItem> orderItems = order.getOrderItems();
+                    boolean excludeInvoice = false;
+                    boolean allItemsHaveStatusMinus1 = true;
+
+                    // Check the status of each order item
+                    for (OrderItem orderItem : orderItems) {
+                        int status = orderItem.getStatusOrder();
+
+                        // Check if there is any OrderItem with status 0 or 1
+                        if (status == 0 || status == 1) {
+                            excludeInvoice = true;
+                            break;
+                        }
+
+                        // Check if all OrderItems have status -1
+                        if (status != -1) {
+                            allItemsHaveStatusMinus1 = false;
+                        }
+                    }
+
+                    // Exclude the invoice if either condition is met
+                    if (!excludeInvoice && !allItemsHaveStatusMinus1) {
+                        listInvoiceKlien.add(invoice);
+                    }
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e.getMessage());

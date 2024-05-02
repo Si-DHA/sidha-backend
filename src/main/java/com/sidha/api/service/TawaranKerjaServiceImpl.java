@@ -98,7 +98,7 @@ public class TawaranKerjaServiceImpl implements TawaranKerjaService {
 
     @Override
     public List<TawaranKerja> getJobOffersAcceptedBySopir(UUID sopirId) {
-        return tawaranKerjaDb.findBySopirId(sopirId);
+        return tawaranKerjaDb.findBySopirIdAndIsDikonfirmasiKaryawanTrue(sopirId);
     }
 
     @Override
