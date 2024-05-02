@@ -27,6 +27,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import java.util.NoSuchElementException;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+
 import com.sidha.api.model.image.ImageData;
 import org.springframework.http.MediaType;
 import java.util.List;
@@ -63,7 +67,7 @@ public class OrderController {
     // #region Klien
 
     @GetMapping("/possible-rute")
-    public ResponseEntity<?> getAllPossibleRute(@RequestParam("userId") UUID userId){
+    public ResponseEntity<?> getAllPossibleRute(@RequestParam("userId") UUID userId) {
         try {
             var response = orderService.getAllPossibleRute(userId);
             return ResponseEntity.ok(new BaseResponse<>(true, 200, "Rute fetched successfully", response));
@@ -138,6 +142,109 @@ public class OrderController {
         }
 
         return ResponseEntity.badRequest().body(new BaseResponse<>(false, 400, "Unauthorized", null));
+    }
+
+    // Endpoint to get total expenditure for a client in a daily range
+    @GetMapping("/total-expenditure/daily/{klienId}")
+    public ResponseEntity<?> getTotalExpenditureDaily(
+            @PathVariable UUID klienId,
+            @RequestParam String date) {
+        try {
+            LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            BigDecimal totalExpenditure = orderService.getTotalExpenditureByKlienDaily(klienId, localDate);
+            return ResponseEntity
+                    .ok(new BaseResponse<>(true, 200, "Total expenditure fetched successfully", totalExpenditure));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new BaseResponse<>(false, 400, e.getMessage(), null));
+        }
+    }
+
+    // Endpoint to get total expenditure for a client in a monthly range
+    @GetMapping("/total-expenditure/monthly/{klienId}")
+    public ResponseEntity<?> getTotalExpenditureMonthly(
+            @PathVariable UUID klienId,
+            @RequestParam String month,
+            @RequestParam String year) {
+        try {
+            YearMonth yearMonth = YearMonth.parse(year + "-" + month, DateTimeFormatter.ofPattern("yyyy-MM"));
+            BigDecimal totalExpenditure = orderService.getTotalExpenditureByKlienMonthly(klienId, yearMonth);
+            return ResponseEntity
+                    .ok(new BaseResponse<>(true, 200, "Total expenditure fetched successfully", totalExpenditure));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new BaseResponse<>(false, 400, e.getMessage(), null));
+        }
+    }
+
+    // Endpoint to get total expenditure for a client in a yearly range
+    @GetMapping("/total-expenditure/yearly/{klienId}")
+    public ResponseEntity<?> getTotalExpenditureYearly(
+            @PathVariable UUID klienId,
+            @RequestParam String year) {
+        try {
+            Year localDate = Year.parse(year + "-01-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            BigDecimal totalExpenditure = orderService.getTotalExpenditureByKlienYearly(klienId, localDate);
+            return ResponseEntity
+                    .ok(new BaseResponse<>(true, 200, "Total expenditure fetched successfully", totalExpenditure));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new BaseResponse<>(false, 400, e.getMessage(), null));
+        }
+    }
+
+    // Endpoint to get total expenditure for a client for today
+    @GetMapping("/total-expenditure/daily-now/{klienId}")
+    public ResponseEntity<?> getTotalExpenditureDailyNow(
+            @PathVariable UUID klienId) {
+        try {
+            LocalDate currentDate = LocalDate.now();
+            BigDecimal totalExpenditure = orderService.getTotalExpenditureByKlienDaily(klienId, currentDate);
+            return ResponseEntity
+                    .ok(new BaseResponse<>(true, 200, "Total expenditure fetched successfully", totalExpenditure));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new BaseResponse<>(false, 400, e.getMessage(), null));
+        }
+    }
+
+    // Endpoint to get total expenditure for a client for this month
+    @GetMapping("/total-expenditure/monthly-now/{klienId}")
+    public ResponseEntity<?> getTotalExpenditureMonthlyNow(
+            @PathVariable UUID klienId) {
+        try {
+            YearMonth currentYearMonth = YearMonth.now();
+            BigDecimal totalExpenditure = orderService.getTotalExpenditureByKlienMonthly(klienId, currentYearMonth);
+            return ResponseEntity
+                    .ok(new BaseResponse<>(true, 200, "Total expenditure fetched successfully", totalExpenditure));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new BaseResponse<>(false, 400, e.getMessage(), null));
+        }
+    }
+
+    // Endpoint to get total expenditure for a client for this year
+    @GetMapping("/total-expenditure/yearly-now/{klienId}")
+    public ResponseEntity<?> getTotalExpenditureYearlyNow(
+        @PathVariable UUID klienId) {
+        try {
+            Year currentYear = Year.now();
+            BigDecimal totalExpenditure = orderService.getTotalExpenditureByKlienYearly(klienId, currentYear);
+            return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total expenditure fetched successfully", totalExpenditure));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new BaseResponse<>(false, 400, e.getMessage(), null));
+        }
+    }
+
+    @GetMapping(value = "/klien/{klienId}/order-item")
+    public List<OrderItem> getAllOrderItemDiprosesByKlienId(@PathVariable("klienId") UUID klienId) {
+        try {
+            List<OrderItem> listOrderItem = orderService.getAllOrderItemDiprosesByKlienId(klienId);
+            return listOrderItem;
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order item tidak ditemukan");
+        }
+    }
+
+    @GetMapping("/count-completed/{klienId}")
+    public ResponseEntity<Integer> countCompletedOrderItemsByKlienId(@PathVariable UUID klienId) {
+        int count = orderService.countCompletedOrderItemsByKlienId(klienId);
+        return ResponseEntity.ok(count);
     }
 
     // #endregion
@@ -365,8 +472,7 @@ public class OrderController {
         try {
             List<OrderItem> listOrderItem = orderService.getAllOrderItemByIdOrder(idOrder);
             return listOrderItem;
-        } 
-        catch (NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order item tidak ditemukan");
         }
     }
