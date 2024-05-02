@@ -7,11 +7,15 @@ import org.springframework.data.repository.query.Param;
 import com.sidha.api.model.order.Order;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface  OrderDb extends JpaRepository<Order, UUID>{
     @Query("SELECT phi FROM Order phi WHERE phi.klien.id = :klien")
-    List<Order> findByKlienId(@Param("klien") UUID klien); 
+    List<Order> findByKlienId(@Param("klien") UUID klien);
+
+    @Query("SELECT o FROM Order o JOIN o.orderItems oi WHERE oi.id = :orderItemId")
+    Optional<Order> findByOrderItemId(@Param("orderItemId") UUID orderItemId);
 
 }

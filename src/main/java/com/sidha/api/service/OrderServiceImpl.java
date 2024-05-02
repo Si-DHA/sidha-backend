@@ -396,8 +396,10 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderItem> getAllOrderItemByIdOrder(UUID idOrder){
         return orderItemDb.findByIdOrder(idOrder);
     }
-    private OrderItemHistory addOrderItemHistory(OrderItem orderItem, String description,
-            String createdBy) {
+
+    @Override
+    public OrderItemHistory addOrderItemHistory(OrderItem orderItem, String description,
+                                                String createdBy) {
         var orderItemHistory = new OrderItemHistory();
         orderItemHistory.setOrderItem(orderItem);
         orderItemHistory.setDescription(description);
@@ -457,6 +459,13 @@ public class OrderServiceImpl implements OrderService {
             listRute.add(penawaranHargaItem.getSource() + " - " + penawaranHargaItem.getDestination());
         }
         return listRute;
+    }
+
+    @Override
+    public Order getOrderByOrderitem(UUID idOrderItem) {
+        return orderDb.findByOrderItemId(idOrderItem).orElseThrow(
+                () -> new NoSuchElementException("Order tidak ditemukan")
+        );
     }
 
 }
