@@ -102,7 +102,7 @@ public class OrderServiceImpl implements OrderService {
         orderItem.setRute(rute);
 
         var orderItemHistories = new ArrayList<OrderItemHistory>();
-        orderItemHistories.add(addOrderItemHistory(orderItem, 0, "Order berhasil dibuat", klien.getUsername()));
+        orderItemHistories.add(addOrderItemHistory(orderItem, "Order berhasil dibuat", klien.getUsername()));
         orderItem.setOrderItemHistories(orderItemHistories);
 
         orderItem.setPrice(rute.stream().mapToLong(Rute::getPrice).sum());
@@ -250,7 +250,7 @@ public class OrderServiceImpl implements OrderService {
                 }
 
                 var createdBy = userService.findById(request.getKaryawanId()).getUsername();
-                var orderItemHistory = addOrderItemHistory(orderItem, orderItem.getStatusOrder(),
+                var orderItemHistory = addOrderItemHistory(orderItem,
                         confirmOrderItem.getIsAccepted() ? "Order diterima"
                                 : "Order ditolak: " + confirmOrderItem.getRejectionReason(),
                         createdBy);
