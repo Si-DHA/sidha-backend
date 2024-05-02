@@ -305,21 +305,29 @@ public class OrderServiceImpl implements OrderService {
         ImageData currentImage;
         currentImage = orderItem.getBuktiMuat();
         orderItem.setBuktiMuat(muatImage);
-        orderItem.setStatusOrder(2);
+//        orderItem.setStatusOrder(2);
         this.saveImageBongkarMuat(orderItem);
 
         // order item history
         var orderItemHistories = orderItem.getOrderItemHistories();
         String sopir = "Sopir " + orderItem.getSopir().getName();
-        String descriptionHistory = "Mengunggah bukti muat";
-        orderItemHistories.add(
-                this.addOrderItemHistory(orderItem, descriptionHistory, sopir)
-        );
+        String descriptionHistory;
 
         if (currentImage != null) {
             storageService.deleteImageFile(currentImage);
             imageDataDb.delete(currentImage);
+            descriptionHistory = "Mengubah bukti muat";
+            orderItemHistories.add(
+                    this.addOrderItemHistory(orderItem, descriptionHistory, sopir)
+            );
+        } else {
+            orderItem.setStatusOrder(2);
+            descriptionHistory = "Mengunggah bukti muat";
+            orderItemHistories.add(
+                    this.addOrderItemHistory(orderItem, descriptionHistory, sopir)
+            );
         }
+
         muatImage.setOrderItem(orderItem);
         imageDataDb.save(muatImage);
         return orderItem;
