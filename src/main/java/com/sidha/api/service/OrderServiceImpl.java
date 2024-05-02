@@ -500,4 +500,14 @@ public class OrderServiceImpl implements OrderService {
         }
         return totalExpenditure;
     }
+
+    @Override
+    public List<OrderItem> getAllOrderItemDiprosesByKlienId(UUID klienId) {
+        return orderItemDb.findByKlienIdAndStatusNotIn(klienId);
+    }
+
+    @Override
+    public int countCompletedOrderItemsByKlienId(UUID klienId) {
+        return orderItemDb.countCompletedOrderItemsByKlienId(klienId);
+    }
 }

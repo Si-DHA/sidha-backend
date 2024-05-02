@@ -63,4 +63,8 @@ public interface OrderService {
 
     BigDecimal calculateTotalExpenditure(List<Order> orders);
 
+    List<OrderItem> getAllOrderItemDiprosesByKlienId(UUID klienId);
+
+    int countCompletedOrderItemsByKlienId(UUID klienId);
+
 }

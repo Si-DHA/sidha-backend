@@ -231,6 +231,22 @@ public class OrderController {
         }
     }
 
+    @GetMapping(value = "/klien/{klienId}/order-item")
+    public List<OrderItem> getAllOrderItemDiprosesByKlienId(@PathVariable("klienId") UUID klienId) {
+        try {
+            List<OrderItem> listOrderItem = orderService.getAllOrderItemDiprosesByKlienId(klienId);
+            return listOrderItem;
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order item tidak ditemukan");
+        }
+    }
+
+    @GetMapping("/count-completed/{klienId}")
+    public ResponseEntity<Integer> countCompletedOrderItemsByKlienId(@PathVariable UUID klienId) {
+        int count = orderService.countCompletedOrderItemsByKlienId(klienId);
+        return ResponseEntity.ok(count);
+    }
+
     // #endregion
 
     // #region Karyawan
