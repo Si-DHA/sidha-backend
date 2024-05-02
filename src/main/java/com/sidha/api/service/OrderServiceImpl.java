@@ -106,7 +106,7 @@ public class OrderServiceImpl implements OrderService {
         orderItem.setRute(rute);
 
         var orderItemHistories = new ArrayList<OrderItemHistory>();
-        orderItemHistories.add(addOrderItemHistory(orderItem, 0, "Order berhasil dibuat", klien.getUsername()));
+        orderItemHistories.add(addOrderItemHistory(orderItem, "Order berhasil dibuat", klien.getUsername()));
         orderItem.setOrderItemHistories(orderItemHistories);
 
         orderItem.setPrice(rute.stream().mapToLong(Rute::getPrice).sum());
@@ -254,7 +254,7 @@ public class OrderServiceImpl implements OrderService {
                 }
 
                 var createdBy = userService.findById(request.getKaryawanId()).getUsername();
-                var orderItemHistory = addOrderItemHistory(orderItem, orderItem.getStatusOrder(),
+                var orderItemHistory = addOrderItemHistory(orderItem,
                         confirmOrderItem.getIsAccepted() ? "Order diterima"
                                 : "Order ditolak: " + confirmOrderItem.getRejectionReason(),
                         createdBy);
@@ -400,11 +400,12 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderItem> getAllOrderItemByIdOrder(UUID idOrder){
         return orderItemDb.findByIdOrder(idOrder);
     }
-    private OrderItemHistory addOrderItemHistory(OrderItem orderItem, Integer status, String description,
-            String createdBy) {
+
+    @Override
+    public OrderItemHistory addOrderItemHistory(OrderItem orderItem, String description,
+                                                String createdBy) {
         var orderItemHistory = new OrderItemHistory();
         orderItemHistory.setOrderItem(orderItem);
-        orderItemHistory.setStatus(status);
         orderItemHistory.setDescription(description);
         orderItemHistory.setCreatedBy(createdBy);
         return orderItemHistoryDb.save(orderItemHistory);
@@ -465,6 +466,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Order getOrderByOrderItem(UUID idOrderItem) {
+        return orderDb.findByOrderItemId(idOrderItem).orElseThrow(
+                () -> new NoSuchElementException("Order tidak ditemukan")
+        );
+    }
+
     public BigDecimal getTotalExpenditureByKlienInRange(UUID klienId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         List<Order> orders = orderDb.findByKlienIdAndCreatedAtBetween(klienId, startDateTime, endDateTime);
         return calculateTotalExpenditure(orders);

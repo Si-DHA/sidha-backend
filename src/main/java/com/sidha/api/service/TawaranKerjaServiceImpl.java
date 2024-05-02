@@ -3,6 +3,7 @@ package com.sidha.api.service;
 import java.util.List;
 import java.util.UUID;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,14 +14,19 @@ import com.sidha.api.repository.OrderItemDb;
 import com.sidha.api.repository.TawaranKerjaDb;
 import com.sidha.api.repository.UserDb;
 
+@AllArgsConstructor
 @Service
 public class TawaranKerjaServiceImpl implements TawaranKerjaService {
-    @Autowired
+
     private TawaranKerjaDb tawaranKerjaDb;
-    @Autowired
+
     private UserDb userDb;
-    @Autowired
+
     private OrderItemDb orderItemDb;
+
+    private OrderService orderService;
+
+    private TrukService trukService;
 
     @Override
     public List<OrderItem> listAvailableOrderItems() {
@@ -33,9 +39,6 @@ public class TawaranKerjaServiceImpl implements TawaranKerjaService {
                 .orElseThrow(() -> new IllegalArgumentException("Order Item not found"));
 
         Sopir sopir = (Sopir) userDb.findById(sopirId).orElseThrow(() -> new RuntimeException("Driver not found"));
-
-        // orderItem.setSopir(sopir);
-        // orderItemDb.save(orderItem);
 
         TawaranKerja tawaranKerja = new TawaranKerja();
         tawaranKerja.setOrderItem(orderItem);
@@ -63,9 +66,29 @@ public class TawaranKerjaServiceImpl implements TawaranKerjaService {
         tawaranKerjaDb.save(confirmedTawaranKerja);
 
         // Update the status of the OrderItem
-        orderItem.setSopir(confirmedTawaranKerja.getSopir());
+        var sopir = confirmedTawaranKerja.getSopir();
+        orderItem.setSopir(sopir);
         orderItem.setStatusOrder(1); // Status indicating that the job offer has been confirmed
         orderItemDb.save(orderItem);
+
+        var orderItemHistories = orderItem.getOrderItemHistories();
+
+        String descriptionHistoryConfirm = "Mengonfirmasi order item " + orderItem.getId();
+        orderItemHistories.add(
+                orderService.addOrderItemHistory(orderItem, descriptionHistoryConfirm, "PT DHA")
+        );
+
+        var trukSopir = trukService.findTrukByIdSopir(sopir.getId());
+        String descriptionHistoryAssign;
+        if (trukSopir != null) {
+            descriptionHistoryAssign = "Menugaskan sopir " + sopir.getName() + " - " + trukSopir.getLicensePlate();
+        } else {
+            throw new RuntimeException("Sopir tidak memiliki truk");
+        }
+        orderItemHistories.add(
+                orderService.addOrderItemHistory(orderItem, descriptionHistoryAssign, "PT DHA")
+        );
+
     }
 
     @Override

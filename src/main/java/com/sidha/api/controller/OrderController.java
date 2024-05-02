@@ -267,6 +267,20 @@ public class OrderController {
         return ResponseEntity.badRequest().body(new BaseResponse<>(false, 400, "Unauthorized", null));
     }
 
+    @GetMapping("/by-order-item/{idOrderItem}")
+    public ResponseEntity<?> getOrderByIdOrderItem(@PathVariable UUID idOrderItem) {
+        try {
+            var response = orderService.getOrderByOrderItem(idOrderItem);
+            return ResponseEntity.ok(new BaseResponse<>(true, 200, "Order fetched successfully", response));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new BaseResponse<>(false, 404, e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new BaseResponse<>(false, 400, e.getMessage(), null));
+        }
+    }
+
     @PostMapping("/confirm")
     public ResponseEntity<?> confirmOrder(@RequestBody OrderConfirmRequestDTO request,
             @RequestHeader("Authorization") String token) {

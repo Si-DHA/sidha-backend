@@ -39,11 +39,8 @@ public class OrderItemHistory {
     private LocalDateTime createdDate = LocalDateTime.now();
 
     @Column(name = "created_by", nullable = false, updatable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private String createdBy;
-
-    @Column(name = "status", nullable = false)
-    private Integer status;
 
     @Column(name = "description")
     private String description;
