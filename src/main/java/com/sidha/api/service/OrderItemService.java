@@ -1,15 +1,24 @@
 package com.sidha.api.service;
 
-import java.util.Map;
-
+import java.util.List;
 public interface OrderItemService {
   Long getTotalRevenueForToday();
+  
+  Double getTotalRevenueForThisWeek();
 
-  Map<Integer, Long> getWeeklyRevenueInMonth(int year, int month);
+  Double getTotalRevenueForThisMonth();
 
-  Map<Integer, Long> getMonthlyRevenueInYear(int year);
+  Double getTotalRevenueForThisYear();
 
-  Map<Integer, Long> getYearlyRevenueInRange(int startYear, int endYear);
+  List<List<Object>>  getWeeklyRevenueInMonth(int year, int month);
 
-  Map<Integer, Long> getOrderCountByStatus();
+  List<List<Object>>  getMonthlyRevenueInYear(int year);
+
+  List<List<Object>>  getYearlyRevenueInRange(int startYear, int endYear);
+
+  List<List<Object>>  getOrderCountByStatus();
+
+
+
+
 }

@@ -1,47 +1,107 @@
 package com.sidha.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sidha.api.service.OrderItemService;
-
-import java.util.Map;
+import com.sidha.api.DTO.response.BaseResponse;
+import lombok.AllArgsConstructor;
 
 @RestController
+@AllArgsConstructor
+@RequestMapping("/api/order-item")
 public class OrderItemController {
 
   @Autowired
   private OrderItemService orderItemService;
 
   @GetMapping("/revenue/today")
-  public Long getTotalRevenueForToday() {
-    return orderItemService.getTotalRevenueForToday();
+  public ResponseEntity<?> getTotalRevenueForToday() {
+    try {
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getTotalRevenueForToday()));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", e.getMessage()));
+    }
   }
 
   @GetMapping("/revenue/weekly")
-  public Map<Integer, Long> getWeeklyRevenueInMonth(
+  public ResponseEntity<?> getWeeklyRevenueInMonth(
       @RequestParam int year,
       @RequestParam int month) {
-    return orderItemService.getWeeklyRevenueInMonth(year, month);
+    try {
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getWeeklyRevenueInMonth(year, month)));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", e.getMessage()));
+    }
   }
 
   @GetMapping("/revenue/monthly")
-  public Map<Integer, Long> getMonthlyRevenueInYear(
+  public ResponseEntity<?> getMonthlyRevenueInYear(
       @RequestParam int year) {
-    return orderItemService.getMonthlyRevenueInYear(year);
+    try {
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getMonthlyRevenueInYear(year)));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", e.getMessage()));
+    }
   }
 
   @GetMapping("/revenue/yearly")
-  public Map<Integer, Long> getYearlyRevenueInRange(
+  public ResponseEntity<?> getYearlyRevenueInRange(
       @RequestParam int startYear,
       @RequestParam int endYear) {
-    return orderItemService.getYearlyRevenueInRange(startYear, endYear);
+    try {
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getYearlyRevenueInRange(startYear, endYear)));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", e.getMessage()));
+    }
   }
 
   @GetMapping("/orders/count-by-status")
-  public Map<Integer, Long> getOrderCountByStatus() {
-    return orderItemService.getOrderCountByStatus();
+  public ResponseEntity<?> getOrderCountByStatus() {
+    try {
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getOrderCountByStatus()));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", e.getMessage()));
+    }
   }
+
+  @GetMapping("/revenue/this-week")
+  public ResponseEntity<?> getTotalRevenueForThisWeek() {
+    try {
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getTotalRevenueForThisWeek()));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", e.getMessage()));
+    }
+  }
+
+  @GetMapping("/revenue/this-month")
+  public ResponseEntity<?> getTotalRevenueForThisMonth() {
+    try {
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getTotalRevenueForThisMonth()));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", e.getMessage()));
+    }
+  }
+
+  @GetMapping("/revenue/this-year")
+  public ResponseEntity<?> getTotalRevenueForThisYear() {
+    try {
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getTotalRevenueForThisYear()));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", e.getMessage()));
+    }
+  }
+
 }
