@@ -74,31 +74,22 @@ public class OrderItemController {
     }
   }
 
-  @GetMapping("/revenue/this-week")
+  @GetMapping("/revenue/total")
   public ResponseEntity<?> getTotalRevenueForThisWeek() {
     try {
       return ResponseEntity.ok()
-          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getTotalRevenueForThisWeek()));
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getTotalRevenue()));
     } catch (Exception e) {
       return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", e.getMessage()));
     }
   }
 
-  @GetMapping("/revenue/this-month")
-  public ResponseEntity<?> getTotalRevenueForThisMonth() {
-    try {
-      return ResponseEntity.ok()
-          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getTotalRevenueForThisMonth()));
-    } catch (Exception e) {
-      return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", e.getMessage()));
-    }
-  }
 
-  @GetMapping("/revenue/this-year")
-  public ResponseEntity<?> getTotalRevenueForThisYear() {
+  @GetMapping("/orders/completed")
+  public ResponseEntity<?> getTotalCompletedOrderItem() {
     try {
       return ResponseEntity.ok()
-          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getTotalRevenueForThisYear()));
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getTotalCompletedOrderItem()));
     } catch (Exception e) {
       return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", e.getMessage()));
     }

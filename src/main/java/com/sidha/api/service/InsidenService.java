@@ -10,8 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-import java.util.Map;
-import java.util.Date;
+
 
 public interface InsidenService {
         public Insiden createInsiden(Insiden insiden, UUID sopirId, UUID orderItemId, MultipartFile buktiFoto)
@@ -32,11 +31,19 @@ public interface InsidenService {
 
         ImageData getBuktiFotoById(UUID insidenId);
 
-        Map<String, Long> getInsidenCountByDay(Date startDate, Date endDate);
+        Long getTotalInsidenForToday();
 
-        Map<String, Long> getInsidenCountByWeek(int year, int month);
+        Long getTotalInsidenForThisWeek();
 
-        Map<String, Long> getInsidenCountByMonth(int year);
+        Long getTotalInsidenForThisMonth();
 
-        Map<Integer, Long> getInsidenCountByYear(int startYear, int endYear);
+        Long getTotalInsidenForThisYear();
+
+        List<List<Object>> getTotalInsiden();
+
+        List<List<Object>> getWeeklyTotalInsidenInMonth(int year, int month);
+
+        List<List<Object>> getMonthlyTotalInsidenInYear(int year);
+
+        List<List<Object>> getYearlyTotalInsidenInRange(int startYear, int endYear);
 }

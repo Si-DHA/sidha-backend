@@ -127,50 +127,51 @@ public class UserController {
     }
   }
 
-  @GetMapping("/klien/hitung")
-  public Long countKlienUsersCreatedInMonthAndYear(@RequestParam("month") int month, @RequestParam("year") int year) {
-    return userService.countUsersWithRoleCreatedInMonthAndYear(Role.KLIEN, month, year);
+  @GetMapping("/client/total/today")
+  public ResponseEntity<?> getTotalNewClientForToday() {
+    return ResponseEntity
+        .ok(new BaseResponse<>(true, 200, "Total new client for today", userService.getTotalNewClientForToday()));
   }
 
-  @GetMapping("/users/count")
-  public ResponseEntity<?> getUserCount(
-      @RequestParam(required = false) Integer month,
-      @RequestParam(required = false) Integer year,
-      @RequestParam(required = false) String range,
-      @RequestParam(required = false) Integer from,
-      @RequestParam(required = false) Integer to,
-      @RequestParam(required = false) Role role) {
+  @GetMapping("/client/total/week")
+  public ResponseEntity<?> getTotalNewClientForThisWeek() {
+    return ResponseEntity.ok(
+        new BaseResponse<>(true, 200, "Total new client for this week", userService.getTotalNewClientForThisWeek()));
+  }
 
-    try {
-      if (range != null && range.equalsIgnoreCase("week") && month != null && year != null) {
-        return ResponseEntity.ok(new BaseResponse<>(true, 200, "User count by week in month",
-            userService.getUserCountByWeekInMonth(year, month, role)));
-      } else if (range != null && range.equalsIgnoreCase("day") && month != null && year != null) {
-        return ResponseEntity.ok(new BaseResponse<>(true, 200, "User count by day in month",
-            userService.getUserCountByDayInMonth(year, month, role)));
-      } else if (range != null && range.equalsIgnoreCase("month") && year != null) {
-        return ResponseEntity.ok(new BaseResponse<>(true, 200, "User count by month in year",
-            userService.getUserCountByMonthInYear(year, role)));
-      } else if (range != null && range.equalsIgnoreCase("year") && from != null && to != null) {
-        return ResponseEntity.ok(new BaseResponse<>(true, 200, "User count by year range",
-            userService.getUserCountByYearRange(from, to, role)));
-      } else {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(new BaseResponse<>(false, 400, "Masukkan rentang yang valid", null));
+  @GetMapping("/client/total/month")
+  public ResponseEntity<?> getTotalNewClientForThisMonth() {
+    return ResponseEntity.ok(
+        new BaseResponse<>(true, 200, "Total new client for this month", userService.getTotalNewClientForThisMonth()));
+  }
 
-      }
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(new BaseResponse<>(false, 500, e.getMessage(), null));
-    }
-    // how to use:
-    // /users/count?month=4&year=2024&range=week untuk mendapatkan jumlah pengguna
-    // baru per minggu di bulan April 2024.
-    // /users/count?month=4&year=2024&range=day untuk mendapatkan jumlah pengguna
-    // baru per hari di bulan April 2024.
-    // /users/count?year=2024&range=month untuk mendapatkan jumlah pengguna baru per
-    // bulan di tahun 2024.
-    // /users/count?from=2021&to=2024&range=year untuk mendapatkan jumlah
+  @GetMapping("/client/total/year")
+  public ResponseEntity<?> getTotalNewClientForThisYear() {
+    return ResponseEntity.ok(
+        new BaseResponse<>(true, 200, "Total new client for this year", userService.getTotalNewClientForThisYear()));
+  }
+
+  @GetMapping("/client/total/all")
+  public ResponseEntity<?> getTotalNewClient() {
+    return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total new client", userService.getTotalNewClient()));
+  }
+
+  @GetMapping("/client/total/weekly")
+  public ResponseEntity<?> getWeeklyTotalNewClientInMonth(@RequestParam int year, @RequestParam int month) {
+    return ResponseEntity.ok(new BaseResponse<>(true, 200, "Weekly total new client in month",
+        userService.getWeeklyTotalNewClientInMonth(year, month)));
+  }
+
+  @GetMapping("/client/total/monthly")
+  public ResponseEntity<?> getMonthlyTotalNewClientInYear(@RequestParam int year) {
+    return ResponseEntity.ok(new BaseResponse<>(true, 200, "Monthly total new client in year",
+        userService.getMonthlyTotalNewClientInYear(year)));
+  }
+
+  @GetMapping("/client/total/yearly")
+  public ResponseEntity<?> getYearlyTotalNewClientInRange(@RequestParam int startYear, @RequestParam int endYear) {
+    return ResponseEntity.ok(new BaseResponse<>(true, 200, "Yearly total new client in range",
+        userService.getYearlyTotalNewClientInRange(startYear, endYear)));
   }
 
 }

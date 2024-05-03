@@ -7,7 +7,6 @@ import com.sidha.api.model.user.Karyawan;
 import com.sidha.api.model.user.Sopir;
 import com.sidha.api.model.user.UserModel;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import com.sidha.api.repository.TrukDb;
@@ -22,7 +21,13 @@ import com.sidha.api.model.enumerator.Role;
 import com.sidha.api.repository.UserDb;
 
 import java.util.List;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Arrays;
+import java.time.LocalDate;
+import java.time.temporal.ChronoField;
 import java.util.Map;
+import java.util.HashMap;
 
 import static com.sidha.api.model.enumerator.Role.SOPIR;
 
@@ -72,7 +77,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserModel  getUserDetail(UUID id) {
+    public UserModel getUserDetail(UUID id) {
         return userDb.getDetailUserById(id).orElseThrow(() -> new RuntimeException("Akun tidak ditemukan"));
 
     }
@@ -87,7 +92,7 @@ public class UserServiceImpl implements UserService {
             try {
                 storageService.updateProfileImage(requestDTO.getImageFile(), user);
             } catch (Exception e) {
-                throw new RuntimeException("Gagal mengunggah gambar : " + e.getMessage()) ;
+                throw new RuntimeException("Gagal mengunggah gambar : " + e.getMessage());
             }
         }
 
@@ -161,25 +166,152 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Long countUsersWithRoleCreatedInMonthAndYear(Role role, Integer month, Integer year) {
-        LocalDateTime startDateTime = LocalDateTime.of(year, month, 1, 0, 0);
-        LocalDateTime endDateTime = startDateTime.plusMonths(1);
-        return userDb.countByRoleAndCreatedAtBetween(role, startDateTime, endDateTime);
-    }
-    public Map<Integer, Long> getUserCountByWeekInMonth(int year, int month, Role role) {
-        return userDb.getUserCountByWeekInMonth(year, month, role);
+    public Long getTotalNewClientForToday() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Date startDate = calendar.getTime();
+
+        calendar.add(Calendar.DATE, 1);
+        Date endDate = calendar.getTime();
+        return userDb.getTotalClientForToday(startDate, endDate);
     }
 
-    public Map<Integer, Long> getUserCountByDayInMonth(int year, int month, Role role) {
-        return userDb.getUserCountByDayInMonth(year, month, role);
+    @Override
+    public Long getTotalNewClientForThisWeek() {
+        return userDb.getTotalClientForThisWeek();
     }
 
-    public Map<Integer, Long> getUserCountByMonthInYear(int year, Role role) {
-        return userDb.getUserCountByMonthInYear(year, role);
+    @Override
+    public Long getTotalNewClientForThisMonth() {
+        return userDb.getTotalClientForThisMonth();
     }
 
-    public Map<Integer, Long> getUserCountByYearRange(int startYear, int endYear, Role role) {
-        return userDb.getUserCountByYearRange(startYear, endYear, role);
+    @Override
+    public Long getTotalNewClientForThisYear() {
+        return userDb.getTotalClientForThisYear();
     }
+
+    @Override
+    public List<List<Object>> getTotalNewClient() {
+        try {
+            Long today = getTotalNewClientForToday();
+            Long weekly = getTotalNewClientForThisWeek();
+            Long monthly = getTotalNewClientForThisMonth();
+            Long yearly = getTotalNewClientForThisYear();
+            List<List<Object>> result = new ArrayList<>();
+            result.add(Arrays.asList("today", today));
+            result.add(Arrays.asList("weekly", weekly));
+            result.add(Arrays.asList("monthly", monthly));
+            result.add(Arrays.asList("yearly", yearly));
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException("Gagal mengambil data:\n" + e.getMessage());
+        }
+    }
+
+    private List<Integer> generateAllWeeksInMonth(int year, int month) {
+        List<Integer> weeks = new ArrayList<>();
+        LocalDate date = LocalDate.of(year, month, 1);
+        while (date.getMonthValue() == month) {
+            int week = date.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+            if (!weeks.contains(week)) {
+                weeks.add(week);
+            }
+            date = date.plusDays(1);
+        }
+        return weeks;
+    }
+
+    @Override
+    public List<List<Object>> getWeeklyTotalNewClientInMonth(int year, int month) {
+        List<Integer> allWeeks = generateAllWeeksInMonth(year, month);
+        List<Object[]> data = userDb.getWeeklyTotalNewClientInMonth(year, month);
+        Map<Integer, Object[]> dataMap = new HashMap<>();
+        for (Object[] row : data) {
+            int week = ((Number) row[0]).intValue();
+            dataMap.put(week, row);
+        }
+
+        int firstWeek = allWeeks.get(0);
+
+        List<List<Object>> result = new ArrayList<>();
+        result.add(Arrays.asList("Minggu", "Jumlah Klien Baru"));
+        for (int week : allWeeks) {
+            List<Object> row = new ArrayList<>();
+            if (dataMap.containsKey(week)) {
+                Object[] rowValue = dataMap.get(week);
+                row.add(((Number) rowValue[0]).intValue() - firstWeek + 1);
+                row.add(rowValue[1]);
+            } else {
+                row.add(week - firstWeek + 1);
+                row.add(0);
+            }
+            result.add(row);
+        }
+        return result;
+    }
+
+    @Override
+    public List<List<Object>> getMonthlyTotalNewClientInYear(int year) {
+        List<Object[]> data = userDb.getMonthlyTotalNewClientInYear(year);
+        Map<Integer, Object[]> dataMap = new HashMap<>();
+        for (Object[] row : data) {
+            int month = ((Number) row[0]).intValue();
+            dataMap.put(month, row);
+        }
+
+        String[] monthNames = new String[] { "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus",
+                "September", "Oktober", "November", "Desember" };
+
+        List<List<Object>> result = new ArrayList<>();
+        result.add(Arrays.asList("Bulan", "Jumlah Klien Baru"));
+
+        for (int month = 1; month <= 12; month++) {
+            List<Object> row = new ArrayList<>();
+            if (dataMap.containsKey(month)) {
+                Object[] rowValue = dataMap.get(month);
+                row.add(monthNames[month - 1]);
+                row.add(rowValue[1]);
+            } else {
+                row.add(monthNames[month - 1]);
+                row.add(0);
+            }
+            result.add(row);
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<List<Object>> getYearlyTotalNewClientInRange(int startYear, int endYear) {
+        List<Object[]> clientData = userDb.getYearlyTotalNewClientInRange(startYear, endYear);
+
+        Map<Integer, Object[]> clientDataMap = new HashMap<>();
+        for (Object[] data : clientData) {
+            int year = ((Number) data[0]).intValue();
+            clientDataMap.put(year, data);
+        }
+
+        List<List<Object>> result = new ArrayList<>();
+        result.add(Arrays.asList("Bulan", "Jumlah Klien Baru"));
+
+        for (int year = startYear; year <= endYear; year++) {
+            List<Object> row = new ArrayList<>();
+            row.add(year);
+            if (clientDataMap.containsKey(year)) {
+                row.add(clientDataMap.get(year)[1]);
+            } else {
+                row.add(0);
+            }
+            result.add(row);
+        }
+
+        return result;
+    }
+
+ 
 
 }

@@ -153,31 +153,51 @@ public class InsidenController {
         }
     }
 
-    @GetMapping("/insiden/count/day")
-    public Map<String, Long> getInsidenCountByDay(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-        return insidenService.getInsidenCountByDay(startDate, endDate);
+
+    @GetMapping("/total/today")
+    public ResponseEntity<?> getTotalInsidenForToday() {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total insiden for today", insidenService.getTotalInsidenForToday()));
     }
 
-    @GetMapping("/insiden/count/week")
-    public Map<String, Long> getInsidenCountByWeek(
-            @RequestParam int year,
-            @RequestParam int month) {
-        return insidenService.getInsidenCountByWeek(year, month);
+    @GetMapping("/total/week")
+    public ResponseEntity<?> getTotalInsidenForThisWeek() {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total insiden for this week", insidenService.getTotalInsidenForThisWeek()));
     }
 
-    @GetMapping("/insiden/count/month")
-    public Map<String, Long> getInsidenCountByMonth(
-            @RequestParam int year) {
-        return insidenService.getInsidenCountByMonth(year);
+
+    @GetMapping("/total/month")
+    public ResponseEntity<?> getTotalInsidenForThisMonth() {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total insiden for this month", insidenService.getTotalInsidenForThisMonth()));
     }
 
-    @GetMapping("/insiden/count/year")
-    public Map<Integer, Long> getInsidenCountByYear(
-            @RequestParam int startYear,
-            @RequestParam int endYear) {
-        return insidenService.getInsidenCountByYear(startYear, endYear);
+    @GetMapping("/total/year")
+    public ResponseEntity<?> getTotalInsidenForThisYear() {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total insiden for this year", insidenService.getTotalInsidenForThisYear()));
     }
+
+    @GetMapping("/total/all")
+    public ResponseEntity<?> getTotalInsiden() {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total insiden", insidenService.getTotalInsiden()));
+    }
+
+    @GetMapping("/total/weekly")
+    public ResponseEntity<?> getWeeklyTotalInsidenInMonth(@RequestParam int year, @RequestParam int month) {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Weekly total insiden in month",
+                insidenService.getWeeklyTotalInsidenInMonth(year, month)));
+    }
+
+    @GetMapping("/total/monthly")
+    public ResponseEntity<?> getMonthlyTotalInsidenInYear(@RequestParam int year) {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Monthly total insiden in year",
+                insidenService.getMonthlyTotalInsidenInYear(year)));
+    }
+
+    @GetMapping("/total/yearly")
+    public ResponseEntity<?> getYearlyTotalInsidenInRange(@RequestParam int startYear, @RequestParam int endYear) {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Yearly total insiden in range",
+                insidenService.getYearlyTotalInsidenInRange(startYear, endYear)));
+    }
+    
+
 
 }

@@ -41,34 +41,41 @@ public interface UserDb extends JpaRepository<UserModel, UUID> {
         @Query("SELECT COUNT(u) FROM UserModel u WHERE u.role = ?1 AND u.createdAt BETWEEN ?2 AND ?3 AND u.isDeleted = false")
         Long countByRoleAndCreatedAtBetween(Role role, LocalDateTime startDate, LocalDateTime endDate);
 
-        @Query("SELECT COUNT(u) AS count, WEEK(u.createdAt) AS week " +
+        // query for get total new client in a certain period
+        @Query("SELECT COUNT(u) " +
                         "FROM UserModel u " +
-                        "WHERE YEAR(u.createdAt) = :year AND MONTH(u.createdAt) = :month " +
-                        "AND (:role IS NULL OR u.role = :role) " +
-                        "GROUP BY WEEK(u.createdAt)")
-        Map<Integer, Long> getUserCountByWeekInMonth(@Param("year") int year, @Param("month") int month,
-                        @Param("role") Role role);
+                        "WHERE u.role = 'KLIEN'  AND u.createdAt BETWEEN :startDate AND :endDate")
+        Long getTotalClientForToday(@Param("startDate") java.util.Date startDate,
+                        @Param("endDate") java.util.Date endDate);
 
-        @Query("SELECT COUNT(u) AS count, DAY(u.createdAt) AS day " +
-                        "FROM UserModel u " +
-                        "WHERE YEAR(u.createdAt) = :year AND MONTH(u.createdAt) = :month " +
-                        "AND (:role IS NULL OR u.role = :role) " +
-                        "GROUP BY DAY(u.createdAt)")
-        Map<Integer, Long> getUserCountByDayInMonth(@Param("year") int year, @Param("month") int month,
-                        @Param("role") Role role);
+        @Query("SELECT COUNT(u) FROM UserModel u WHERE u.role = 'KLIEN' AND EXTRACT (WEEK FROM u.createdAt) = EXTRACT (WEEK FROM CURRENT_DATE) AND EXTRACT (YEAR FROM u.createdAt) = EXTRACT (YEAR FROM CURRENT_DATE)")
+        Long getTotalClientForThisWeek();
 
-        @Query("SELECT COUNT(u) AS count, MONTH(u.createdAt) AS month " +
+
+        @Query("SELECT COUNT(u) FROM UserModel u WHERE u.role = 'KLIEN' AND EXTRACT (MONTH FROM u.createdAt) = EXTRACT (MONTH FROM CURRENT_DATE)" +
+                        "AND EXTRACT (YEAR FROM u.createdAt) = EXTRACT (YEAR FROM CURRENT_DATE)")
+        Long getTotalClientForThisMonth();
+
+        @Query("SELECT COUNT(u) FROM UserModel u WHERE u.role = 'KLIEN' AND EXTRACT (YEAR FROM u.createdAt) = EXTRACT (YEAR FROM CURRENT_DATE)")
+        Long getTotalClientForThisYear();
+
+        // query for get total new client in a certain range
+
+        @Query("SELECT EXTRACT(WEEK FROM u.createdAt) AS week, COALESCE(COUNT(u), 0) AS revenue "
+                        + "FROM UserModel u "
+                        + "WHERE u.role = 'KLIEN' AND  EXTRACT(YEAR FROM u.createdAt) = :year AND EXTRACT(MONTH FROM u.createdAt) = :month "
+                        + "GROUP BY EXTRACT(WEEK FROM u.createdAt)")
+        List<Object[]> getWeeklyTotalNewClientInMonth(@Param("year") int year, @Param("month") int month);
+
+        @Query("SELECT MONTH(u.createdAt) AS month, COUNT(u) AS revenue " +
                         "FROM UserModel u " +
-                        "WHERE YEAR(u.createdAt) = :year " +
-                        "AND (:role IS NULL OR u.role = :role) " +
+                        "WHERE YEAR(u.createdAt) = :year AND u.role = 'KLIEN'" +
                         "GROUP BY MONTH(u.createdAt)")
-        Map<Integer, Long> getUserCountByMonthInYear(@Param("year") int year, @Param("role") Role role);
+        List<Object[]> getMonthlyTotalNewClientInYear(@Param("year") int year);
 
-        @Query("SELECT COUNT(u) AS count, YEAR(u.createdAt) AS year " +
+        @Query("SELECT YEAR(u.createdAt) AS year, COUNT(u) AS revenue " +
                         "FROM UserModel u " +
-                        "WHERE YEAR(u.createdAt) BETWEEN :startYear AND :endYear " +
-                        "AND (:role IS NULL OR u.role = :role) " +
+                        "WHERE YEAR(u.createdAt) BETWEEN :startYear AND :endYear AND  u.role = 'KLIEN' " +
                         "GROUP BY YEAR(u.createdAt)")
-        Map<Integer, Long> getUserCountByYearRange(@Param("startYear") int startYear, @Param("endYear") int endYear,
-                        @Param("role") Role role);
+        List<Object[]> getYearlyTotalNewClientInRange(@Param("startYear") int startYear, @Param("endYear") int endYear);
 }

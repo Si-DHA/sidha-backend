@@ -34,15 +34,24 @@ public interface UserService {
     void deleteUser(UUID id);
 
     // dashboard perusahaan
-    Long countUsersWithRoleCreatedInMonthAndYear(Role role, Integer month, Integer year);
-
-    public Map<Integer, Long> getUserCountByWeekInMonth(int year, int month, Role role);
-
-    public Map<Integer, Long> getUserCountByDayInMonth(int year, int month, Role role);
-
-    public Map<Integer, Long> getUserCountByMonthInYear(int year, Role role);
-
-    public Map<Integer, Long> getUserCountByYearRange(int startYear, int endYear, Role role);
-    // end of dashboard perusahaan
+    Long getTotalNewClientForToday();
+  
+    Long getTotalNewClientForThisWeek();
+  
+    Long getTotalNewClientForThisMonth();
+  
+    Long getTotalNewClientForThisYear();
+  
+    List<List<Object>> getTotalNewClient();
+  
+    List<List<Object>>  getWeeklyTotalNewClientInMonth(int year, int month);
+  
+    List<List<Object>>  getMonthlyTotalNewClientInYear(int year);
+  
+    List<List<Object>>  getYearlyTotalNewClientInRange(int startYear, int endYear);
+  
+  
+  
+  
 
 }
