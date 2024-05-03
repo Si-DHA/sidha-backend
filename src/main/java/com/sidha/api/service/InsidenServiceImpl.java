@@ -80,6 +80,16 @@ public class InsidenServiceImpl implements InsidenService {
         existingInsiden.setLokasi(insidenDetails.getLokasi());
         existingInsiden.setKeterangan(insidenDetails.getKeterangan());
         existingInsiden.setUpdatedAt(LocalDateTime.now());
+
+        // add order item history
+        var orderItem = existingInsiden.getOrderItem();
+        var orderItemHistories = orderItem.getOrderItemHistories();
+        String sopir = "Sopir " + orderItem.getSopir().getName();
+        String descriptionHistory = "Mengubah laporan insiden (" + existingInsiden.getKategori() + ")";
+        orderItemHistories.add(
+                orderService.addOrderItemHistory(orderItem, descriptionHistory, sopir)
+        );
+
         return insidenRepository.save(existingInsiden);
     }
 
