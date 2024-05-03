@@ -214,16 +214,27 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         InvoiceImage invoiceImage = modelMapper.map(imageData, InvoiceImage.class);
 
+        // order item history
+        String descriptionHistory;
+
         if (konfirmasiBuktiPembayaranDTO.getIsConfirmed()) {
             invoiceImage.setStatus(1);
             List<OrderItem> orderItems = invoice.getOrder().getOrderItems();
 
+            descriptionHistory = "Mengonfirmasi bukti pembayaran ";
             for (OrderItem orderItem : orderItems) {
-                if (orderItem.getStatusOrder() >= 0) {
+                if (orderItem.getStatusOrder() >= 2) {
+                    var orderItemHistories = orderItem.getOrderItemHistories();
                     if (isPelunasan) {
                         orderItem.setStatusOrder(5);
+                        orderItemHistories.add(
+                                orderService.addOrderItemHistory(orderItem, descriptionHistory + "pelunasan", "PT DHA")
+                        );
                     } else {
                         orderItem.setStatusOrder(3);
+                        orderItemHistories.add(
+                                orderService.addOrderItemHistory(orderItem, descriptionHistory + "DP", "PT DHA")
+                        );
                     }
                 }
             }
@@ -234,6 +245,23 @@ public class InvoiceServiceImpl implements InvoiceService {
             }
             invoiceImage.setStatus(-1);
             invoiceImage.setAlasanPenolakan(alasanPenolakan);
+
+            // order item history
+            descriptionHistory = "Menolak bukti pembayaran ";
+            for (OrderItem orderItem : orderItems) {
+                if (orderItem.getStatusOrder() >= 2) {
+                    var orderItemHistories = orderItem.getOrderItemHistories();
+                    if (isPelunasan) {
+                        orderItemHistories.add(
+                                orderService.addOrderItemHistory(orderItem, descriptionHistory + "pelunasan", "PT DHA")
+                        );
+                    } else {
+                        orderItemHistories.add(
+                                orderService.addOrderItemHistory(orderItem, descriptionHistory + "DP", "PT DHA")
+                        );
+                    }
+                }
+            }
         }
         imageDataDb.save(invoiceImage);
 
