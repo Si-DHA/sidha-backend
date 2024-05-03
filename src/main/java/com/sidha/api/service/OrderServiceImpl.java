@@ -106,7 +106,7 @@ public class OrderServiceImpl implements OrderService {
         orderItem.setRute(rute);
 
         var orderItemHistories = new ArrayList<OrderItemHistory>();
-        orderItemHistories.add(addOrderItemHistory(orderItem, "Order berhasil dibuat", klien.getUsername()));
+        orderItemHistories.add(this.addOrderItemHistory(orderItem, "Order berhasil dibuat", klien.getUsername()));
         orderItem.setOrderItemHistories(orderItemHistories);
 
         orderItem.setPrice(rute.stream().mapToLong(Rute::getPrice).sum());
@@ -254,7 +254,7 @@ public class OrderServiceImpl implements OrderService {
                 }
 
                 var createdBy = userService.findById(request.getKaryawanId()).getUsername();
-                var orderItemHistory = addOrderItemHistory(orderItem,
+                var orderItemHistory = this.addOrderItemHistory(orderItem,
                         confirmOrderItem.getIsAccepted() ? "Order diterima"
                                 : "Order ditolak: " + confirmOrderItem.getRejectionReason(),
                         createdBy);
@@ -305,7 +305,6 @@ public class OrderServiceImpl implements OrderService {
         ImageData currentImage;
         currentImage = orderItem.getBuktiMuat();
         orderItem.setBuktiMuat(muatImage);
-//        orderItem.setStatusOrder(2);
         this.saveImageBongkarMuat(orderItem);
 
         // order item history
@@ -344,20 +343,26 @@ public class OrderServiceImpl implements OrderService {
         ImageData currentImage;
         currentImage = orderItem.getBuktiBongkar();
         orderItem.setBuktiBongkar(bongkarImage);
-        orderItem.setStatusOrder(4);
         this.saveImageBongkarMuat(orderItem);
 
         // order item history
         var orderItemHistories = orderItem.getOrderItemHistories();
         String sopir = "Sopir " + orderItem.getSopir().getName();
-        String descriptionHistory = "Mengunggah bukti bongkar";
-        orderItemHistories.add(
-                this.addOrderItemHistory(orderItem, descriptionHistory, sopir)
-        );
+        String descriptionHistory;
 
         if (currentImage != null) {
             storageService.deleteImageFile(currentImage);
             imageDataDb.delete(currentImage);
+            descriptionHistory = "Mengubah bukti bongkar";
+            orderItemHistories.add(
+                    this.addOrderItemHistory(orderItem, descriptionHistory, sopir)
+            );
+        } else {
+            orderItem.setStatusOrder(4);
+            descriptionHistory = "Mengunggah bukti bongkar";
+            orderItemHistories.add(
+                    this.addOrderItemHistory(orderItem, descriptionHistory, sopir)
+            );
         }
         bongkarImage.setOrderItem(orderItem);
         imageDataDb.save(bongkarImage);

@@ -6,8 +6,10 @@ import com.sidha.api.model.image.ImageData;
 import com.sidha.api.model.image.InvoiceImage;
 import com.sidha.api.model.order.Order;
 import com.sidha.api.model.order.OrderItem;
+import com.sidha.api.model.order.OrderItemHistory;
 import com.sidha.api.repository.ImageDataDb;
 import com.sidha.api.repository.InvoiceDb;
+import com.sidha.api.repository.OrderItemHistoryDb;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -31,7 +33,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     private ModelMapper modelMapper;
 
-    private OrderService orderService;
+    private OrderItemHistoryDb orderItemHistoryDb;
 
 
     @Override
@@ -141,7 +143,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 if (orderItem.getStatusOrder() >= 2) {
                     var orderItemHistories = orderItem.getOrderItemHistories();
                     orderItemHistories.add(
-                            orderService.addOrderItemHistory(orderItem, descriptionHistory, klien)
+                            this.addOrderItemHistory(orderItem, descriptionHistory, klien)
                     );
                 }
             }
@@ -155,7 +157,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 if (orderItem.getStatusOrder() >= 2) {
                     var orderItemHistories = orderItem.getOrderItemHistories();
                     orderItemHistories.add(
-                            orderService.addOrderItemHistory(orderItem, descriptionHistory, klien)
+                            this.addOrderItemHistory(orderItem, descriptionHistory, klien)
                     );
                 }
             }
@@ -216,24 +218,24 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         // order item history
         String descriptionHistory;
+        List<OrderItem> orderItems = invoice.getOrder().getOrderItems();
 
         if (konfirmasiBuktiPembayaranDTO.getIsConfirmed()) {
             invoiceImage.setStatus(1);
-            List<OrderItem> orderItems = invoice.getOrder().getOrderItems();
 
-            descriptionHistory = "Mengonfirmasi bukti pembayaran ";
+            descriptionHistory = "Menerima bukti pembayaran ";
             for (OrderItem orderItem : orderItems) {
                 if (orderItem.getStatusOrder() >= 2) {
                     var orderItemHistories = orderItem.getOrderItemHistories();
                     if (isPelunasan) {
                         orderItem.setStatusOrder(5);
                         orderItemHistories.add(
-                                orderService.addOrderItemHistory(orderItem, descriptionHistory + "pelunasan", "PT DHA")
+                                this.addOrderItemHistory(orderItem, descriptionHistory + "pelunasan", "PT DHA")
                         );
                     } else {
                         orderItem.setStatusOrder(3);
                         orderItemHistories.add(
-                                orderService.addOrderItemHistory(orderItem, descriptionHistory + "DP", "PT DHA")
+                                this.addOrderItemHistory(orderItem, descriptionHistory + "DP", "PT DHA")
                         );
                     }
                 }
@@ -253,11 +255,11 @@ public class InvoiceServiceImpl implements InvoiceService {
                     var orderItemHistories = orderItem.getOrderItemHistories();
                     if (isPelunasan) {
                         orderItemHistories.add(
-                                orderService.addOrderItemHistory(orderItem, descriptionHistory + "pelunasan", "PT DHA")
+                                this.addOrderItemHistory(orderItem, descriptionHistory + "pelunasan", "PT DHA")
                         );
                     } else {
                         orderItemHistories.add(
-                                orderService.addOrderItemHistory(orderItem, descriptionHistory + "DP", "PT DHA")
+                                this.addOrderItemHistory(orderItem, descriptionHistory + "DP", "PT DHA")
                         );
                     }
                 }
@@ -266,6 +268,15 @@ public class InvoiceServiceImpl implements InvoiceService {
         imageDataDb.save(invoiceImage);
 
         return invoice;
+    }
+
+    public OrderItemHistory addOrderItemHistory(OrderItem orderItem, String description,
+                                                String createdBy) {
+        var orderItemHistory = new OrderItemHistory();
+        orderItemHistory.setOrderItem(orderItem);
+        orderItemHistory.setDescription(description);
+        orderItemHistory.setCreatedBy(createdBy);
+        return orderItemHistoryDb.save(orderItemHistory);
     }
 
 
