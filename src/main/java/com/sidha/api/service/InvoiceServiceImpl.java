@@ -31,6 +31,8 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     private ModelMapper modelMapper;
 
+    private OrderService orderService;
+
 
     @Override
     public Invoice saveInvoice(Invoice invoice) {
@@ -114,19 +116,49 @@ public class InvoiceServiceImpl implements InvoiceService {
                 idInvoice + "_" + isPelunasan + "_" + imageFile.getOriginalFilename());
         InvoiceImage invoiceImage = modelMapper.map(imageData, InvoiceImage.class);
 
+        // order item history
+        Order order = invoice.getOrder();
+        List<OrderItem> orderItems = order.getOrderItems();
+        String klien = order.getKlien().getCompanyName();
+        String descriptionHistory;
+
         ImageData currentImage;
         if (!isPelunasan) {
             currentImage = invoice.getBuktiDp();
             invoice.setBuktiDp(invoiceImage);
+            descriptionHistory = "bukti pembayaran DP";
         } else {
             currentImage = invoice.getBuktiPelunasan();
             invoice.setBuktiPelunasan(invoiceImage);
+            descriptionHistory = "bukti pembayaran pelunasan";
         }
         this.saveInvoice(invoice);
 
         if (currentImage != null) {
+            // order item history
+            descriptionHistory = "Mengubah " + descriptionHistory;
+            for (OrderItem orderItem : orderItems) {
+                if (orderItem.getStatusOrder() >= 2) {
+                    var orderItemHistories = orderItem.getOrderItemHistories();
+                    orderItemHistories.add(
+                            orderService.addOrderItemHistory(orderItem, descriptionHistory, klien)
+                    );
+                }
+            }
+
             storageService.deleteImageFile(currentImage);
             imageDataDb.delete(currentImage);
+        } else {
+            // order item history
+            descriptionHistory = "Mengunggah " + descriptionHistory;
+            for (OrderItem orderItem : orderItems) {
+                if (orderItem.getStatusOrder() >= 2) {
+                    var orderItemHistories = orderItem.getOrderItemHistories();
+                    orderItemHistories.add(
+                            orderService.addOrderItemHistory(orderItem, descriptionHistory, klien)
+                    );
+                }
+            }
         }
 
         invoiceImage.setInvoice(invoice);
