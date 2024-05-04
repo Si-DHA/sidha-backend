@@ -49,7 +49,7 @@ public interface InsidenRepository extends JpaRepository<Insiden, UUID> {
         @Query(value = "SELECT MONTH(u.createdAt) AS month, COUNT(u) AS insiden " +
                         "FROM Insiden u " +
                         "WHERE YEAR(u.createdAt) = :year " +
-                        "GROUP BY MONTH(u.createdAt)", nativeQuery = true)
+                        "GROUP BY MONTH(u.createdAt)")
         List<Object[]> getMonthlyTotalInsidenInYear(@Param("year") int year);
 
         @Query("SELECT YEAR(u.createdAt) AS year, COUNT(u) AS insiden " +
