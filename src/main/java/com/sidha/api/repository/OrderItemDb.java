@@ -109,10 +109,7 @@ public interface OrderItemDb extends JpaRepository<OrderItem, UUID> {
         List<Object[]> getYearlyOrdersInRange(@Param("startYear") int startYear,
                         @Param("endYear") int endYear, @Param("status") int status);
 
-    List<OrderItem> findByStatusOrder(int i);
-  
-    @Query("SELECT phi FROM OrderItem phi WHERE phi.order.id = :idOrder")
-    List<OrderItem> findByIdOrder(@Param("idOrder") UUID idOrder);
+
 
     @Query("SELECT oi FROM OrderItem oi WHERE oi.order.klien.id = :klienId AND oi.statusOrder NOT IN (-1, 0)")
     List<OrderItem> findByKlienIdAndStatusNotIn(@Param("klienId") UUID klienId);
