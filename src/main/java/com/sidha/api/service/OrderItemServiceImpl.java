@@ -202,8 +202,8 @@ public class OrderItemServiceImpl implements OrderItemService {
         Date endDate = new Date(today.getYear(), today.getMonth(), today.getDate(), 23, 59, 59);
 
         try {
-            var totalToday = orderItemDb.getTotalCompletedOrdersForToday(startDate, endDate);
-            var weeklyList = orderItemDb.getWeeklyCompletedOrdersInMonth(year, month);
+            var totalToday = orderItemDb.getTotalCompletedOrdersForToday(startDate, endDate, 6);
+            var weeklyList = orderItemDb.getWeeklyOrdersInMonth(year, month, 6);
             Long weekly = 0L;
             for (Object[] data : weeklyList) {
                 int weekNumber = ((Number) data[0]).intValue();
@@ -213,7 +213,7 @@ public class OrderItemServiceImpl implements OrderItemService {
                 }
             }
 
-            var monthlyList = orderItemDb.getMonthlyCompletedOrdersInYear(year);
+            var monthlyList = orderItemDb.getMonthlyOrdersInYear(year, 6);
             Long monthly = 0L;
             for (Object[] data : monthlyList) {
                 int monthNumber = ((Number) data[0]).intValue();
@@ -222,7 +222,7 @@ public class OrderItemServiceImpl implements OrderItemService {
                     break;
                 }
             }
-            var yearlyList = orderItemDb.getYearlyCompletedOrdersInRange(year, year);
+            var yearlyList = orderItemDb.getYearlyOrdersInRange(year, year, 6);
             Long yearly = (Long) yearlyList.get(0)[1];
             List<List<Object>> result = new ArrayList<>();
             result.add(Arrays.asList("today", totalToday));
@@ -235,5 +235,105 @@ public class OrderItemServiceImpl implements OrderItemService {
             throw new RuntimeException(e.getMessage());
         }
 
+    }
+
+    @Override
+    public List<List<Object>> getWeeklyOrder(int year, int month, int status) {
+         // Generate all weeks in the given month
+         List<Integer> allWeeks = generateAllWeeksInMonth(year, month);
+
+         // Get the revenue data from the database
+         List<Object[]> orderData = orderItemDb.getWeeklyOrdersInMonth(year, month, status);
+ 
+         // Create a map for quick lookup
+         Map<Integer, Object[]> orderDataMap = new HashMap<>();
+         for (Object[] data : orderData) {
+             int week = ((Number) data[0]).intValue();
+             orderDataMap.put(week, data);
+         }
+ 
+         // Get the first week in the month
+         int firstWeek = allWeeks.get(0);
+ 
+         // Fill the result with revenue data or 0, and adjust the week number
+         List<List<Object>> result = new ArrayList<>();
+         result.add(Arrays.asList("Minggu", "Total Order Item"));
+         for (int week : allWeeks) {
+             List<Object> row = new ArrayList<>();
+             if (orderDataMap.containsKey(week)) {
+                 Object[] data = orderDataMap.get(week);
+                 row.add(((Number) data[0]).intValue() - firstWeek + 1);
+                 row.add(data[1]);
+             } else {
+                 row.add(week - firstWeek + 1);
+                 row.add(0);
+             }
+             result.add(row);
+         }
+ 
+         return result;
+    }
+
+    @Override
+    public List<List<Object>> getMonthlyOrder(int year, int status) {
+        // Get the revenue data from the database
+        List<Object[]> orderData = orderItemDb.getMonthlyOrdersInYear(year, status);
+
+        // Create a map for quick lookup
+        Map<Integer, Object[]> orderDataMap = new HashMap<>();
+        for (Object[] data : orderData) {
+            int month = ((Number) data[0]).intValue();
+            orderDataMap.put(month, data);
+        }
+
+        // Array of month names
+        String[] monthNames = { "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                "Juli", "Agustus", "September", "Oktober", "November", "Desember" };
+
+        // Fill the result with revenue data or 0 for each month
+        List<List<Object>> result = new ArrayList<>();
+        result.add(Arrays.asList("Bulan", "Total Order Item"));
+        for (int month = 1; month <= 12; month++) {
+            List<Object> row = new ArrayList<>();
+            row.add(monthNames[month - 1]); // Use month - 1 as index to get month name
+            if (orderDataMap.containsKey(month)) {
+                row.add(orderDataMap.get(month)[1]);
+            } else {
+                row.add(0);
+            }
+
+            result.add(row);
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<List<Object>> getYearlyOrder(int startYear, int endYear, int status) {
+        // Get the revenue data from the database
+        List<Object[]> orderData = orderItemDb.getYearlyOrdersInRange(startYear, endYear, status);
+
+        // Create a map for quick lookup
+        Map<Integer, Object[]> orderDataMap = new HashMap<>();
+        for (Object[] data : orderData) {
+            int year = ((Number) data[0]).intValue();
+            orderDataMap.put(year, data);
+        }
+
+        // Fill the result with revenue data or 0 for each year
+        List<List<Object>> result = new ArrayList<>();
+        result.add(Arrays.asList("Tahun", "Total Order Item"));
+        for (int year = startYear; year <= endYear; year++) {
+            List<Object> row = new ArrayList<>();
+            row.add(year);
+            if (orderDataMap.containsKey(year)) {
+                row.add(orderDataMap.get(year)[1]);
+            } else {
+                row.add(0);
+            }
+            result.add(row);
+        }
+
+        return result;
     }
 }

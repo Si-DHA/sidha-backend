@@ -8,9 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Repository
@@ -26,8 +24,8 @@ public interface InsidenRepository extends JpaRepository<Insiden, UUID> {
         @Query("SELECT COUNT(u) " +
                         "FROM Insiden u " +
                         "WHERE  u.createdAt BETWEEN :startDate AND :endDate")
-        Long getTotalInsidenForToday(@Param("startDate") java.util.Date startDate,
-                        @Param("endDate") java.util.Date endDate);
+        Long getTotalInsidenForToday(@Param("startDate") java.time.LocalDateTime startDate,
+                        @Param("endDate") java.time.LocalDateTime endDate);
 
         @Query("SELECT COUNT(u) FROM Insiden u WHERE EXTRACT (WEEK FROM u.createdAt) = EXTRACT (WEEK FROM CURRENT_DATE) AND EXTRACT (YEAR FROM u.createdAt) = EXTRACT (YEAR FROM CURRENT_DATE)")
         Long getTotalInsidenForThisWeek();

@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.time.LocalTime;
 
 @Service
 @Transactional
@@ -141,16 +142,9 @@ public class InsidenServiceImpl implements InsidenService {
 
     @Override
     public Long getTotalInsidenForToday() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        Date startDate = calendar.getTime();
-
-        calendar.add(Calendar.DATE, 1);
-        Date endDate = calendar.getTime();
-        return insidenRepository.getTotalInsidenForToday(startDate, endDate);
+        LocalDateTime startDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        LocalDateTime endDateTime = startDateTime.plusDays(1);
+        return insidenRepository.getTotalInsidenForToday(startDateTime, endDateTime);
     }
 
     @Override

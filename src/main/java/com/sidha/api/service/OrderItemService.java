@@ -23,4 +23,10 @@ public interface OrderItemService {
 
   List<List<Object>> getTotalCompletedOrderItem();
 
+  List<List<Object>> getWeeklyOrder(int year, int month, int status);
+
+  List<List<Object>> getMonthlyOrder(int year, int status);
+
+  List<List<Object>> getYearlyOrder(int startYear, int endYear, int status);
+
 }

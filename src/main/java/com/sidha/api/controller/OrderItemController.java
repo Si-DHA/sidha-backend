@@ -95,4 +95,48 @@ public class OrderItemController {
     }
   }
 
+  @GetMapping("/orders/weekly")
+  public ResponseEntity<?> getTotalOrderWeeklyByStatus(
+    @RequestParam("year") int year,
+    @RequestParam("month") int month,
+    @RequestParam("status") int status
+  ) {
+    try {
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getWeeklyOrder(year, month, status)));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", e.getMessage()));
+    }
+  }
+
+  @GetMapping("/orders/monthly")
+  public ResponseEntity<?> getTotalOrderMonthlyByStatus(
+    @RequestParam("year") int year,
+    @RequestParam("status") int status
+  ) {
+    try {
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getMonthlyOrder(year, status)));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", e.getMessage()));
+    }
+  }
+
+  @GetMapping("/orders/yearly")
+  public ResponseEntity<?> getTotalOrderYearlyByStatus(
+    @RequestParam("startYear") int startYear,
+    @RequestParam("endYear") int endYear,
+
+    @RequestParam("status") int status
+  ) {
+    try {
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getYearlyOrder(startYear, endYear, status)));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", e.getMessage()));
+    }
+  }
+
+  
+
 }
