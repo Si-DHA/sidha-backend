@@ -131,7 +131,7 @@ public class InvoiceController {
     }
 
     @GetMapping("/order/{idInvoice}")
-    public ResponseEntity<?> getOrderFromInoiceId(
+    public ResponseEntity<?> getOrderFromInvoiceId(
             @PathVariable String idInvoice
     ) {
         try {
