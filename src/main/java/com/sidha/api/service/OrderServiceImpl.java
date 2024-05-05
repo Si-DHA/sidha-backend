@@ -246,9 +246,7 @@ public class OrderServiceImpl implements OrderService {
                     throw new IllegalArgumentException("Order Item already confirmed");
                 }
 
-                if (confirmOrderItem.getIsAccepted()) {
-                    orderItem.setStatusOrder(1);
-                } else {
+                if (!confirmOrderItem.getIsAccepted()) {
                     orderItem.setStatusOrder(-1);
                     orderItem.setAlasanPenolakan(confirmOrderItem.getRejectionReason());
 
@@ -260,13 +258,11 @@ public class OrderServiceImpl implements OrderService {
                     order.setTotalPrice(orderPrice);
                     invoice.setTotalDp(BigDecimal.valueOf(dp));
                     invoice.setTotalPelunasan(BigDecimal.valueOf(pelunasan));
+                    var orderItemHistory = this.addOrderItemHistory(orderItem,
+                            "Menolak order item dengan alasan \"" + confirmOrderItem.getRejectionReason() + "\"",
+                            "PT DHA");
+                    orderItem.getOrderItemHistories().add(orderItemHistory);
                 }
-
-                var orderItemHistory = this.addOrderItemHistory(orderItem,
-                        confirmOrderItem.getIsAccepted() ? "Menerima order item" // gausah
-                                : "Menolak order item dengan alasan \"" + confirmOrderItem.getRejectionReason() + "\"",
-                        "PT DHA");
-                orderItem.getOrderItemHistories().add(orderItemHistory);
 
                 orderItemDb.save(orderItem);
 
