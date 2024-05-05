@@ -40,14 +40,13 @@ public class TawaranKerjaController {
     @PostMapping("/accept")
     public ResponseEntity<BaseResponse<TawaranKerja>> acceptJobOffer(
             @RequestBody AcceptTawaranKerjaDTO dto) {
-        // if (!authUtils.isSopir(dto.getSopirId().toString())) {
-        // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new
-        // BaseResponse<>(false, 401, "Unauthorized", null));
-        // }
-
-        TawaranKerja tawaranKerja = tawaranKerjaService.acceptJobOffer(dto.getSopirId(), dto.getOrderItemId(),
-                dto.getLokasi());
-        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Job offer accepted successfully", tawaranKerja));
+        try {
+            TawaranKerja tawaranKerja = tawaranKerjaService.acceptJobOffer(dto.getSopirId(), dto.getOrderItemId(),
+                    dto.getLokasi());
+            return ResponseEntity.ok(new BaseResponse<>(true, 200, "Job offer accepted successfully", tawaranKerja));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(false, 400, e.getMessage(), null));
+        }
     }
 
     @PostMapping("/confirm/{tawaranKerjaId}")
