@@ -39,6 +39,10 @@ public class TawaranKerjaServiceImpl implements TawaranKerjaService {
                 .orElseThrow(() -> new IllegalArgumentException("Order Item not found"));
 
         Sopir sopir = (Sopir) userDb.findById(sopirId).orElseThrow(() -> new RuntimeException("Driver not found"));
+        var trukSopir = trukService.findTrukByIdSopir(sopirId);
+        if (trukSopir == null) {
+            throw new RuntimeException("Sopir tidak memiliki truk");
+        }
 
         TawaranKerja tawaranKerja = new TawaranKerja();
         tawaranKerja.setOrderItem(orderItem);
