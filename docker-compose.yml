@@ -14,9 +14,9 @@ services:
       - /home/devinahaz/imagedata:/home/devinahaz/imagedata
     depends_on:
       - db
+    platform: linux/amd64
     environment:
       - TZ=Asia/Jakarta
-    platform: linux/amd64
   db:
     image: postgres:14-alpine
     ports:
