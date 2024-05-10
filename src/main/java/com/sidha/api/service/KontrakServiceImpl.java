@@ -189,8 +189,8 @@ public void deleteKontrak(Kontrak kontrak){
 }
 
   public String getUrlPath() {
-    if (FOLDER_PATH.contains("nur_fajar11")) {
-      return "https://sidha.nurfajar.me/api";
+    if (FOLDER_PATH.contains("devinahaz")) {
+      return "https://sidha-backend.site/api";
     } else {
       var port = environment.getRequiredProperty("server.port");
       return "http://localhost:" + port + "/api";
