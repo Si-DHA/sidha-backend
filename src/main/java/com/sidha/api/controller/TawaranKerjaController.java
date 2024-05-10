@@ -3,6 +3,7 @@ package com.sidha.api.controller;
 import java.util.List;
 import java.util.UUID;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,18 +23,13 @@ import com.sidha.api.model.order.OrderItem;
 import com.sidha.api.service.TawaranKerjaService;
 import com.sidha.api.utils.AuthUtils;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/tawaran-kerja")
 public class TawaranKerjaController {
 
     private TawaranKerjaService tawaranKerjaService;
     private AuthUtils authUtils;
-
-    @Autowired
-    public TawaranKerjaController(TawaranKerjaService tawaranKerjaService, AuthUtils authUtils) {
-        this.tawaranKerjaService = tawaranKerjaService;
-        this.authUtils = authUtils;
-    }
 
     @GetMapping("/available")
     public ResponseEntity<BaseResponse<List<OrderItem>>> getAvailableOrderItems() {
@@ -44,14 +40,13 @@ public class TawaranKerjaController {
     @PostMapping("/accept")
     public ResponseEntity<BaseResponse<TawaranKerja>> acceptJobOffer(
             @RequestBody AcceptTawaranKerjaDTO dto) {
-        // if (!authUtils.isSopir(dto.getSopirId().toString())) {
-        // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new
-        // BaseResponse<>(false, 401, "Unauthorized", null));
-        // }
-
-        TawaranKerja tawaranKerja = tawaranKerjaService.acceptJobOffer(dto.getSopirId(), dto.getOrderItemId(),
-                dto.getLokasi());
-        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Job offer accepted successfully", tawaranKerja));
+        try {
+            TawaranKerja tawaranKerja = tawaranKerjaService.acceptJobOffer(dto.getSopirId(), dto.getOrderItemId(),
+                    dto.getLokasi());
+            return ResponseEntity.ok(new BaseResponse<>(true, 200, "Job offer accepted successfully", tawaranKerja));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(false, 400, e.getMessage(), null));
+        }
     }
 
     @PostMapping("/confirm/{tawaranKerjaId}")
@@ -63,8 +58,13 @@ public class TawaranKerjaController {
         // }
 
         // UUID karyawanId = authUtils.getUserId(token);
-        tawaranKerjaService.confirmJobOffer(dto.getKaryawanId(), tawaranKerjaId);
-        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Job offer confirmed successfully", null));
+        try {
+            tawaranKerjaService.confirmJobOffer(dto.getKaryawanId(), tawaranKerjaId);
+            return ResponseEntity.ok(new BaseResponse<>(true, 200, "Job offer confirmed successfully", null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new BaseResponse<>(false, 400, e.getMessage(), null));
+        }
     }
 
     @GetMapping("")

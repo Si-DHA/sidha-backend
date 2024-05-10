@@ -202,8 +202,8 @@ public class OrderItemServiceImpl implements OrderItemService {
         Date endDate = new Date(today.getYear(), today.getMonth(), today.getDate(), 23, 59, 59);
 
         try {
-            var totalToday = orderItemDb.getTotalCompletedOrdersForToday(startDate, endDate, 6);
-            var weeklyList = orderItemDb.getWeeklyOrdersInMonth(year, month, 6);
+            var totalToday = orderItemDb.getTotalCompletedOrdersForToday(startDate, endDate, 5);
+            var weeklyList = orderItemDb.getWeeklyOrdersInMonth(year, month, 5);
             Long weekly = 0L;
             for (Object[] data : weeklyList) {
                 int weekNumber = ((Number) data[0]).intValue();
@@ -213,7 +213,7 @@ public class OrderItemServiceImpl implements OrderItemService {
                 }
             }
 
-            var monthlyList = orderItemDb.getMonthlyOrdersInYear(year, 6);
+            var monthlyList = orderItemDb.getMonthlyOrdersInYear(year, 5);
             Long monthly = 0L;
             for (Object[] data : monthlyList) {
                 int monthNumber = ((Number) data[0]).intValue();
@@ -222,7 +222,7 @@ public class OrderItemServiceImpl implements OrderItemService {
                     break;
                 }
             }
-            var yearlyList = orderItemDb.getYearlyOrdersInRange(year, year, 6);
+            var yearlyList = orderItemDb.getYearlyOrdersInRange(year, year, 5);
             Long yearly = (Long) yearlyList.get(0)[1];
             List<List<Object>> result = new ArrayList<>();
             result.add(Arrays.asList("today", totalToday));

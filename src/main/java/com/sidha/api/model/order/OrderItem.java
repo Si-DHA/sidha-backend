@@ -94,7 +94,7 @@ public class OrderItem { // 1 order item = 1 truk
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
   private List<OrderItemHistory> orderItemHistories;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @JoinColumn(name = "tawaran_kerja")
   @JsonBackReference
   private TawaranKerja tawaranKerja;

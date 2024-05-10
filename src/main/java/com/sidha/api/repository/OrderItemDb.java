@@ -108,4 +108,13 @@ public interface OrderItemDb extends JpaRepository<OrderItem, UUID> {
                         "GROUP BY YEAR(oi.createdAt)")
         List<Object[]> getYearlyOrdersInRange(@Param("startYear") int startYear,
                         @Param("endYear") int endYear, @Param("status") int status);
+
+
+
+    @Query("SELECT oi FROM OrderItem oi WHERE oi.order.klien.id = :klienId AND oi.statusOrder NOT IN (-1, 0)")
+    List<OrderItem> findByKlienIdAndStatusNotIn(@Param("klienId") UUID klienId);
+
+    @Query("SELECT COUNT(oi) FROM OrderItem oi WHERE oi.order.klien.id = :klienId AND oi.statusOrder = 5")
+    int countCompletedOrderItemsByKlienId(@Param("klienId") UUID klienId);
+
 }
