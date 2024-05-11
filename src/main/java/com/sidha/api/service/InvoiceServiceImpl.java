@@ -4,9 +4,12 @@ import com.sidha.api.DTO.request.KonfirmasiBuktiPembayaranDTO;
 import com.sidha.api.model.Invoice;
 import com.sidha.api.model.image.ImageData;
 import com.sidha.api.model.image.InvoiceImage;
+import com.sidha.api.model.order.Order;
 import com.sidha.api.model.order.OrderItem;
+import com.sidha.api.model.order.OrderItemHistory;
 import com.sidha.api.repository.ImageDataDb;
 import com.sidha.api.repository.InvoiceDb;
+import com.sidha.api.repository.OrderItemHistoryDb;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,8 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     private ModelMapper modelMapper;
 
+    private OrderItemHistoryDb orderItemHistoryDb;
+
 
     @Override
     public Invoice saveInvoice(Invoice invoice) {
@@ -47,8 +52,32 @@ public class InvoiceServiceImpl implements InvoiceService {
         List<Invoice> listInvoiceKlien = new ArrayList<>();
         for (Invoice invoice : this.findAllInvoice()) {
             try {
-                if (invoice.getOrder().getKlien().getId().equals(idKlien)) {
-                    listInvoiceKlien.add(invoice);
+                Order order = invoice.getOrder();
+                if (order.getKlien().getId().equals(idKlien)) {
+                    List<OrderItem> orderItems = order.getOrderItems();
+                    boolean excludeInvoice = false;
+                    boolean allItemsHaveStatusMinus1 = true;
+
+                    // Check the status of each order item
+                    for (OrderItem orderItem : orderItems) {
+                        int status = orderItem.getStatusOrder();
+
+                        // Check if there is any OrderItem with status 0 or 1
+                        if (status == 0 || status == 1) {
+                            excludeInvoice = true;
+                            break;
+                        }
+
+                        // Check if all OrderItems have status -1
+                        if (status != -1) {
+                            allItemsHaveStatusMinus1 = false;
+                        }
+                    }
+
+                    // Exclude the invoice if either condition is met
+                    if (!excludeInvoice && !allItemsHaveStatusMinus1) {
+                        listInvoiceKlien.add(invoice);
+                    }
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e.getMessage());
@@ -89,19 +118,49 @@ public class InvoiceServiceImpl implements InvoiceService {
                 idInvoice + "_" + isPelunasan + "_" + imageFile.getOriginalFilename());
         InvoiceImage invoiceImage = modelMapper.map(imageData, InvoiceImage.class);
 
+        // order item history
+        Order order = invoice.getOrder();
+        List<OrderItem> orderItems = order.getOrderItems();
+        String klien = order.getKlien().getCompanyName();
+        String descriptionHistory;
+
         ImageData currentImage;
         if (!isPelunasan) {
             currentImage = invoice.getBuktiDp();
             invoice.setBuktiDp(invoiceImage);
+            descriptionHistory = "bukti pembayaran DP";
         } else {
             currentImage = invoice.getBuktiPelunasan();
             invoice.setBuktiPelunasan(invoiceImage);
+            descriptionHistory = "bukti pembayaran pelunasan";
         }
         this.saveInvoice(invoice);
 
         if (currentImage != null) {
+            // order item history
+            descriptionHistory = "Mengubah " + descriptionHistory;
+            for (OrderItem orderItem : orderItems) {
+                if (orderItem.getStatusOrder() >= 2) {
+                    var orderItemHistories = orderItem.getOrderItemHistories();
+                    orderItemHistories.add(
+                            this.addOrderItemHistory(orderItem, descriptionHistory, klien)
+                    );
+                }
+            }
+
             storageService.deleteImageFile(currentImage);
             imageDataDb.delete(currentImage);
+        } else {
+            // order item history
+            descriptionHistory = "Mengunggah " + descriptionHistory;
+            for (OrderItem orderItem : orderItems) {
+                if (orderItem.getStatusOrder() >= 2) {
+                    var orderItemHistories = orderItem.getOrderItemHistories();
+                    orderItemHistories.add(
+                            this.addOrderItemHistory(orderItem, descriptionHistory, klien)
+                    );
+                }
+            }
         }
 
         invoiceImage.setInvoice(invoice);
@@ -157,16 +216,27 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         InvoiceImage invoiceImage = modelMapper.map(imageData, InvoiceImage.class);
 
+        // order item history
+        String descriptionHistory;
+        List<OrderItem> orderItems = invoice.getOrder().getOrderItems();
+
         if (konfirmasiBuktiPembayaranDTO.getIsConfirmed()) {
             invoiceImage.setStatus(1);
-            List<OrderItem> orderItems = invoice.getOrder().getOrderItems();
 
+            descriptionHistory = "Menerima bukti pembayaran ";
             for (OrderItem orderItem : orderItems) {
-                if (orderItem.getStatusOrder() >= 0) {
+                if (orderItem.getStatusOrder() >= 2) {
+                    var orderItemHistories = orderItem.getOrderItemHistories();
                     if (isPelunasan) {
                         orderItem.setStatusOrder(5);
+                        orderItemHistories.add(
+                                this.addOrderItemHistory(orderItem, descriptionHistory + "pelunasan", "PT DHA")
+                        );
                     } else {
                         orderItem.setStatusOrder(3);
+                        orderItemHistories.add(
+                                this.addOrderItemHistory(orderItem, descriptionHistory + "DP", "PT DHA")
+                        );
                     }
                 }
             }
@@ -177,10 +247,36 @@ public class InvoiceServiceImpl implements InvoiceService {
             }
             invoiceImage.setStatus(-1);
             invoiceImage.setAlasanPenolakan(alasanPenolakan);
+
+            // order item history
+            descriptionHistory = "Menolak bukti pembayaran ";
+            for (OrderItem orderItem : orderItems) {
+                if (orderItem.getStatusOrder() >= 2) {
+                    var orderItemHistories = orderItem.getOrderItemHistories();
+                    if (isPelunasan) {
+                        orderItemHistories.add(
+                                this.addOrderItemHistory(orderItem, descriptionHistory + "pelunasan", "PT DHA")
+                        );
+                    } else {
+                        orderItemHistories.add(
+                                this.addOrderItemHistory(orderItem, descriptionHistory + "DP", "PT DHA")
+                        );
+                    }
+                }
+            }
         }
         imageDataDb.save(invoiceImage);
 
         return invoice;
+    }
+
+    public OrderItemHistory addOrderItemHistory(OrderItem orderItem, String description,
+                                                String createdBy) {
+        var orderItemHistory = new OrderItemHistory();
+        orderItemHistory.setOrderItem(orderItem);
+        orderItemHistory.setDescription(description);
+        orderItemHistory.setCreatedBy(createdBy);
+        return orderItemHistoryDb.save(orderItemHistory);
     }
 
 

@@ -106,7 +106,7 @@ public class OrderServiceImpl implements OrderService {
         orderItem.setRute(rute);
 
         var orderItemHistories = new ArrayList<OrderItemHistory>();
-        orderItemHistories.add(addOrderItemHistory(orderItem, 0, "Order berhasil dibuat", klien.getUsername()));
+        orderItemHistories.add(this.addOrderItemHistory(orderItem, "Membentuk order item " + orderItem.getId(), klien.getCompanyName()));
         orderItem.setOrderItemHistories(orderItemHistories);
 
         orderItem.setPrice(rute.stream().mapToLong(Rute::getPrice).sum());
@@ -246,20 +246,24 @@ public class OrderServiceImpl implements OrderService {
                     throw new IllegalArgumentException("Order Item already confirmed");
                 }
 
-                if (confirmOrderItem.getIsAccepted()) {
-                    orderItem.setStatusOrder(1);
-                } else {
+                if (!confirmOrderItem.getIsAccepted()) {
                     orderItem.setStatusOrder(-1);
                     orderItem.setAlasanPenolakan(confirmOrderItem.getRejectionReason());
+
+                    Order order = this.getOrderByOrderItem(orderItem.getId());
+                    var invoice = order.getInvoice();
+                    Long orderPrice = order.getTotalPrice() - orderItem.getPrice();
+                    Long dp = (long) (orderPrice * 0.6);
+                    Long pelunasan = (long) (orderPrice * 0.4);
+                    order.setTotalPrice(orderPrice);
+                    invoice.setTotalDp(BigDecimal.valueOf(dp));
+                    invoice.setTotalPelunasan(BigDecimal.valueOf(pelunasan));
+                    var orderItemHistory = this.addOrderItemHistory(orderItem,
+                            "Menolak order item dengan alasan \"" + confirmOrderItem.getRejectionReason() + "\"",
+                            "PT DHA");
+                    orderItem.getOrderItemHistories().add(orderItemHistory);
                 }
 
-                var createdBy = userService.findById(request.getKaryawanId()).getUsername();
-                var orderItemHistory = addOrderItemHistory(orderItem, orderItem.getStatusOrder(),
-                        confirmOrderItem.getIsAccepted() ? "Order diterima"
-                                : "Order ditolak: " + confirmOrderItem.getRejectionReason(),
-                        createdBy);
-
-                orderItem.getOrderItemHistories().add(orderItemHistory);
                 orderItemDb.save(orderItem);
 
                 logger.info("Order item {} processed with status {}", orderItem.getId(), orderItem.getStatusOrder());
@@ -307,10 +311,26 @@ public class OrderServiceImpl implements OrderService {
         orderItem.setBuktiMuat(muatImage);
         this.saveImageBongkarMuat(orderItem);
 
+        // order item history
+        var orderItemHistories = orderItem.getOrderItemHistories();
+        String sopir = "Sopir " + orderItem.getSopir().getName();
+        String descriptionHistory;
+
         if (currentImage != null) {
             storageService.deleteImageFile(currentImage);
             imageDataDb.delete(currentImage);
+            descriptionHistory = "Mengubah bukti muat";
+            orderItemHistories.add(
+                    this.addOrderItemHistory(orderItem, descriptionHistory, sopir)
+            );
+        } else {
+            orderItem.setStatusOrder(2);
+            descriptionHistory = "Mengunggah bukti muat";
+            orderItemHistories.add(
+                    this.addOrderItemHistory(orderItem, descriptionHistory, sopir)
+            );
         }
+
         muatImage.setOrderItem(orderItem);
         imageDataDb.save(muatImage);
         return orderItem;
@@ -329,9 +349,24 @@ public class OrderServiceImpl implements OrderService {
         orderItem.setBuktiBongkar(bongkarImage);
         this.saveImageBongkarMuat(orderItem);
 
+        // order item history
+        var orderItemHistories = orderItem.getOrderItemHistories();
+        String sopir = "Sopir " + orderItem.getSopir().getName();
+        String descriptionHistory;
+
         if (currentImage != null) {
             storageService.deleteImageFile(currentImage);
             imageDataDb.delete(currentImage);
+            descriptionHistory = "Mengubah bukti bongkar";
+            orderItemHistories.add(
+                    this.addOrderItemHistory(orderItem, descriptionHistory, sopir)
+            );
+        } else {
+            orderItem.setStatusOrder(4);
+            descriptionHistory = "Mengunggah bukti bongkar";
+            orderItemHistories.add(
+                    this.addOrderItemHistory(orderItem, descriptionHistory, sopir)
+            );
         }
         bongkarImage.setOrderItem(orderItem);
         imageDataDb.save(bongkarImage);
@@ -400,11 +435,12 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderItem> getAllOrderItemByIdOrder(UUID idOrder){
         return orderItemDb.findByIdOrder(idOrder);
     }
-    private OrderItemHistory addOrderItemHistory(OrderItem orderItem, Integer status, String description,
-            String createdBy) {
+
+    @Override
+    public OrderItemHistory addOrderItemHistory(OrderItem orderItem, String description,
+                                                String createdBy) {
         var orderItemHistory = new OrderItemHistory();
         orderItemHistory.setOrderItem(orderItem);
-        orderItemHistory.setStatus(status);
         orderItemHistory.setDescription(description);
         orderItemHistory.setCreatedBy(createdBy);
         return orderItemHistoryDb.save(orderItemHistory);
@@ -465,6 +501,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Order getOrderByOrderItem(UUID idOrderItem) {
+        return orderDb.findByOrderItemId(idOrderItem).orElseThrow(
+                () -> new NoSuchElementException("Order tidak ditemukan")
+        );
+    }
+
     public BigDecimal getTotalExpenditureByKlienInRange(UUID klienId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         List<Order> orders = orderDb.findByKlienIdAndCreatedAtBetween(klienId, startDateTime, endDateTime);
         return calculateTotalExpenditure(orders);

@@ -9,6 +9,7 @@ import com.sidha.api.DTO.request.order.UpdateOrderRequestDTO;
 import com.sidha.api.model.image.ImageData;
 import com.sidha.api.model.order.Order;
 import com.sidha.api.model.order.OrderItem;
+import com.sidha.api.model.order.OrderItemHistory;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -47,11 +48,17 @@ public interface OrderService {
     OrderItem getOrderItemById(UUID idOrderItem);
 
     List<OrderItem> getAllOrderItemByIdOrder(UUID idOrder);
+
+    OrderItemHistory addOrderItemHistory(OrderItem orderItem, String description,
+                                         String createdBy);
+
     Order getOrderById(UUID orderId);
 
     Order getPrice(CreateOrderRequestDTO request);
 
     List<String> getAllPossibleRute(UUID userId);
+
+    Order getOrderByOrderItem(UUID idOrderItem);
 
     BigDecimal getTotalExpenditureByKlienInRange(UUID klienId, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
