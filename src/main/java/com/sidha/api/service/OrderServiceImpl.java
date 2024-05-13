@@ -258,6 +258,7 @@ public class OrderServiceImpl implements OrderService {
                     order.setTotalPrice(orderPrice);
                     invoice.setTotalDp(BigDecimal.valueOf(dp));
                     invoice.setTotalPelunasan(BigDecimal.valueOf(pelunasan));
+
                     var orderItemHistory = this.addOrderItemHistory(orderItem,
                             "Menolak order item dengan alasan \"" + confirmOrderItem.getRejectionReason() + "\"",
                             "PT DHA");
