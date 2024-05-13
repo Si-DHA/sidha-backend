@@ -27,8 +27,30 @@ public interface UserService {
     List<UserModel> getListRole(Role role);
 
     List<Sopir> getListSopirNoTruk();
-    
+
     List<UserModel> findAllList();
 
     void deleteUser(UUID id);
+
+    // dashboard perusahaan
+    Long getTotalNewClientForToday();
+  
+    Long getTotalNewClientForThisWeek();
+  
+    Long getTotalNewClientForThisMonth();
+  
+    Long getTotalNewClientForThisYear();
+  
+    List<List<Object>> getTotalNewClient();
+  
+    List<List<Object>>  getWeeklyTotalNewClientInMonth(int year, int month);
+  
+    List<List<Object>>  getMonthlyTotalNewClientInYear(int year);
+  
+    List<List<Object>>  getYearlyTotalNewClientInRange(int startYear, int endYear);
+  
+  
+  
+  
+
 }

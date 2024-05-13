@@ -15,7 +15,7 @@ public class AcceptTawaranKerjaDTO {
     private UUID sopirId;
 
     @NotNull(message = "Order item tidak boleh kosong")
-    private UUID orderItemId;
+    private String orderItemId;
 
     @NotNull(message = "Lokasi Sopir tidak boleh kosong")
     private String lokasi;

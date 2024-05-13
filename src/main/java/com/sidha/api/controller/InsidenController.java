@@ -38,7 +38,7 @@ public class InsidenController {
             @RequestParam("sopirId") UUID sopirId,
             @RequestParam("kategori") String kategori,
             @RequestParam("lokasi") String lokasi,
-            @RequestParam("keterangan") String keterangan, @RequestParam("orderItemId") UUID orderItemId,
+            @RequestParam("keterangan") String keterangan, @RequestParam("orderItemId") String orderItemId,
             @RequestPart(value = "buktiFoto", required = false) MultipartFile buktiFoto) {
         try {
 
@@ -64,7 +64,7 @@ public class InsidenController {
             @PathVariable UUID id,
             @RequestParam("kategori") String kategori,
             @RequestParam("lokasi") String lokasi,
-            @RequestParam("keterangan") String keterangan, @RequestParam("orderItemId") UUID orderItemId,
+            @RequestParam("keterangan") String keterangan, @RequestParam("orderItemId") String orderItemId,
             @RequestPart(value = "buktiFoto", required = false) MultipartFile buktiFoto) {
         try {
             Insiden insidenDetails = new Insiden();
@@ -149,5 +149,52 @@ public class InsidenController {
             return ResponseEntity.internalServerError().body("Failed to fetch image");
         }
     }
+
+
+    @GetMapping("/total/today")
+    public ResponseEntity<?> getTotalInsidenForToday() {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total insiden for today", insidenService.getTotalInsidenForToday()));
+    }
+
+    @GetMapping("/total/week")
+    public ResponseEntity<?> getTotalInsidenForThisWeek() {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total insiden for this week", insidenService.getTotalInsidenForThisWeek()));
+    }
+
+
+    @GetMapping("/total/month")
+    public ResponseEntity<?> getTotalInsidenForThisMonth() {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total insiden for this month", insidenService.getTotalInsidenForThisMonth()));
+    }
+
+    @GetMapping("/total/year")
+    public ResponseEntity<?> getTotalInsidenForThisYear() {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total insiden for this year", insidenService.getTotalInsidenForThisYear()));
+    }
+
+    @GetMapping("/total/all")
+    public ResponseEntity<?> getTotalInsiden() {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total insiden", insidenService.getTotalInsiden()));
+    }
+
+    @GetMapping("/total/weekly")
+    public ResponseEntity<?> getWeeklyTotalInsidenInMonth(@RequestParam int year, @RequestParam int month) {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Weekly total insiden in month",
+                insidenService.getWeeklyTotalInsidenInMonth(year, month)));
+    }
+
+    @GetMapping("/total/monthly")
+    public ResponseEntity<?> getMonthlyTotalInsidenInYear(@RequestParam int year) {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Monthly total insiden in year",
+                insidenService.getMonthlyTotalInsidenInYear(year)));
+    }
+
+    @GetMapping("/total/yearly")
+    public ResponseEntity<?> getYearlyTotalInsidenInRange(@RequestParam int startYear, @RequestParam int endYear) {
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Yearly total insiden in range",
+                insidenService.getYearlyTotalInsidenInRange(startYear, endYear)));
+    }
+    
+
 
 }

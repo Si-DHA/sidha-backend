@@ -35,7 +35,7 @@ public class UserController {
 
   @GetMapping("/all")
   public ResponseEntity<?> getUserList() {
-    return ResponseEntity.ok(new BaseResponse<>(true, 200, "User list", userService.findAllList() ));
+    return ResponseEntity.ok(new BaseResponse<>(true, 200, "User list", userService.findAllList()));
   }
 
   @GetMapping("/admin")
@@ -71,7 +71,7 @@ public class UserController {
   private ResponseEntity<?> getUserDetail(@PathVariable UUID id) {
     try {
       var user = userService.getUserDetail(id);
-      
+
       return ResponseEntity.ok(new BaseResponse<>(true, 200, "User detail",
           user));
     } catch (Exception e) {
@@ -125,5 +125,51 @@ public class UserController {
     }
   }
 
+  @GetMapping("/client/total/today")
+  public ResponseEntity<?> getTotalNewClientForToday() {
+    return ResponseEntity
+        .ok(new BaseResponse<>(true, 200, "Total new client for today", userService.getTotalNewClientForToday()));
+  }
+
+  @GetMapping("/client/total/week")
+  public ResponseEntity<?> getTotalNewClientForThisWeek() {
+    return ResponseEntity.ok(
+        new BaseResponse<>(true, 200, "Total new client for this week", userService.getTotalNewClientForThisWeek()));
+  }
+
+  @GetMapping("/client/total/month")
+  public ResponseEntity<?> getTotalNewClientForThisMonth() {
+    return ResponseEntity.ok(
+        new BaseResponse<>(true, 200, "Total new client for this month", userService.getTotalNewClientForThisMonth()));
+  }
+
+  @GetMapping("/client/total/year")
+  public ResponseEntity<?> getTotalNewClientForThisYear() {
+    return ResponseEntity.ok(
+        new BaseResponse<>(true, 200, "Total new client for this year", userService.getTotalNewClientForThisYear()));
+  }
+
+  @GetMapping("/client/total/all")
+  public ResponseEntity<?> getTotalNewClient() {
+    return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total new client", userService.getTotalNewClient()));
+  }
+
+  @GetMapping("/client/total/weekly")
+  public ResponseEntity<?> getWeeklyTotalNewClientInMonth(@RequestParam int year, @RequestParam int month) {
+    return ResponseEntity.ok(new BaseResponse<>(true, 200, "Weekly total new client in month",
+        userService.getWeeklyTotalNewClientInMonth(year, month)));
+  }
+
+  @GetMapping("/client/total/monthly")
+  public ResponseEntity<?> getMonthlyTotalNewClientInYear(@RequestParam int year) {
+    return ResponseEntity.ok(new BaseResponse<>(true, 200, "Monthly total new client in year",
+        userService.getMonthlyTotalNewClientInYear(year)));
+  }
+
+  @GetMapping("/client/total/yearly")
+  public ResponseEntity<?> getYearlyTotalNewClientInRange(@RequestParam int startYear, @RequestParam int endYear) {
+    return ResponseEntity.ok(new BaseResponse<>(true, 200, "Yearly total new client in range",
+        userService.getYearlyTotalNewClientInRange(startYear, endYear)));
+  }
 
 }

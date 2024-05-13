@@ -1,7 +1,15 @@
 package com.sidha.api.service;
 
-import java.util.UUID;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.UUID;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sidha.api.DTO.request.order.CreateOrderRequestDTO;
 import com.sidha.api.DTO.request.order.OrderConfirmRequestDTO;
@@ -9,8 +17,7 @@ import com.sidha.api.DTO.request.order.UpdateOrderRequestDTO;
 import com.sidha.api.model.image.ImageData;
 import com.sidha.api.model.order.Order;
 import com.sidha.api.model.order.OrderItem;
-import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
+import com.sidha.api.model.order.OrderItemHistory;
 
 public interface OrderService {
 
@@ -24,30 +31,51 @@ public interface OrderService {
 
     List<Order> getAllOrders();
 
-    OrderItem findOrderItemById(UUID idOrderItem);
+    OrderItem findOrderItemById(String idOrderItem);
 
-    OrderItem uploadImageMuat(UUID idOrderItem, MultipartFile imageFile) throws IOException;
+    OrderItem uploadImageMuat(String idOrderItem, MultipartFile imageFile) throws IOException;
 
-    OrderItem uploadImageBongkar(UUID idOrderItem, MultipartFile imageFile) throws IOException;
+    OrderItem uploadImageBongkar(String idOrderItem, MultipartFile imageFile) throws IOException;
 
-    ImageData getImageMuat(UUID idOrderItem);
+    ImageData getImageMuat(String idOrderItem);
 
-    ImageData getImageBongkar(UUID idOrderItem);
+    ImageData getImageBongkar(String idOrderItem);
 
-    void deleteImageMuat(UUID idOrderItem);
+    void deleteImageMuat(String idOrderItem);
 
-    void deleteImageBongkar(UUID idOrderItem);
+    void deleteImageBongkar(String idOrderItem);
 
     OrderItem saveImageBongkarMuat(OrderItem orderItem);
 
     List<OrderItem> getAllOrderItemByIdSopir(UUID sopir);
 
-    OrderItem getOrderItemById(UUID idOrderItem);
+    OrderItem getOrderItemById(String idOrderItem);
 
-    List<OrderItem> getAllOrderItemByIdOrder(UUID idOrder);
-    Order getOrderById(UUID orderId);
+    List<OrderItem> getAllOrderItemByIdOrder(String idOrder);
+
+    OrderItemHistory addOrderItemHistory(OrderItem orderItem, String description,
+                                         String createdBy);
+
+    Order getOrderById(String orderId);
 
     Order getPrice(CreateOrderRequestDTO request);
 
     List<String> getAllPossibleRute(UUID userId);
+
+    Order getOrderByOrderItem(String idOrderItem);
+
+    BigDecimal getTotalExpenditureByKlienInRange(UUID klienId, LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+    BigDecimal getTotalExpenditureByKlienDaily(UUID klienId, LocalDate date);
+
+    BigDecimal getTotalExpenditureByKlienMonthly(UUID klienId, YearMonth yearMonth);
+
+    BigDecimal getTotalExpenditureByKlienYearly(UUID klienId, Year year);
+
+    BigDecimal calculateTotalExpenditure(List<Order> orders);
+
+    List<OrderItem> getAllOrderItemDiprosesByKlienId(UUID klienId);
+
+    int countCompletedOrderItemsByKlienId(UUID klienId);
+
 }

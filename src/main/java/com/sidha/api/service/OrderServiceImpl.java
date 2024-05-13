@@ -1,37 +1,43 @@
 package com.sidha.api.service;
 
-import java.util.UUID;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+import java.util.Date;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.sidha.api.DTO.request.order.CreateOrderRequestDTO;
-import com.sidha.api.DTO.request.order.OrderConfirmRequestDTO;
 import com.sidha.api.DTO.request.order.CreateOrderItemRequestDTO;
+import com.sidha.api.DTO.request.order.CreateOrderRequestDTO;
 import com.sidha.api.DTO.request.order.CreateRuteRequestDTO;
+import com.sidha.api.DTO.request.order.OrderConfirmRequestDTO;
 import com.sidha.api.DTO.request.order.UpdateOrderRequestDTO;
 import com.sidha.api.model.PenawaranHargaItem;
 import com.sidha.api.model.enumerator.TipeBarang;
 import com.sidha.api.model.enumerator.TipeTruk;
+import com.sidha.api.model.image.BongkarMuatImage;
+import com.sidha.api.model.image.ImageData;
 import com.sidha.api.model.order.Order;
 import com.sidha.api.model.order.OrderItem;
 import com.sidha.api.model.order.OrderItemHistory;
 import com.sidha.api.model.order.Rute;
 import com.sidha.api.model.user.Klien;
+import com.sidha.api.repository.ImageDataDb;
 import com.sidha.api.repository.OrderDb;
 import com.sidha.api.repository.OrderItemDb;
 import com.sidha.api.repository.OrderItemHistoryDb;
 import com.sidha.api.repository.RuteDb;
-import java.util.NoSuchElementException;
-import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
-import org.modelmapper.ModelMapper;
-import com.sidha.api.model.image.BongkarMuatImage;
-import com.sidha.api.model.image.ImageData;
-import com.sidha.api.repository.ImageDataDb;
 
 import lombok.AllArgsConstructor;
 
@@ -52,6 +58,53 @@ public class OrderServiceImpl implements OrderService {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
+    private static int ORDER_NUMBER = 1;
+    private static int ORDER_ITEM_NUMBER = 1;
+
+    private String generateOrderId(CreateOrderRequestDTO request) {
+        // OR-PTX-DDMMYY-0000
+        String orderId = "OR-";
+
+        String companyName = ((Klien) userService.findById(request.getKlienId())).getCompanyName().toUpperCase().strip();
+        // remove whitespace and special characters
+        companyName = companyName.replaceAll("[^a-zA-Z0-9]", "");
+        if (companyName.substring(0,2).equals("PT") || companyName.substring(0,2).equals("CV")){
+            companyName = companyName.substring(2);
+        } 
+        companyName = companyName.substring(0, Math.min(companyName.length(), 3));
+        orderId += companyName + "-";
+
+        Date date = request.getTanggalPengiriman();
+        String dateStr = String.format("%td%tm%ty", date, date, date);
+        orderId += dateStr + "-";
+
+        String orderItemNumber = String.format("%04d", ORDER_NUMBER);
+        orderId += orderItemNumber;
+        ORDER_NUMBER++;
+
+        return orderId;
+    }
+
+    private String generateOrderItemId(CreateOrderItemRequestDTO request, String orderId) {
+        // ORI-PTX-CCD-DDMMYY-00000
+        String orderItemId = "ORI-";
+
+        String companyName = orderId.substring(3, 6);
+        orderItemId += companyName + "-";
+
+        String tipeTruk = request.getTipeTruk().toString().toUpperCase();
+        orderItemId += tipeTruk + "-";
+
+        String date = orderId.substring(7, 13);
+        orderItemId += date + "-";
+
+        String orderItemNumber = String.format("%05d", ORDER_ITEM_NUMBER);
+        orderItemId += orderItemNumber;
+        ORDER_ITEM_NUMBER++;
+
+        return orderItemId;
+    }
+
     @Override
     public Order createOrder(CreateOrderRequestDTO request) {
         var user = userService.findById(request.getKlienId());
@@ -60,6 +113,7 @@ public class OrderServiceImpl implements OrderService {
         var order = new Order();
         order.setKlien(klien);
         order.setTanggalPengiriman(request.getTanggalPengiriman());
+        order.setId(generateOrderId(request));
         orderDb.save(order);
 
         var orderItems = new ArrayList<OrderItem>();
@@ -69,10 +123,16 @@ public class OrderServiceImpl implements OrderService {
         });
 
         order.setOrderItems(orderItems);
-        order.setTotalPrice(orderItems.stream().mapToLong(OrderItem::getPrice).sum());
+        Long totalPrice = orderItems.stream().mapToLong(OrderItem::getPrice).sum();
+        order.setTotalPrice(totalPrice);
+
         var invoice = invoiceService.createInvoice();
         order.setInvoice(invoice);
         invoice.setOrder(order);
+        BigDecimal totalDp = BigDecimal.valueOf(0.6 * totalPrice);
+        BigDecimal totalPelunasan = BigDecimal.valueOf(0.4 * totalPrice);;
+        invoice.setTotalDp(totalDp);
+        invoice.setTotalPelunasan(totalPelunasan);
         invoiceService.saveInvoice(invoice);
 
         return orderDb.save(order);
@@ -85,6 +145,7 @@ public class OrderServiceImpl implements OrderService {
         orderItem.setStatusOrder(0);
         orderItem.setTipeBarang(TipeBarang.valueOf(request.getTipeBarang()));
         orderItem.setTipeTruk(TipeTruk.valueOf(request.getTipeTruk()));
+        orderItem.setId(generateOrderItemId(request, order.getId()));
         orderItemDb.save(orderItem);
 
         var rute = new ArrayList<Rute>();
@@ -95,7 +156,7 @@ public class OrderServiceImpl implements OrderService {
         orderItem.setRute(rute);
 
         var orderItemHistories = new ArrayList<OrderItemHistory>();
-        orderItemHistories.add(addOrderItemHistory(orderItem, 0, "Order berhasil dibuat", klien.getUsername()));
+        orderItemHistories.add(this.addOrderItemHistory(orderItem, "Membentuk order item " + orderItem.getId(), klien.getCompanyName()));
         orderItem.setOrderItemHistories(orderItemHistories);
 
         orderItem.setPrice(rute.stream().mapToLong(Rute::getPrice).sum());
@@ -211,7 +272,16 @@ public class OrderServiceImpl implements OrderService {
 
         });
 
-        order.setTotalPrice(order.getOrderItems().stream().mapToLong(OrderItem::getPrice).sum());
+        Long totalPrice = order.getOrderItems().stream().mapToLong(OrderItem::getPrice).sum();
+        order.setTotalPrice(totalPrice);
+
+        BigDecimal totalDp = BigDecimal.valueOf(0.6 * totalPrice);
+        BigDecimal totalPelunasan = BigDecimal.valueOf(0.4 * totalPrice);
+        var invoice = order.getInvoice();
+        invoice.setTotalDp(totalDp);
+        invoice.setTotalPelunasan(totalPelunasan);
+        invoiceService.saveInvoice(invoice);
+
         return orderDb.save(order);
     }
 
@@ -226,20 +296,25 @@ public class OrderServiceImpl implements OrderService {
                     throw new IllegalArgumentException("Order Item already confirmed");
                 }
 
-                if (confirmOrderItem.getIsAccepted()) {
-                    orderItem.setStatusOrder(1);
-                } else {
+                if (!confirmOrderItem.getIsAccepted()) {
                     orderItem.setStatusOrder(-1);
                     orderItem.setAlasanPenolakan(confirmOrderItem.getRejectionReason());
+
+                    Order order = this.getOrderByOrderItem(orderItem.getId());
+                    var invoice = order.getInvoice();
+                    Long orderPrice = order.getTotalPrice() - orderItem.getPrice();
+                    Long dp = (long) (orderPrice * 0.6);
+                    Long pelunasan = (long) (orderPrice * 0.4);
+                    order.setTotalPrice(orderPrice);
+                    invoice.setTotalDp(BigDecimal.valueOf(dp));
+                    invoice.setTotalPelunasan(BigDecimal.valueOf(pelunasan));
+
+                    var orderItemHistory = this.addOrderItemHistory(orderItem,
+                            "Menolak order item dengan alasan \"" + confirmOrderItem.getRejectionReason() + "\"",
+                            "PT DHA");
+                    orderItem.getOrderItemHistories().add(orderItemHistory);
                 }
 
-                var createdBy = userService.findById(request.getKaryawanId()).getUsername();
-                var orderItemHistory = addOrderItemHistory(orderItem, orderItem.getStatusOrder(),
-                        confirmOrderItem.getIsAccepted() ? "Order diterima"
-                                : "Order ditolak: " + confirmOrderItem.getRejectionReason(),
-                        createdBy);
-
-                orderItem.getOrderItemHistories().add(orderItemHistory);
                 orderItemDb.save(orderItem);
 
                 logger.info("Order item {} processed with status {}", orderItem.getId(), orderItem.getStatusOrder());
@@ -259,7 +334,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderItem findOrderItemById(UUID idOrderItem) {
+    public OrderItem findOrderItemById(String idOrderItem) {
         OrderItem orderItem = orderItemDb.findById(idOrderItem).orElse(null);
 
         if (orderItem == null) {
@@ -275,11 +350,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderItem uploadImageMuat(UUID idOrderItem, MultipartFile imageFile) throws IOException {
+    public OrderItem uploadImageMuat(String idOrderItem, MultipartFile imageFile) throws IOException {
         OrderItem orderItem = this.findOrderItemById(idOrderItem);
         ImageData imageData = storageService.uploadImageAndSaveToDB(
                 imageFile,
-                imageFile.getOriginalFilename());
+                imageFile.getOriginalFilename() + "_muat_" + idOrderItem
+        );
         BongkarMuatImage muatImage = modelMapper.map(imageData, BongkarMuatImage.class);
 
         ImageData currentImage;
@@ -287,21 +363,38 @@ public class OrderServiceImpl implements OrderService {
         orderItem.setBuktiMuat(muatImage);
         this.saveImageBongkarMuat(orderItem);
 
+        // order item history
+        var orderItemHistories = orderItem.getOrderItemHistories();
+        String sopir = "Sopir " + orderItem.getSopir().getName();
+        String descriptionHistory;
+
         if (currentImage != null) {
             storageService.deleteImageFile(currentImage);
             imageDataDb.delete(currentImage);
+            descriptionHistory = "Mengubah bukti muat";
+            orderItemHistories.add(
+                    this.addOrderItemHistory(orderItem, descriptionHistory, sopir)
+            );
+        } else {
+            orderItem.setStatusOrder(2);
+            descriptionHistory = "Mengunggah bukti muat";
+            orderItemHistories.add(
+                    this.addOrderItemHistory(orderItem, descriptionHistory, sopir)
+            );
         }
+
         muatImage.setOrderItem(orderItem);
         imageDataDb.save(muatImage);
         return orderItem;
     }
 
     @Override
-    public OrderItem uploadImageBongkar(UUID idOrderItem, MultipartFile imageFile) throws IOException {
+    public OrderItem uploadImageBongkar(String idOrderItem, MultipartFile imageFile) throws IOException {
         OrderItem orderItem = this.findOrderItemById(idOrderItem);
         ImageData imageData = storageService.uploadImageAndSaveToDB(
                 imageFile,
-                imageFile.getOriginalFilename());
+                imageFile.getOriginalFilename() + "_bongkar_" + idOrderItem
+        );
         BongkarMuatImage bongkarImage = modelMapper.map(imageData, BongkarMuatImage.class);
 
         ImageData currentImage;
@@ -309,9 +402,24 @@ public class OrderServiceImpl implements OrderService {
         orderItem.setBuktiBongkar(bongkarImage);
         this.saveImageBongkarMuat(orderItem);
 
+        // order item history
+        var orderItemHistories = orderItem.getOrderItemHistories();
+        String sopir = "Sopir " + orderItem.getSopir().getName();
+        String descriptionHistory;
+
         if (currentImage != null) {
             storageService.deleteImageFile(currentImage);
             imageDataDb.delete(currentImage);
+            descriptionHistory = "Mengubah bukti bongkar";
+            orderItemHistories.add(
+                    this.addOrderItemHistory(orderItem, descriptionHistory, sopir)
+            );
+        } else {
+            orderItem.setStatusOrder(4);
+            descriptionHistory = "Mengunggah bukti bongkar";
+            orderItemHistories.add(
+                    this.addOrderItemHistory(orderItem, descriptionHistory, sopir)
+            );
         }
         bongkarImage.setOrderItem(orderItem);
         imageDataDb.save(bongkarImage);
@@ -319,21 +427,21 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public ImageData getImageMuat(UUID idOrderItem) {
+    public ImageData getImageMuat(String idOrderItem) {
         OrderItem orderItem = this.findOrderItemById(idOrderItem);
         ImageData imageData = orderItem.getBuktiMuat();
         return imageData;
     }
 
     @Override
-    public ImageData getImageBongkar(UUID idOrderItem) {
+    public ImageData getImageBongkar(String idOrderItem) {
         OrderItem orderItem = this.findOrderItemById(idOrderItem);
         ImageData imageData = orderItem.getBuktiBongkar();
         return imageData;
     }
 
     @Override
-    public void deleteImageMuat(UUID idOrderItem) {
+    public void deleteImageMuat(String idOrderItem) {
         ImageData imageData = this.getImageMuat(idOrderItem);
         if (imageData != null) {
             OrderItem orderItem = this.findOrderItemById(idOrderItem);
@@ -348,7 +456,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void deleteImageBongkar(UUID idOrderItem) {
+    public void deleteImageBongkar(String idOrderItem) {
         ImageData imageData = this.getImageBongkar(idOrderItem);
         if (imageData != null) {
             OrderItem orderItem = this.findOrderItemById(idOrderItem);
@@ -368,7 +476,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderItem getOrderItemById(UUID idOrderItem) {
+    public OrderItem getOrderItemById(String idOrderItem) {
         OrderItem orderItem = orderItemDb.findById(idOrderItem).orElse(null);
         if (orderItem == null) {
             throw new NoSuchElementException("Id order tidak valid");
@@ -377,21 +485,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderItem> getAllOrderItemByIdOrder(UUID idOrder){
+    public List<OrderItem> getAllOrderItemByIdOrder(String idOrder){
         return orderItemDb.findByIdOrder(idOrder);
     }
-    private OrderItemHistory addOrderItemHistory(OrderItem orderItem, Integer status, String description,
-            String createdBy) {
+
+    @Override
+    public OrderItemHistory addOrderItemHistory(OrderItem orderItem, String description,
+                                                String createdBy) {
         var orderItemHistory = new OrderItemHistory();
         orderItemHistory.setOrderItem(orderItem);
-        orderItemHistory.setStatus(status);
         orderItemHistory.setDescription(description);
         orderItemHistory.setCreatedBy(createdBy);
         return orderItemHistoryDb.save(orderItemHistory);
     }
 
     @Override
-    public Order getOrderById(UUID orderId) {
+    public Order getOrderById(String orderId) {
         return orderDb.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
     }
@@ -444,4 +553,56 @@ public class OrderServiceImpl implements OrderService {
         return listRute;
     }
 
+    @Override
+    public Order getOrderByOrderItem(String idOrderItem) {
+        return orderDb.findByOrderItemId(idOrderItem).orElseThrow(
+                () -> new NoSuchElementException("Order tidak ditemukan")
+        );
+    }
+
+    public BigDecimal getTotalExpenditureByKlienInRange(UUID klienId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List<Order> orders = orderDb.findByKlienIdAndCreatedAtBetween(klienId, startDateTime, endDateTime);
+        return calculateTotalExpenditure(orders);
+    }
+
+    @Override
+    public BigDecimal getTotalExpenditureByKlienDaily(UUID klienId, LocalDate date) {
+        LocalDateTime startDateTime = date.atStartOfDay();
+        LocalDateTime endDateTime = date.atTime(23, 59, 59);
+        return getTotalExpenditureByKlienInRange(klienId, startDateTime, endDateTime);
+    }
+
+    @Override
+    public BigDecimal getTotalExpenditureByKlienMonthly(UUID klienId, YearMonth yearMonth) {
+        LocalDateTime startDateTime = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime endDateTime = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+        return getTotalExpenditureByKlienInRange(klienId, startDateTime, endDateTime);
+    }
+
+    @Override
+    public BigDecimal getTotalExpenditureByKlienYearly(UUID klienId, Year year) {
+        LocalDateTime startDateTime = year.atDay(1).atStartOfDay();
+        LocalDateTime endDateTime = year.atMonth(12).atEndOfMonth().atTime(23, 59, 59);
+        return getTotalExpenditureByKlienInRange(klienId, startDateTime, endDateTime);
+    }
+
+    @Override
+    public BigDecimal calculateTotalExpenditure(List<Order> orders) {
+        BigDecimal totalExpenditure = BigDecimal.ZERO;
+        for (Order order : orders) {
+            BigDecimal orderTotalPrice = BigDecimal.valueOf(order.getTotalPrice());
+            totalExpenditure = totalExpenditure.add(orderTotalPrice);
+        }
+        return totalExpenditure;
+    }
+
+    @Override
+    public List<OrderItem> getAllOrderItemDiprosesByKlienId(UUID klienId) {
+        return orderItemDb.findByKlienIdAndStatusNotIn(klienId);
+    }
+
+    @Override
+    public int countCompletedOrderItemsByKlienId(UUID klienId) {
+        return orderItemDb.countCompletedOrderItemsByKlienId(klienId);
+    }
 }
