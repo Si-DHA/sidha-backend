@@ -13,10 +13,10 @@ import java.util.UUID;
 
 
 public interface InsidenService {
-        public Insiden createInsiden(Insiden insiden, UUID sopirId, UUID orderItemId, MultipartFile buktiFoto)
+        public Insiden createInsiden(Insiden insiden, UUID sopirId, String orderItemId, MultipartFile buktiFoto)
                         throws IOException;
 
-        public Insiden updateInsiden(UUID id, Insiden insidenDetails, UUID orderItemId, MultipartFile buktiFoto)
+        public Insiden updateInsiden(UUID id, Insiden insidenDetails, String orderItemId, MultipartFile buktiFoto)
                         throws IOException;
 
         void deleteInsiden(UUID id);

@@ -1,42 +1,43 @@
 package com.sidha.api.service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.YearMonth;
-import java.util.UUID;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+import java.util.Date;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.sidha.api.DTO.request.order.CreateOrderRequestDTO;
-import com.sidha.api.DTO.request.order.OrderConfirmRequestDTO;
 import com.sidha.api.DTO.request.order.CreateOrderItemRequestDTO;
+import com.sidha.api.DTO.request.order.CreateOrderRequestDTO;
 import com.sidha.api.DTO.request.order.CreateRuteRequestDTO;
+import com.sidha.api.DTO.request.order.OrderConfirmRequestDTO;
 import com.sidha.api.DTO.request.order.UpdateOrderRequestDTO;
 import com.sidha.api.model.PenawaranHargaItem;
 import com.sidha.api.model.enumerator.TipeBarang;
 import com.sidha.api.model.enumerator.TipeTruk;
+import com.sidha.api.model.image.BongkarMuatImage;
+import com.sidha.api.model.image.ImageData;
 import com.sidha.api.model.order.Order;
 import com.sidha.api.model.order.OrderItem;
 import com.sidha.api.model.order.OrderItemHistory;
 import com.sidha.api.model.order.Rute;
 import com.sidha.api.model.user.Klien;
+import com.sidha.api.repository.ImageDataDb;
 import com.sidha.api.repository.OrderDb;
 import com.sidha.api.repository.OrderItemDb;
 import com.sidha.api.repository.OrderItemHistoryDb;
 import com.sidha.api.repository.RuteDb;
-import java.util.NoSuchElementException;
-import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
-import org.modelmapper.ModelMapper;
-import com.sidha.api.model.image.BongkarMuatImage;
-import com.sidha.api.model.image.ImageData;
-import com.sidha.api.repository.ImageDataDb;
 
 import lombok.AllArgsConstructor;
 
@@ -57,6 +58,53 @@ public class OrderServiceImpl implements OrderService {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
+    private static int ORDER_NUMBER = 1;
+    private static int ORDER_ITEM_NUMBER = 1;
+
+    private String generateOrderId(CreateOrderRequestDTO request) {
+        // OR-PTX-DDMMYY-0000
+        String orderId = "OR-";
+
+        String companyName = ((Klien) userService.findById(request.getKlienId())).getCompanyName().toUpperCase().strip();
+        // remove whitespace and special characters
+        companyName = companyName.replaceAll("[^a-zA-Z0-9]", "");
+        if (companyName.substring(0,2).equals("PT") || companyName.substring(0,2).equals("CV")){
+            companyName = companyName.substring(2);
+        } 
+        companyName = companyName.substring(0, Math.min(companyName.length(), 3));
+        orderId += companyName + "-";
+
+        Date date = request.getTanggalPengiriman();
+        String dateStr = String.format("%td%tm%ty", date, date, date);
+        orderId += dateStr + "-";
+
+        String orderItemNumber = String.format("%04d", ORDER_NUMBER);
+        orderId += orderItemNumber;
+        ORDER_NUMBER++;
+
+        return orderId;
+    }
+
+    private String generateOrderItemId(CreateOrderItemRequestDTO request, String orderId) {
+        // ORI-PTX-CCD-DDMMYY-00000
+        String orderItemId = "ORI-";
+
+        String companyName = orderId.substring(3, 6);
+        orderItemId += companyName + "-";
+
+        String tipeTruk = request.getTipeTruk().toString().toUpperCase();
+        orderItemId += tipeTruk + "-";
+
+        String date = orderId.substring(7, 13);
+        orderItemId += date + "-";
+
+        String orderItemNumber = String.format("%05d", ORDER_ITEM_NUMBER);
+        orderItemId += orderItemNumber;
+        ORDER_ITEM_NUMBER++;
+
+        return orderItemId;
+    }
+
     @Override
     public Order createOrder(CreateOrderRequestDTO request) {
         var user = userService.findById(request.getKlienId());
@@ -65,6 +113,7 @@ public class OrderServiceImpl implements OrderService {
         var order = new Order();
         order.setKlien(klien);
         order.setTanggalPengiriman(request.getTanggalPengiriman());
+        order.setId(generateOrderId(request));
         orderDb.save(order);
 
         var orderItems = new ArrayList<OrderItem>();
@@ -96,6 +145,7 @@ public class OrderServiceImpl implements OrderService {
         orderItem.setStatusOrder(0);
         orderItem.setTipeBarang(TipeBarang.valueOf(request.getTipeBarang()));
         orderItem.setTipeTruk(TipeTruk.valueOf(request.getTipeTruk()));
+        orderItem.setId(generateOrderItemId(request, order.getId()));
         orderItemDb.save(orderItem);
 
         var rute = new ArrayList<Rute>();
@@ -258,6 +308,7 @@ public class OrderServiceImpl implements OrderService {
                     order.setTotalPrice(orderPrice);
                     invoice.setTotalDp(BigDecimal.valueOf(dp));
                     invoice.setTotalPelunasan(BigDecimal.valueOf(pelunasan));
+
                     var orderItemHistory = this.addOrderItemHistory(orderItem,
                             "Menolak order item dengan alasan \"" + confirmOrderItem.getRejectionReason() + "\"",
                             "PT DHA");
@@ -283,7 +334,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderItem findOrderItemById(UUID idOrderItem) {
+    public OrderItem findOrderItemById(String idOrderItem) {
         OrderItem orderItem = orderItemDb.findById(idOrderItem).orElse(null);
 
         if (orderItem == null) {
@@ -299,11 +350,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderItem uploadImageMuat(UUID idOrderItem, MultipartFile imageFile) throws IOException {
+    public OrderItem uploadImageMuat(String idOrderItem, MultipartFile imageFile) throws IOException {
         OrderItem orderItem = this.findOrderItemById(idOrderItem);
         ImageData imageData = storageService.uploadImageAndSaveToDB(
                 imageFile,
-                imageFile.getOriginalFilename());
+                imageFile.getOriginalFilename() + "_muat_" + idOrderItem
+        );
         BongkarMuatImage muatImage = modelMapper.map(imageData, BongkarMuatImage.class);
 
         ImageData currentImage;
@@ -337,11 +389,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderItem uploadImageBongkar(UUID idOrderItem, MultipartFile imageFile) throws IOException {
+    public OrderItem uploadImageBongkar(String idOrderItem, MultipartFile imageFile) throws IOException {
         OrderItem orderItem = this.findOrderItemById(idOrderItem);
         ImageData imageData = storageService.uploadImageAndSaveToDB(
                 imageFile,
-                imageFile.getOriginalFilename());
+                imageFile.getOriginalFilename() + "_bongkar_" + idOrderItem
+        );
         BongkarMuatImage bongkarImage = modelMapper.map(imageData, BongkarMuatImage.class);
 
         ImageData currentImage;
@@ -374,21 +427,21 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public ImageData getImageMuat(UUID idOrderItem) {
+    public ImageData getImageMuat(String idOrderItem) {
         OrderItem orderItem = this.findOrderItemById(idOrderItem);
         ImageData imageData = orderItem.getBuktiMuat();
         return imageData;
     }
 
     @Override
-    public ImageData getImageBongkar(UUID idOrderItem) {
+    public ImageData getImageBongkar(String idOrderItem) {
         OrderItem orderItem = this.findOrderItemById(idOrderItem);
         ImageData imageData = orderItem.getBuktiBongkar();
         return imageData;
     }
 
     @Override
-    public void deleteImageMuat(UUID idOrderItem) {
+    public void deleteImageMuat(String idOrderItem) {
         ImageData imageData = this.getImageMuat(idOrderItem);
         if (imageData != null) {
             OrderItem orderItem = this.findOrderItemById(idOrderItem);
@@ -403,7 +456,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void deleteImageBongkar(UUID idOrderItem) {
+    public void deleteImageBongkar(String idOrderItem) {
         ImageData imageData = this.getImageBongkar(idOrderItem);
         if (imageData != null) {
             OrderItem orderItem = this.findOrderItemById(idOrderItem);
@@ -423,7 +476,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderItem getOrderItemById(UUID idOrderItem) {
+    public OrderItem getOrderItemById(String idOrderItem) {
         OrderItem orderItem = orderItemDb.findById(idOrderItem).orElse(null);
         if (orderItem == null) {
             throw new NoSuchElementException("Id order tidak valid");
@@ -432,7 +485,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderItem> getAllOrderItemByIdOrder(UUID idOrder){
+    public List<OrderItem> getAllOrderItemByIdOrder(String idOrder){
         return orderItemDb.findByIdOrder(idOrder);
     }
 
@@ -447,7 +500,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order getOrderById(UUID orderId) {
+    public Order getOrderById(String orderId) {
         return orderDb.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
     }
@@ -501,7 +554,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order getOrderByOrderItem(UUID idOrderItem) {
+    public Order getOrderByOrderItem(String idOrderItem) {
         return orderDb.findByOrderItemId(idOrderItem).orElseThrow(
                 () -> new NoSuchElementException("Order tidak ditemukan")
         );

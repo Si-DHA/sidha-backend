@@ -4,14 +4,12 @@ import java.util.List;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +19,6 @@ import com.sidha.api.DTO.response.BaseResponse;
 import com.sidha.api.model.TawaranKerja;
 import com.sidha.api.model.order.OrderItem;
 import com.sidha.api.service.TawaranKerjaService;
-import com.sidha.api.utils.AuthUtils;
 
 @AllArgsConstructor
 @RestController
@@ -29,7 +26,7 @@ import com.sidha.api.utils.AuthUtils;
 public class TawaranKerjaController {
 
     private TawaranKerjaService tawaranKerjaService;
-    private AuthUtils authUtils;
+    // private AuthUtils authUtils;
 
     @GetMapping("/available")
     public ResponseEntity<BaseResponse<List<OrderItem>>> getAvailableOrderItems() {
@@ -81,7 +78,7 @@ public class TawaranKerjaController {
     }
 
     @GetMapping("/{orderItemId}")
-    public ResponseEntity<?> getTawaranKerjaByOrderItemId(@PathVariable UUID orderItemId) {
+    public ResponseEntity<?> getTawaranKerjaByOrderItemId(@PathVariable String orderItemId) {
         try {
             List<TawaranKerja> tawaranKerja = tawaranKerjaService.getTawaranKerjaByOrderItemId(orderItemId);
             if (tawaranKerja.isEmpty()) {

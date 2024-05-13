@@ -232,6 +232,9 @@ public class InvoiceServiceImpl implements InvoiceService {
                         orderItemHistories.add(
                                 this.addOrderItemHistory(orderItem, descriptionHistory + "pelunasan", "PT DHA")
                         );
+                        orderItemHistories.add(
+                                this.addOrderItemHistory(orderItem, "Order item selesai", "")
+                        );
                     } else {
                         orderItem.setStatusOrder(3);
                         orderItemHistories.add(
