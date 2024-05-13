@@ -29,4 +29,7 @@ public class FAQ {
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
+
+    @Column(name = "order_number",nullable = false)
+    private int order;
 }
