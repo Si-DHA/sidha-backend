@@ -1,7 +1,5 @@
 package com.sidha.api.model;
 
-import java.time.LocalDateTime;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 

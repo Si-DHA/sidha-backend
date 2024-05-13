@@ -7,7 +7,6 @@ import com.sidha.api.model.user.Sopir;
 import com.sidha.api.model.user.UserModel;
 import com.sidha.api.model.enumerator.Role;
 import java.util.List;
-import java.util.Map;
 
 public interface UserService {
 

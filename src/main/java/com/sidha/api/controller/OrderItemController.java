@@ -84,7 +84,6 @@ public class OrderItemController {
     }
   }
 
-
   @GetMapping("/orders/completed")
   public ResponseEntity<?> getTotalCompletedOrderItem() {
     try {
@@ -97,10 +96,9 @@ public class OrderItemController {
 
   @GetMapping("/orders/weekly")
   public ResponseEntity<?> getTotalOrderWeeklyByStatus(
-    @RequestParam("year") int year,
-    @RequestParam("month") int month,
-    @RequestParam("status") int status
-  ) {
+      @RequestParam("year") int year,
+      @RequestParam("month") int month,
+      @RequestParam("status") int status) {
     try {
       return ResponseEntity.ok()
           .body(new BaseResponse<>(true, 200, "Success", orderItemService.getWeeklyOrder(year, month, status)));
@@ -111,9 +109,8 @@ public class OrderItemController {
 
   @GetMapping("/orders/monthly")
   public ResponseEntity<?> getTotalOrderMonthlyByStatus(
-    @RequestParam("year") int year,
-    @RequestParam("status") int status
-  ) {
+      @RequestParam("year") int year,
+      @RequestParam("status") int status) {
     try {
       return ResponseEntity.ok()
           .body(new BaseResponse<>(true, 200, "Success", orderItemService.getMonthlyOrder(year, status)));
@@ -124,11 +121,10 @@ public class OrderItemController {
 
   @GetMapping("/orders/yearly")
   public ResponseEntity<?> getTotalOrderYearlyByStatus(
-    @RequestParam("startYear") int startYear,
-    @RequestParam("endYear") int endYear,
+      @RequestParam("startYear") int startYear,
+      @RequestParam("endYear") int endYear,
 
-    @RequestParam("status") int status
-  ) {
+      @RequestParam("status") int status) {
     try {
       return ResponseEntity.ok()
           .body(new BaseResponse<>(true, 200, "Success", orderItemService.getYearlyOrder(startYear, endYear, status)));
@@ -136,7 +132,5 @@ public class OrderItemController {
       return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", e.getMessage()));
     }
   }
-
-  
 
 }
