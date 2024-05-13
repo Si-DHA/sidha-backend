@@ -11,16 +11,13 @@ import com.sidha.api.service.InsidenService;
 import com.sidha.api.service.StorageService;
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -41,7 +38,7 @@ public class InsidenController {
             @RequestParam("sopirId") UUID sopirId,
             @RequestParam("kategori") String kategori,
             @RequestParam("lokasi") String lokasi,
-            @RequestParam("keterangan") String keterangan, @RequestParam("orderItemId") UUID orderItemId,
+            @RequestParam("keterangan") String keterangan, @RequestParam("orderItemId") String orderItemId,
             @RequestPart(value = "buktiFoto", required = false) MultipartFile buktiFoto) {
         try {
 
@@ -67,7 +64,7 @@ public class InsidenController {
             @PathVariable UUID id,
             @RequestParam("kategori") String kategori,
             @RequestParam("lokasi") String lokasi,
-            @RequestParam("keterangan") String keterangan, @RequestParam("orderItemId") UUID orderItemId,
+            @RequestParam("keterangan") String keterangan, @RequestParam("orderItemId") String orderItemId,
             @RequestPart(value = "buktiFoto", required = false) MultipartFile buktiFoto) {
         try {
             Insiden insidenDetails = new Insiden();

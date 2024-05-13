@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateOrderRequestDTO {
-    private UUID id;
+    private String id;
 
     private List<UpdateOrderItemRequestDTO> orderItems;
 

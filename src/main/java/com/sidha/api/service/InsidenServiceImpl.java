@@ -13,16 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import com.sidha.api.repository.UserDb;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.Calendar;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.time.LocalDate;
@@ -45,7 +42,7 @@ public class InsidenServiceImpl implements InsidenService {
     private OrderService orderService;
 
     @Override
-    public Insiden createInsiden(Insiden insiden, UUID sopirId, UUID orderItemId, MultipartFile buktiFoto)
+    public Insiden createInsiden(Insiden insiden, UUID sopirId, String orderItemId, MultipartFile buktiFoto)
             throws IOException {
         Sopir sopir = (Sopir) userDb.findById(sopirId).orElseThrow(() -> new RuntimeException("Driver not found"));
 
@@ -70,7 +67,7 @@ public class InsidenServiceImpl implements InsidenService {
     }
 
     @Override
-    public Insiden updateInsiden(UUID id, Insiden insidenDetails, UUID orderItemId, MultipartFile buktiFoto)
+    public Insiden updateInsiden(UUID id, Insiden insidenDetails, String orderItemId, MultipartFile buktiFoto)
             throws IOException {
         Insiden existingInsiden = insidenRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Insiden not found"));
