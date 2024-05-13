@@ -49,7 +49,7 @@ public class OrderController {
 
     // #region Klien
     @GetMapping("/{orderId}")
-    public ResponseEntity<?> getOrderById(@PathVariable UUID orderId, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> getOrderById(@PathVariable String orderId, @RequestHeader("Authorization") String token) {
         token = token.substring(7); // remove "Bearer " from token
 
         if (authUtils.isKaryawan(token) || authUtils.isKlien(token)) {
@@ -268,7 +268,7 @@ public class OrderController {
     }
 
     @GetMapping("/by-order-item/{idOrderItem}")
-    public ResponseEntity<?> getOrderByIdOrderItem(@PathVariable UUID idOrderItem) {
+    public ResponseEntity<?> getOrderByIdOrderItem(@PathVariable String idOrderItem) {
         try {
             var response = orderService.getOrderByOrderItem(idOrderItem);
             return ResponseEntity.ok(new BaseResponse<>(true, 200, "Order fetched successfully", response));
@@ -311,7 +311,7 @@ public class OrderController {
         }
 
         try {
-            OrderItem orderItem = orderService.uploadImageMuat(UUID.fromString(idOrderItem),
+            OrderItem orderItem = orderService.uploadImageMuat(idOrderItem,
                     imageFile);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new BaseResponse<>(true, 200, "Bukti berhasil diunggah", orderItem));
@@ -338,7 +338,7 @@ public class OrderController {
         }
 
         try {
-            OrderItem orderItem = orderService.uploadImageBongkar(UUID.fromString(idOrderItem),
+            OrderItem orderItem = orderService.uploadImageBongkar(idOrderItem,
                     imageFile);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new BaseResponse<>(true, 200, "Bukti berhasil diunggah", orderItem));
@@ -360,7 +360,7 @@ public class OrderController {
             @RequestParam String idOrderItem) {
         try {
             ImageData imageData = orderService.getImageMuat(
-                    UUID.fromString(idOrderItem));
+                    idOrderItem);
 
             if (imageData != null) {
                 byte[] image = storageService.getImageFromFileSystem(imageData.getName());
@@ -391,7 +391,7 @@ public class OrderController {
             @RequestParam String idOrderItem) {
         try {
             ImageData imageData = orderService.getImageBongkar(
-                    UUID.fromString(idOrderItem));
+                    idOrderItem);
 
             if (imageData != null) {
                 byte[] image = storageService.getImageFromFileSystem(imageData.getName());
@@ -422,7 +422,7 @@ public class OrderController {
             @RequestParam String idOrderItem) {
         try {
             orderService.deleteImageMuat(
-                    UUID.fromString(idOrderItem));
+                    idOrderItem);
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new BaseResponse<>(true, 200, "Bukti berhasil dihapus", null));
@@ -440,7 +440,7 @@ public class OrderController {
             @RequestParam String idOrderItem) {
         try {
             orderService.deleteImageBongkar(
-                    UUID.fromString(idOrderItem));
+                    idOrderItem);
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new BaseResponse<>(true, 200, "Bukti berhasil dihapus", null));
@@ -469,7 +469,7 @@ public class OrderController {
     public ResponseEntity<?> getOrderItemById(
             @PathVariable String idOrderItem) {
         try {
-            OrderItem orderItem = orderService.getOrderItemById(UUID.fromString(idOrderItem));
+            OrderItem orderItem = orderService.getOrderItemById(idOrderItem);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new BaseResponse<>(true, 200, "Order item is succesfully found", orderItem));
         } catch (NoSuchElementException e) {
@@ -482,7 +482,7 @@ public class OrderController {
     }
 
     @GetMapping(value = "/{idOrder}/order-item")
-    public List<OrderItem> getAllOrderItemByIdOrder(@PathVariable("idOrder") UUID idOrder) {
+    public List<OrderItem> getAllOrderItemByIdOrder(@PathVariable("idOrder") String idOrder) {
         try {
             List<OrderItem> listOrderItem = orderService.getAllOrderItemByIdOrder(idOrder);
             return listOrderItem;

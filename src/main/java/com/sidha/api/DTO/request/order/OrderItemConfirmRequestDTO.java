@@ -1,7 +1,5 @@
 package com.sidha.api.DTO.request.order;
 
-import java.util.UUID;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderItemConfirmRequestDTO {
-    private UUID orderItemId;
+    private String orderItemId;
     private Boolean isAccepted;
     private String rejectionReason;
 

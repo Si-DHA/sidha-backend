@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
-import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -31,8 +30,7 @@ import java.util.List;
 public class OrderItem { // 1 order item = 1 truk
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private UUID id = UUID.randomUUID();
+  private String id;
 
   @Column(name = "price")
   private Long price;

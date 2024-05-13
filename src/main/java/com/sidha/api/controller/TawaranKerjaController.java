@@ -78,7 +78,7 @@ public class TawaranKerjaController {
     }
 
     @GetMapping("/{orderItemId}")
-    public ResponseEntity<?> getTawaranKerjaByOrderItemId(@PathVariable UUID orderItemId) {
+    public ResponseEntity<?> getTawaranKerjaByOrderItemId(@PathVariable String orderItemId) {
         try {
             List<TawaranKerja> tawaranKerja = tawaranKerjaService.getTawaranKerjaByOrderItemId(orderItemId);
             if (tawaranKerja.isEmpty()) {

@@ -3,7 +3,6 @@ package com.sidha.api.service;
 import java.util.List;
 import java.util.UUID;
 
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import com.sidha.api.model.TawaranKerja;
@@ -12,6 +11,8 @@ import com.sidha.api.model.user.Sopir;
 import com.sidha.api.repository.OrderItemDb;
 import com.sidha.api.repository.TawaranKerjaDb;
 import com.sidha.api.repository.UserDb;
+
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @Service
@@ -33,7 +34,7 @@ public class TawaranKerjaServiceImpl implements TawaranKerjaService {
     }
 
     @Override
-    public TawaranKerja acceptJobOffer(UUID sopirId, UUID orderItemId, String lokasi) {
+    public TawaranKerja acceptJobOffer(UUID sopirId, String orderItemId, String lokasi) {
         OrderItem orderItem = orderItemDb.findById(orderItemId)
                 .orElseThrow(() -> new IllegalArgumentException("Order Item not found"));
 
@@ -105,7 +106,7 @@ public class TawaranKerjaServiceImpl implements TawaranKerjaService {
     }
 
     @Override
-    public List<TawaranKerja> getTawaranKerjaByOrderItemId(UUID orderItemId) {
+    public List<TawaranKerja> getTawaranKerjaByOrderItemId(String orderItemId) {
         return tawaranKerjaDb.findByOrderItemId(orderItemId);
     }
 }

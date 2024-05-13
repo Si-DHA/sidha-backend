@@ -38,7 +38,7 @@ public class InsidenController {
             @RequestParam("sopirId") UUID sopirId,
             @RequestParam("kategori") String kategori,
             @RequestParam("lokasi") String lokasi,
-            @RequestParam("keterangan") String keterangan, @RequestParam("orderItemId") UUID orderItemId,
+            @RequestParam("keterangan") String keterangan, @RequestParam("orderItemId") String orderItemId,
             @RequestPart(value = "buktiFoto", required = false) MultipartFile buktiFoto) {
         try {
 
@@ -64,7 +64,7 @@ public class InsidenController {
             @PathVariable UUID id,
             @RequestParam("kategori") String kategori,
             @RequestParam("lokasi") String lokasi,
-            @RequestParam("keterangan") String keterangan, @RequestParam("orderItemId") UUID orderItemId,
+            @RequestParam("keterangan") String keterangan, @RequestParam("orderItemId") String orderItemId,
             @RequestPart(value = "buktiFoto", required = false) MultipartFile buktiFoto) {
         try {
             Insiden insidenDetails = new Insiden();
