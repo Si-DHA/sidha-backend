@@ -354,7 +354,8 @@ public class OrderServiceImpl implements OrderService {
         OrderItem orderItem = this.findOrderItemById(idOrderItem);
         ImageData imageData = storageService.uploadImageAndSaveToDB(
                 imageFile,
-                imageFile.getOriginalFilename());
+                imageFile.getOriginalFilename() + "_muat_" + idOrderItem
+        );
         BongkarMuatImage muatImage = modelMapper.map(imageData, BongkarMuatImage.class);
 
         ImageData currentImage;
@@ -392,7 +393,8 @@ public class OrderServiceImpl implements OrderService {
         OrderItem orderItem = this.findOrderItemById(idOrderItem);
         ImageData imageData = storageService.uploadImageAndSaveToDB(
                 imageFile,
-                imageFile.getOriginalFilename());
+                imageFile.getOriginalFilename() + "_bongkar_" + idOrderItem
+        );
         BongkarMuatImage bongkarImage = modelMapper.map(imageData, BongkarMuatImage.class);
 
         ImageData currentImage;
