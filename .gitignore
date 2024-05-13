@@ -37,3 +37,7 @@ out/
 .vscode/
 application.properties
 docker-compose.yml
+
+### Deployment ###
+nginx/
+certbot/
