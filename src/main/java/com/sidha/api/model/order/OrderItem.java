@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -16,6 +19,7 @@ import com.sidha.api.model.enumerator.TipeTruk;
 import com.sidha.api.model.image.BongkarMuatImage;
 import com.sidha.api.model.user.Sopir;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -50,6 +54,17 @@ public class OrderItem { // 1 order item = 1 truk
 
   @Column(name = "keterangan")
   private String keterangan;
+  // start of dashboard perusahaan
+  @CreationTimestamp
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "created_at", updatable = false, nullable = false)
+  private Date createdAt;
+
+  @UpdateTimestamp
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "updated_at", nullable = false)
+  private Date updatedAt;
+  // end of dashboard perusahaan
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "order_id")
@@ -63,7 +78,7 @@ public class OrderItem { // 1 order item = 1 truk
 
   @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JsonManagedReference
-  @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
   private List<Rute> rute;
 
   @JsonManagedReference
@@ -76,7 +91,7 @@ public class OrderItem { // 1 order item = 1 truk
 
   @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JsonManagedReference
-  @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
   private List<OrderItemHistory> orderItemHistories;
 
   @ManyToOne
