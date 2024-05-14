@@ -9,6 +9,7 @@ import com.sidha.api.model.FAQ;
 import com.sidha.api.service.FAQService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/faq")
@@ -65,6 +66,17 @@ public class FAQController {
             return ResponseEntity.ok("FAQ is deleted!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting FAQ: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/updateOrder")
+    public ResponseEntity<String> updateFAQOrder(@RequestBody Map<Long, Integer> newOrder) {
+        try {
+            faqService.updateFAQOrder(newOrder);
+            return ResponseEntity.ok("FAQ order updated successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("Error updating FAQ order: " + e.getMessage());
         }
     }
 }
