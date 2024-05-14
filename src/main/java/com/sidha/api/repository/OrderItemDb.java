@@ -11,14 +11,14 @@ import java.util.UUID;
 import java.util.Map;
 
 @Repository
-public interface OrderItemDb extends JpaRepository<OrderItem, UUID> {
+public interface OrderItemDb extends JpaRepository<OrderItem, String> {
         @Query("SELECT phi FROM OrderItem phi WHERE phi.sopir.id = :sopir")
         List<OrderItem> findByIdSopir(@Param("sopir") UUID sopir);
 
         List<OrderItem> findByStatusOrder(int i);
 
         @Query("SELECT phi FROM OrderItem phi WHERE phi.order.id = :idOrder")
-        List<OrderItem> findByIdOrder(@Param("idOrder") UUID idOrder);
+        List<OrderItem> findByIdOrder(@Param("idOrder") String idOrder);
 
         // start of dashboard perusahaan
 

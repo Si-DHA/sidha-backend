@@ -10,7 +10,7 @@ public interface TawaranKerjaService {
     
     List<OrderItem> listAvailableOrderItems();
 
-    TawaranKerja acceptJobOffer(UUID sopirId, UUID orderItemId, String lokasi);
+    TawaranKerja acceptJobOffer(UUID sopirId, String orderItemId, String lokasi);
     
     void confirmJobOffer(UUID karyawanId, UUID tawaranKerjaId); 
     
@@ -18,6 +18,6 @@ public interface TawaranKerjaService {
 
     List<TawaranKerja> getJobOffersAcceptedBySopir(UUID sopirId);
 
-    List<TawaranKerja> getTawaranKerjaByOrderItemId(UUID orderItemId);
+    List<TawaranKerja> getTawaranKerjaByOrderItemId(String orderItemId);
 
 }
