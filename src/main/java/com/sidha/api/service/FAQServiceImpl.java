@@ -1,6 +1,8 @@
 package com.sidha.api.service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +22,14 @@ public class FAQServiceImpl implements FAQService {
 
     @Override
     public List<FAQ> getAllFAQs() {
-        return faqDb.findAll().stream()
+        List<FAQ> allFAQs = faqDb.findAll().stream()
                 .filter(faqItem -> !faqItem.isDeleted())
                 .collect(Collectors.toList());
+
+        // Urutkan FAQ berdasarkan order_number dari yang terkecil ke yang terbesar
+        allFAQs.sort(Comparator.comparingInt(FAQ::getOrder));
+
+        return allFAQs;
     }
 
     @Override
@@ -72,4 +79,13 @@ public class FAQServiceImpl implements FAQService {
         }
     }
 
+    @Override
+    public void updateFAQOrder(Map<Long, Integer> newOrder) {
+        // Untuk setiap ID FAQ yang diberikan, perbarui urutannya di database
+        newOrder.forEach((faqId, newOrderValue) -> {
+            FAQ faq = faqDb.findById(faqId).orElseThrow(() -> new RuntimeException("FAQ not found"));
+            faq.setOrder(newOrderValue);
+            faqDb.save(faq);
+        });
+    }
 }
