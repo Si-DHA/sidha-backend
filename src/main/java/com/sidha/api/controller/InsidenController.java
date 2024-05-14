@@ -153,26 +153,28 @@ public class InsidenController {
         }
     }
 
-
     @GetMapping("/total/today")
     public ResponseEntity<?> getTotalInsidenForToday() {
-        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total insiden for today", insidenService.getTotalInsidenForToday()));
+        return ResponseEntity
+                .ok(new BaseResponse<>(true, 200, "Total insiden for today", insidenService.getTotalInsidenForToday()));
     }
 
     @GetMapping("/total/week")
     public ResponseEntity<?> getTotalInsidenForThisWeek() {
-        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total insiden for this week", insidenService.getTotalInsidenForThisWeek()));
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total insiden for this week",
+                insidenService.getTotalInsidenForThisWeek()));
     }
-
 
     @GetMapping("/total/month")
     public ResponseEntity<?> getTotalInsidenForThisMonth() {
-        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total insiden for this month", insidenService.getTotalInsidenForThisMonth()));
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total insiden for this month",
+                insidenService.getTotalInsidenForThisMonth()));
     }
 
     @GetMapping("/total/year")
     public ResponseEntity<?> getTotalInsidenForThisYear() {
-        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total insiden for this year", insidenService.getTotalInsidenForThisYear()));
+        return ResponseEntity.ok(new BaseResponse<>(true, 200, "Total insiden for this year",
+                insidenService.getTotalInsidenForThisYear()));
     }
 
     @GetMapping("/total/all")
@@ -197,7 +199,23 @@ public class InsidenController {
         return ResponseEntity.ok(new BaseResponse<>(true, 200, "Yearly total insiden in range",
                 insidenService.getYearlyTotalInsidenInRange(startYear, endYear)));
     }
-    
 
+    @GetMapping("/list")
+    public ResponseEntity<?> getListInsiden(@RequestParam String timeRange) {
+        try {
+            List<Insiden> listInsiden = null;
+            if (timeRange.equals("today"))
+                listInsiden = insidenService.getListInsidenForToday();
+            else if (timeRange.equals("week"))
+                listInsiden = insidenService.getListInsidenForThisWeek();
+            else if (timeRange.equals("month"))
+                listInsiden     = insidenService.getListInsidenForThisMonth();
+            else if (timeRange.equals("year"))
+                listInsiden = insidenService.getListInsidenForThisYear();
+            return ResponseEntity.ok(new BaseResponse<>(true, 200, "List of insiden", listInsiden));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", e.getMessage()));
+        }
+    }
 
 }

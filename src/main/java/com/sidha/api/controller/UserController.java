@@ -174,4 +174,18 @@ public class UserController {
         userService.getYearlyTotalNewClientInRange(startYear, endYear)));
   }
 
+
+  @GetMapping("/client/list")
+  public ResponseEntity<?> getListClientToday(@RequestParam String timeRange) {
+    List<UserModel> listClient = null;
+    if(timeRange.equals("today"))
+      listClient = userService.getListClientToday();
+    else if(timeRange.equals("week"))
+      listClient = userService.getListClientThisWeek();
+    else if(timeRange.equals("month"))
+      listClient = userService.getListClientThisMonth();
+    else if(timeRange.equals("year"))
+      listClient = userService.getListClientThisYear();
+    return ResponseEntity.ok(new BaseResponse<>(true, 200, "List client " + timeRange, listClient));
+  }
 }

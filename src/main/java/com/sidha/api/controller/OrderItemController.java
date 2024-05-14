@@ -84,7 +84,6 @@ public class OrderItemController {
     }
   }
 
-
   @GetMapping("/orders/completed")
   public ResponseEntity<?> getTotalCompletedOrderItem() {
     try {
@@ -97,10 +96,9 @@ public class OrderItemController {
 
   @GetMapping("/orders/weekly")
   public ResponseEntity<?> getTotalOrderWeeklyByStatus(
-    @RequestParam("year") int year,
-    @RequestParam("month") int month,
-    @RequestParam("status") int status
-  ) {
+      @RequestParam("year") int year,
+      @RequestParam("month") int month,
+      @RequestParam("status") int status) {
     try {
       return ResponseEntity.ok()
           .body(new BaseResponse<>(true, 200, "Success", orderItemService.getWeeklyOrder(year, month, status)));
@@ -111,9 +109,8 @@ public class OrderItemController {
 
   @GetMapping("/orders/monthly")
   public ResponseEntity<?> getTotalOrderMonthlyByStatus(
-    @RequestParam("year") int year,
-    @RequestParam("status") int status
-  ) {
+      @RequestParam("year") int year,
+      @RequestParam("status") int status) {
     try {
       return ResponseEntity.ok()
           .body(new BaseResponse<>(true, 200, "Success", orderItemService.getMonthlyOrder(year, status)));
@@ -124,11 +121,10 @@ public class OrderItemController {
 
   @GetMapping("/orders/yearly")
   public ResponseEntity<?> getTotalOrderYearlyByStatus(
-    @RequestParam("startYear") int startYear,
-    @RequestParam("endYear") int endYear,
+      @RequestParam("startYear") int startYear,
+      @RequestParam("endYear") int endYear,
 
-    @RequestParam("status") int status
-  ) {
+      @RequestParam("status") int status) {
     try {
       return ResponseEntity.ok()
           .body(new BaseResponse<>(true, 200, "Success", orderItemService.getYearlyOrder(startYear, endYear, status)));
@@ -137,6 +133,42 @@ public class OrderItemController {
     }
   }
 
-  
+  @GetMapping("/revenue/list")
+  public ResponseEntity<?> getListRevenue(@RequestParam String timeRange) {
+    if (timeRange.equals("today")) {
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getListRevenueForToday()));
+    } else if (timeRange.equals("week")){
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getListRevenueForThisWeek()));
+    } else if (timeRange.equals("month")){
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getListRevenueForThisMonth()));
+    } else if (timeRange.equals("year")){
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getListRevenueForThisYear()));
+    } else {
+      return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", "Invalid time range"));
+    }
+  }
+
+  @GetMapping("/orders/list")
+  public ResponseEntity<?> getListOrder(@RequestParam String timeRange, @RequestParam int status) {
+    if (timeRange.equals("today")) {
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getListOrderForToday(status)));
+    } else if (timeRange.equals("week")){
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getListOrderForThisWeek(status)));
+    } else if (timeRange.equals("month")){
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getListOrderForThisMonth(status)));
+    } else if (timeRange.equals("year")){
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getListOrderForThisYear(status)));
+    } else {
+      return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", "Invalid time range"));
+    }
+  }
 
 }

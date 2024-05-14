@@ -46,4 +46,14 @@ public interface InsidenService {
         List<List<Object>> getMonthlyTotalInsidenInYear(int year);
 
         List<List<Object>> getYearlyTotalInsidenInRange(int startYear, int endYear);
+
+        List<Insiden> getListInsidenForToday();
+
+        List<Insiden> getListInsidenForThisWeek();
+
+        List<Insiden> getListInsidenForThisMonth();
+
+        List<Insiden> getListInsidenForThisYear();
+
+
 }

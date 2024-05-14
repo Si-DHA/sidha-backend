@@ -2,6 +2,7 @@ package com.sidha.api.repository;
 
 import com.sidha.api.model.Insiden;
 import com.sidha.api.model.user.Sopir;
+import com.sidha.api.model.user.UserModel;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -57,4 +58,24 @@ public interface InsidenRepository extends JpaRepository<Insiden, UUID> {
                 "WHERE YEAR(u.createdAt) BETWEEN :startYear AND :endYear  " +
                 "GROUP BY YEAR(u.createdAt)")
         List<Object[]> getYearlyTotalInsidenInRange(@Param("startYear") int startYear, @Param("endYear") int endYear);
+
+        // query for get list of insiden in a certain period
+        
+        @Query("SELECT u " +
+                "FROM Insiden u " +
+                "WHERE  u.createdAt BETWEEN :startDate AND :endDate")
+        List<Insiden> getListInsidenForToday(@Param("startDate") java.time.LocalDateTime startDate,
+                                     @Param("endDate") java.time.LocalDateTime endDate);
+
+        @Query("SELECT u FROM Insiden u WHERE EXTRACT (WEEK FROM u.createdAt) = EXTRACT (WEEK FROM CURRENT_DATE) AND EXTRACT (YEAR FROM u.createdAt) = EXTRACT (YEAR FROM CURRENT_DATE)")
+        List<Insiden> getListInsidenForThisWeek();
+
+        @Query("SELECT u FROM Insiden u WHERE EXTRACT (MONTH FROM u.createdAt) = EXTRACT (MONTH FROM CURRENT_DATE)"
+                +
+                "AND EXTRACT (YEAR FROM u.createdAt) = EXTRACT (YEAR FROM CURRENT_DATE)")
+        List<Insiden> getListInsidenForThisMonth();
+
+        @Query("SELECT u FROM Insiden u WHERE EXTRACT (YEAR FROM u.createdAt) = EXTRACT (YEAR FROM CURRENT_DATE)")
+        List<Insiden> getListInsidenForThisYear();
+
 }

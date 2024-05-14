@@ -50,8 +50,12 @@ public interface UserService {
   
     List<List<Object>>  getYearlyTotalNewClientInRange(int startYear, int endYear);
   
-  
-  
-  
+    List<UserModel> getListClientToday();
+
+    List<UserModel> getListClientThisWeek();
+
+    List<UserModel> getListClientThisMonth();
+
+    List<UserModel> getListClientThisYear(); 
 
 }
