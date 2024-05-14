@@ -26,11 +26,11 @@ public class Order {
   private String id;
 
   @Column(name = "created_at", nullable = false, updatable = false)
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
   private LocalDateTime createdAt = LocalDateTime.now();
 
   @Column(name = "updated_at", nullable = false)
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
   private LocalDateTime updatedAt = LocalDateTime.now();
 
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
@@ -43,7 +43,7 @@ public class Order {
   private Long totalPrice;
 
   @Column(name = "tanggal_pengiriman")
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
   private Date tanggalPengiriman;
 
   @ManyToOne
