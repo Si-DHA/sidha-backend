@@ -218,6 +218,9 @@ public class OrderServiceImpl implements OrderService {
                 orderItem.setTipeTruk(TipeTruk.valueOf(item.getTipeTruk()));
                 orderItem.setKeterangan(item.getKeterangan());
 
+                var orderItemHistories = orderItem.getOrderItemHistories();
+                orderItemHistories.add(this.addOrderItemHistory(orderItem, "Memperbarui order item " + orderItem.getId(), klien.getCompanyName()));
+
                 item.getRute().forEach(r -> {
                     if (r.getRuteId() != null) { // Jika rute sudah ada
                         var rute = ruteDb.findById(r.getRuteId())
