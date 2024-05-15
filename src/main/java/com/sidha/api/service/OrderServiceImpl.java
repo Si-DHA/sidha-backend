@@ -209,6 +209,8 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
         order.setTanggalPengiriman(request.getTanggalPengiriman());
 
+        var klien = order.getKlien();
+
         request.getOrderItems().forEach(item -> {
             if (item.getOrderItemId() != null) { // Jika order item sudah ada
                 var orderItem = orderItemDb.findById(item.getOrderItemId())
