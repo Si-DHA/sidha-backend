@@ -312,6 +312,34 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    @Override
+    public List<UserModel> getListClientToday() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Date startDate = calendar.getTime();
+
+        calendar.add(Calendar.DATE, 1);
+        Date endDate = calendar.getTime();
+        return userDb.getListClientForToday(startDate, endDate);
+    }
+
+    @Override
+    public List<UserModel> getListClientThisWeek() {
+        return userDb.getListClientForThisWeek();
+    }
+
+    @Override
+    public List<UserModel> getListClientThisMonth() {
+        return userDb.getListClientForThisMonth();
+    }
+
+    @Override
+    public List<UserModel> getListClientThisYear() {
+        return userDb.getListClientForThisYear();
+    }
  
 
 }
