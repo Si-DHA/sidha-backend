@@ -41,6 +41,7 @@ public interface UserDb extends JpaRepository<UserModel, UUID> {
         Long countByRoleAndCreatedAtBetween(Role role, LocalDateTime startDate, LocalDateTime endDate);
 
         // query for get total new client in a certain period
+        
         @Query("SELECT COUNT(u) " +
                         "FROM UserModel u " +
                         "WHERE u.role = 'KLIEN'  AND u.createdAt BETWEEN :startDate AND :endDate")
@@ -50,8 +51,8 @@ public interface UserDb extends JpaRepository<UserModel, UUID> {
         @Query("SELECT COUNT(u) FROM UserModel u WHERE u.role = 'KLIEN' AND EXTRACT (WEEK FROM u.createdAt) = EXTRACT (WEEK FROM CURRENT_DATE) AND EXTRACT (YEAR FROM u.createdAt) = EXTRACT (YEAR FROM CURRENT_DATE)")
         Long getTotalClientForThisWeek();
 
-
-        @Query("SELECT COUNT(u) FROM UserModel u WHERE u.role = 'KLIEN' AND EXTRACT (MONTH FROM u.createdAt) = EXTRACT (MONTH FROM CURRENT_DATE)" +
+        @Query("SELECT COUNT(u) FROM UserModel u WHERE u.role = 'KLIEN' AND EXTRACT (MONTH FROM u.createdAt) = EXTRACT (MONTH FROM CURRENT_DATE)"
+                        +
                         "AND EXTRACT (YEAR FROM u.createdAt) = EXTRACT (YEAR FROM CURRENT_DATE)")
         Long getTotalClientForThisMonth();
 
@@ -77,4 +78,23 @@ public interface UserDb extends JpaRepository<UserModel, UUID> {
                         "WHERE YEAR(u.createdAt) BETWEEN :startYear AND :endYear AND  u.role = 'KLIEN' " +
                         "GROUP BY YEAR(u.createdAt)")
         List<Object[]> getYearlyTotalNewClientInRange(@Param("startYear") int startYear, @Param("endYear") int endYear);
+
+        // query for get list of new client in a certain period
+        @Query("SELECT u " +
+                        "FROM UserModel u " +
+                        "WHERE u.role = 'KLIEN'  AND u.createdAt BETWEEN :startDate AND :endDate")
+        List<UserModel> getListClientForToday(@Param("startDate") java.util.Date startDate,
+                        @Param("endDate") java.util.Date endDate);
+
+        @Query("SELECT u FROM UserModel u WHERE u.role = 'KLIEN' AND EXTRACT (WEEK FROM u.createdAt) = EXTRACT (WEEK FROM CURRENT_DATE) AND EXTRACT (YEAR FROM u.createdAt) = EXTRACT (YEAR FROM CURRENT_DATE)")
+        List<UserModel> getListClientForThisWeek();
+
+        @Query("SELECT u FROM UserModel u WHERE u.role = 'KLIEN' AND EXTRACT (MONTH FROM u.createdAt) = EXTRACT (MONTH FROM CURRENT_DATE)"
+                        +
+                        "AND EXTRACT (YEAR FROM u.createdAt) = EXTRACT (YEAR FROM CURRENT_DATE)")
+        List<UserModel> getListClientForThisMonth();
+
+        @Query("SELECT u FROM UserModel u WHERE u.role = 'KLIEN' AND EXTRACT (YEAR FROM u.createdAt) = EXTRACT (YEAR FROM CURRENT_DATE)")
+        List<UserModel> getListClientForThisYear();
+
 }
