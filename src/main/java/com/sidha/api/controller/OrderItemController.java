@@ -133,4 +133,42 @@ public class OrderItemController {
     }
   }
 
+  @GetMapping("/revenue/list")
+  public ResponseEntity<?> getListRevenue(@RequestParam String timeRange) {
+    if (timeRange.equals("today")) {
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getListRevenueForToday()));
+    } else if (timeRange.equals("week")){
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getListRevenueForThisWeek()));
+    } else if (timeRange.equals("month")){
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getListRevenueForThisMonth()));
+    } else if (timeRange.equals("year")){
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getListRevenueForThisYear()));
+    } else {
+      return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", "Invalid time range"));
+    }
+  }
+
+  @GetMapping("/orders/list")
+  public ResponseEntity<?> getListOrder(@RequestParam String timeRange, @RequestParam int status) {
+    if (timeRange.equals("today")) {
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getListOrderForToday(status)));
+    } else if (timeRange.equals("week")){
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getListOrderForThisWeek(status)));
+    } else if (timeRange.equals("month")){
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getListOrderForThisMonth(status)));
+    } else if (timeRange.equals("year")){
+      return ResponseEntity.ok()
+          .body(new BaseResponse<>(true, 200, "Success", orderItemService.getListOrderForThisYear(status)));
+    } else {
+      return ResponseEntity.badRequest().body(new BaseResponse<>(true, 404, "Failed", "Invalid time range"));
+    }
+  }
+
 }

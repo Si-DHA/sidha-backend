@@ -2,6 +2,9 @@ package com.sidha.api.service;
 
 import java.util.List;
 
+import com.sidha.api.model.order.OrderItem;
+import java.util.Map;
+
 public interface OrderItemService {
   Long getTotalRevenueForToday();
 
@@ -29,4 +32,19 @@ public interface OrderItemService {
 
   List<List<Object>> getYearlyOrder(int startYear, int endYear, int status);
 
-}
+  List<Map<String, Object>> getListRevenueForToday();
+
+  List<Map<String, Object>> getListRevenueForThisWeek();
+
+  List<Map<String, Object>> getListRevenueForThisMonth();
+
+  List<Map<String, Object>> getListRevenueForThisYear();
+
+  List<OrderItem> getListOrderForToday(int status);
+
+  List<OrderItem> getListOrderForThisWeek(int status);
+
+  List<OrderItem> getListOrderForThisMonth(int status);
+
+  List<OrderItem> getListOrderForThisYear(int status);
+} 
