@@ -328,4 +328,26 @@ public class InsidenServiceImpl implements InsidenService {
         return result;
     }
 
+    @Override
+    public List<Insiden> getListInsidenForToday() {
+        LocalDateTime startDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        LocalDateTime endDateTime = startDateTime.plusDays(1);
+        return insidenRepository.getListInsidenForToday(startDateTime, endDateTime);
+    }
+
+    @Override
+    public List<Insiden> getListInsidenForThisWeek() {
+        return insidenRepository.getListInsidenForThisWeek();
+    }
+
+    @Override
+    public List<Insiden> getListInsidenForThisMonth() {
+        return insidenRepository.getListInsidenForThisMonth();
+    }   
+
+    @Override
+    public List<Insiden> getListInsidenForThisYear() {
+        return insidenRepository.getListInsidenForThisYear();
+    }
+
 }

@@ -4,16 +4,18 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Map;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.glassfish.jaxb.core.annotation.OverrideAnnotationOf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.sidha.api.model.order.OrderItem;
 import com.sidha.api.repository.OrderItemDb;
 import java.util.List;
 import java.util.Arrays;
+import java.util.Map;
 
 @Service
 public class OrderItemServiceImpl implements OrderItemService {
@@ -335,5 +337,65 @@ public class OrderItemServiceImpl implements OrderItemService {
         }
 
         return result;
+    }
+
+    @Override
+    public  List<Map<String, Object>>   getListRevenueForToday() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Date startDate = calendar.getTime();
+
+        calendar.add(Calendar.DATE, 1);
+        Date endDate = calendar.getTime();
+        return orderItemDb.getListRevenueForToday(startDate, endDate);
+    }
+
+    @Override
+    public List<Map<String, Object>> getListRevenueForThisWeek() {
+        return orderItemDb.getListRevenueForThisWeek();
+    }
+
+    @Override
+    public List<Map<String, Object>> getListRevenueForThisMonth() {
+        return orderItemDb.getListRevenueForThisMonth();
+    }
+
+    @Override
+    public List<Map<String, Object>> getListRevenueForThisYear() {
+        return orderItemDb.getListRevenueForThisYear();
+    }
+
+    @Override
+    public List<OrderItem> getListOrderForToday(int status) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Date startDate = calendar.getTime();
+
+        calendar.add(Calendar.DATE, 1);
+        Date endDate = calendar.getTime();
+        return orderItemDb.getListOrdersForToday(startDate, endDate, 5);
+    }
+
+    @Override
+    public List<OrderItem> getListOrderForThisWeek(int status) {
+        return orderItemDb.getListOrdersForThisWeek(status);
+      
+    }
+
+    @Override
+    public List<OrderItem> getListOrderForThisMonth(int status) {
+        return orderItemDb.getListOrdersForThisMonth(status);
+    }
+
+
+    @Override
+    public List<OrderItem> getListOrderForThisYear(int status) {
+        return orderItemDb.getListOrdersForThisYear(status);
     }
 }
