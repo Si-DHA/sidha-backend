@@ -48,9 +48,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ModelMapper modelMapper;
 
-    @Value("${app.image.url}")
-    private String IMAGE_URL;
-
     @Override
     public List<UserModel> findAllList() {
         return userDb.findAll();
