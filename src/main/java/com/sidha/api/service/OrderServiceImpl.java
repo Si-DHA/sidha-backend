@@ -209,6 +209,8 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
         order.setTanggalPengiriman(request.getTanggalPengiriman());
 
+        var klien = order.getKlien();
+
         request.getOrderItems().forEach(item -> {
             if (item.getOrderItemId() != null) { // Jika order item sudah ada
                 var orderItem = orderItemDb.findById(item.getOrderItemId())
@@ -217,6 +219,9 @@ public class OrderServiceImpl implements OrderService {
                 orderItem.setTipeBarang(TipeBarang.valueOf(item.getTipeBarang()));
                 orderItem.setTipeTruk(TipeTruk.valueOf(item.getTipeTruk()));
                 orderItem.setKeterangan(item.getKeterangan());
+
+                var orderItemHistories = orderItem.getOrderItemHistories();
+                orderItemHistories.add(this.addOrderItemHistory(orderItem, "Memperbarui order item " + orderItem.getId(), klien.getCompanyName()));
 
                 item.getRute().forEach(r -> {
                     if (r.getRuteId() != null) { // Jika rute sudah ada
